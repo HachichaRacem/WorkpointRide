@@ -46,6 +46,13 @@ dependencies:
   syncfusion_flutter_datepicker: 20.3.61
   lottie: ^2.7.0
   flutter_osm_plugin: 0.70.4
+  google_maps_flutter: ^2.6.0
+  geolocator: ^10.1.0
+  search_map_place_updated: ^0.0.4
+  geocode: ^1.0.3
+  geocoding: ^2.1.1
+  shared_preferences: ^2.2.2
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +80,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottieFiles/
+    - assets/themes/
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

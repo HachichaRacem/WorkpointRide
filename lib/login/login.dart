@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/login/choose_role.dart';
 
@@ -11,7 +12,7 @@ class Login extends StatelessWidget {
         child: SingleChildScrollView(
           child: Container(
             width: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 colors: [
@@ -23,8 +24,8 @@ class Login extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 80),
-                Padding(
+                const SizedBox(height: 80),
+                const Padding(
                   padding: EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,11 +42,11 @@ class Login extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Container(
                   height:500,
                   width: double.infinity,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(60),
@@ -53,7 +54,7 @@ class Login extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(30),
                     child: Column(
                       children: <Widget>[
                         Container(
@@ -62,7 +63,7 @@ class Login extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
-                              BoxShadow(
+                              const BoxShadow(
                                 color: colorsFile.ProfileIcon,
                                 blurRadius: 20,
                                 offset: Offset(0, 10),
@@ -72,7 +73,7 @@ class Login extends StatelessWidget {
                           child: Column(
                             children: <Widget>[
                               Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
@@ -80,7 +81,7 @@ class Login extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                child: TextField(
+                                child: const TextField(
                                   decoration: InputDecoration(
                                     hintText: "Email or Phone number",
                                     hintStyle: TextStyle(color: Colors.grey),
@@ -89,7 +90,7 @@ class Login extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
@@ -97,7 +98,7 @@ class Login extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                child: TextField(
+                                child: const TextField(
                                   obscureText: true,
                                   decoration: InputDecoration(
                                     hintText: "Password",
@@ -109,16 +110,16 @@ class Login extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(height: 40),
-                        Text(
+                        const SizedBox(height: 40),
+                        const Text(
                           "Forgot Password?",
                           style: TextStyle(color: Colors.grey),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) => ChooseRole(),
+                              pageBuilder: (context, animation, secondaryAnimation) => const ChooseRole(),
                               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                 const begin = Offset(1.0, 0.0);
                                 const end = Offset.zero;
@@ -134,10 +135,10 @@ class Login extends StatelessWidget {
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(colorsFile.buttonRole),
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              EdgeInsets.symmetric(vertical: 16.0, horizontal: 70.0),
+                              const EdgeInsets.symmetric(vertical: 16.0, horizontal: 70.0),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'Login',
                             style: TextStyle(color: colorsFile.icons),
                           ),

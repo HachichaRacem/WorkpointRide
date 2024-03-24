@@ -37,6 +37,7 @@ class _AlertUpcomingState extends State<AlertUpcoming> {
                   4,
                   (index) => GestureDetector(
                     onTap: () {
+
                       setState(() {
                         cardColors[index] =
                             (cardColors[index] == colorsFile.cardColor)
@@ -45,7 +46,7 @@ class _AlertUpcomingState extends State<AlertUpcoming> {
                       });
                     },
                     child: Padding(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         right: 16.0,
                         top: 16.0,
                       ),

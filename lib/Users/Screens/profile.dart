@@ -1,10 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 
-import 'package:osmflutter/map/home_example.dart';
+import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../../GoogleMaps/driver_polyline_map.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -14,10 +20,50 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
   late double _height;
   late double _width;
   Color baseColor = const Color(0xFFf2f2f2);
+
+  bool bottomSheetVisible =true;
+  bool check = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("Inside the insit state \n getting the shared preferences values");
+    getshared();
+  }
+
+  dynamic sp_poly_lat1,sp_poly_lng1,sp_poly_lat2,sp_poly_lng2;
+  getshared()async
+  {
+    final prefs = await sharedpreferences.get_poly_lat1();
+    sp_poly_lat1 = prefs;
+    print("Poly_lat1 = ${sp_poly_lat1}");
+
+    final prefs1 = await sharedpreferences.get_poly_lng1();
+    sp_poly_lng1 = prefs1;
+    print("Poly_lng1 = ${sp_poly_lng1}");
+
+    final prefs2 = await sharedpreferences.get_poly_lat2();
+    sp_poly_lat2 = prefs2;
+    print("Poly_lat2 = ${sp_poly_lat2}");
+
+    final prefs3 = await sharedpreferences.get_poly_lng2();
+    sp_poly_lng2 = prefs3;
+    print("Poly_lng2 = ${sp_poly_lng2}");
+
+
+    if(sp_poly_lng1!=null || sp_poly_lat1!=null || sp_poly_lng2!=null || sp_poly_lat2!=null)
+      {
+        setState(() {
+          check=false;
+        });
+      }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
@@ -38,68 +84,87 @@ class _ProfileState extends State<Profile> {
           ),
         ),
         toolbarHeight: 80.0,
-        title: Column(
+        title: const Column(
           children: [
-            const SizedBox(height: 16.0),
-
-
+            SizedBox(height: 16.0),
           ],
         ),
       ),
       body: Stack(
         children: [
           // Background Photo
-          OldMainExample(),
-          Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 400,
-                decoration: BoxDecoration(
-                  color: colorsFile.cardColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(50.0),
-                    topRight: Radius.circular(50.0),
+         // MapsGoogleExample(),
+          check == true
+              ? MapsGoogleExample()
+              : DriverOnMap(
+            poly_lat1: sp_poly_lat1,
+            poly_lng1: sp_poly_lng1,
+            poly_lat2: sp_poly_lat2,
+            poly_lng2: sp_poly_lng2,
+
+          ),
+
+          SlidingUpPanel(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+            minHeight: MediaQuery.of(context).size.height * 0.45,
+            panel: Stack(
+              alignment: Alignment.topCenter,
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.85,
+                  color: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 60),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      decoration: const BoxDecoration(
+                        color: colorsFile.cardColor,
+                        borderRadius:  BorderRadius.only(
+                          topLeft: Radius.circular(50.0),
+                          topRight: Radius.circular(50.0),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                child:Stack(
-                  alignment: AlignmentDirectional.topCenter,
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: -40,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          height: 90,
-                          padding: EdgeInsets.all(5), // Border width
-                          decoration: BoxDecoration(
-                              color: colorsFile.borderCircle, shape: BoxShape.circle),
-                          child: ClipOval(
-                            child: SizedBox.fromSize(
-                              size: Size.fromRadius(40), // Image radius
-                              child: Image(
-                                image: AssetImage("assets/images/homme1.jpg"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                Positioned(
+                  top: 12,
+                  right: 25,
+                  left: 25,
+                  child: Center(
+                    child: Container(
+                      height: 90,
+                      padding: const EdgeInsets.all(5), // Border width
+                      decoration: const BoxDecoration(
+                        color: colorsFile.borderCircle,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: SizedBox.fromSize(
+                          size: const Size.fromRadius(40), // Image radius
+                          child: const Image(
+                            image: AssetImage("assets/images/homme1.jpg"),
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
                     ),
-                    Positioned(
-                      child: Column(children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Column(children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: GestureDetector(
+                  ),
+                ),
+                Container(
+                  child: SingleChildScrollView(
+                    child:
+                    Column(
+                      children: [
+                        const SizedBox(height: 30),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: GestureDetector(
                                     onTap: () {
                                       // Call your void method or add logic for the entire structure
                                       // _showModalBottomSheet1(context);
@@ -107,7 +172,7 @@ class _ProfileState extends State<Profile> {
                                     child: Container(
                                       height: 50,
                                       width: 50,
-                                      child:  Stack(
+                                      child: Stack(
                                         children: [
                                           ClayContainer(
                                             color: Colors.white,
@@ -127,8 +192,9 @@ class _ProfileState extends State<Profile> {
                                               curveType: CurveType.convex,
                                               depth: 30,
                                               spread: 1,
-                                              child: Center(
-                                                child: Icon(Icons.history_outlined,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.history_outlined,
                                                   color: colorsFile.ProfileIcon,
                                                 ),
                                               ),
@@ -136,12 +202,13 @@ class _ProfileState extends State<Profile> {
                                           )
                                         ],
                                       ),
-                                    )),
-                              ),
-                              Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: GestureDetector(
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: GestureDetector(
                                     onTap: () {
                                       // Call your void method or add logic for the entire structure
                                       // _showModalBottomSheet1(context);
@@ -149,7 +216,7 @@ class _ProfileState extends State<Profile> {
                                     child: Container(
                                       height: 50,
                                       width: 50,
-                                      child:  Stack(
+                                      child: Stack(
                                         children: [
                                           ClayContainer(
                                             color: Colors.white,
@@ -169,8 +236,9 @@ class _ProfileState extends State<Profile> {
                                               curveType: CurveType.convex,
                                               depth: 30,
                                               spread: 1,
-                                              child: Center(
-                                                child: Icon(Icons.airline_seat_recline_normal_sharp,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.airline_seat_recline_normal_sharp,
                                                   color: colorsFile.ProfileIcon,
                                                 ),
                                               ),
@@ -178,227 +246,238 @@ class _ProfileState extends State<Profile> {
                                           )
                                         ],
                                       ),
-                                    )),
-                              ),
-                            ],
-                          ),
-                          //SizedBox(height: 8,),
-                          Text(
-                            "Foulen Ben Foulen",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserrat(
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              "Foulen Ben Foulen",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
-                                color: colorsFile.titleCard),
-                          ),
-                        ]),
+                                color: colorsFile.titleCard,
+                              ),
+                            ),
+                          ],
+                        ),
                         GlassmorphicContainer(
                           height: 250,
-                          width: _width * 0.9,
+                          width: MediaQuery.of(context).size.width * 0.9,
                           borderRadius: 15,
                           blur: 100,
                           alignment: Alignment.center,
                           border: 2,
                           linearGradient: const LinearGradient(
-                              colors: [Color(0xFFD8E6EE), Color(0xFFD8E6EE)],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter),
-                          borderGradient: LinearGradient(colors: [
-                            Colors.white24.withOpacity(0.2),
-                            Colors.white70.withOpacity(0.2)
-                          ]),
-                          child: Container(
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 5,
-                                ),
-
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Row(
+                            colors: [Color(0xFFD8E6EE), Color(0xFFD8E6EE)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderGradient: LinearGradient(
+                            colors: [
+                              Colors.white24.withOpacity(0.2),
+                              Colors.white70.withOpacity(0.2),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: _width * 0.9,
+                                child: Row(
+                                  children: [
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Icon(
-                                              Icons.phone,
-                                              color: colorsFile.detailColor,
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              "55 555 555",
-                                              style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12,
-                                                  color: colorsFile.titleCard),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.home,
-                                              color: colorsFile.detailColor,
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              "V5VP+RH La Marsa",
-                                              style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                  color: colorsFile.titleCard),
-                                            ),
-
-                                            IconButton(
-                                                onPressed: () => {},
-                                                icon: Icon(
-                                                  Icons.delete,
-                                                  color: colorsFile.skyBlue,
-                                                )),
-                                          ],
-                                        ),
-
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
+                                            const SizedBox(height: 10),
                                             Row(
                                               children: [
-                                                Icon(
-                                                  Icons.favorite,
+                                                const Icon(
+                                                  Icons.phone,
                                                   color: colorsFile.detailColor,
                                                 ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Column(
-                                                    children: [
-                                                      Row(
-                                                          children: [
-                                                            Text(
-                                                              "V5VP+RH La Marsa",
-                                                              style: GoogleFonts.montserrat(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: 13,
-                                                                  color: colorsFile.titleCard),
-                                                            ),
-
-                                                            IconButton(
-                                                                onPressed: () => {},
-                                                                icon: Icon(
-                                                                  Icons.delete,
-                                                                  color: colorsFile.skyBlue,
-                                                                )),
-                                                          ]
-                                                      ),
-                                                      Row(
-                                                          children: [
-                                                            Text(
-                                                              "V5VP+RH La Marsa",
-                                                              style: GoogleFonts.montserrat(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: 13,
-                                                                  color: colorsFile.titleCard),
-                                                            ),
-
-                                                            IconButton(
-                                                                onPressed: () => {},
-                                                                icon: Icon(
-                                                                  Icons.delete,
-                                                                  color: colorsFile.skyBlue,
-                                                                )),
-                                                          ]
-                                                      ),
-                                                      IconButton(
-                                                          onPressed: () => {},
-                                                          icon: Icon(
-                                                            Icons.add,
-                                                            color: colorsFile.skyBlue,
-                                                          )),
-
-                                                    ]
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  "55 555 555",
+                                                  style: GoogleFonts.montserrat(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                    color: colorsFile.titleCard,
+                                                  ),
                                                 ),
                                               ],
-
                                             ),
-                                            Spacer(),
-                                            Padding(
-                                              padding: const EdgeInsets.all(16.0),
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    // Call your void method or add logic for the entire structure
-                                                    // _showModalBottomSheet1(context);
-                                                  },
-                                                  child: Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child:  Stack(
+                                            const SizedBox(height: 5),
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.home,
+                                                  color: colorsFile.detailColor,
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  "V5VP+RH La Marsa",
+                                                  style: GoogleFonts.montserrat(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13,
+                                                    color: colorsFile.titleCard,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {},
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: colorsFile.skyBlue,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.favorite,
+                                                      color: colorsFile.detailColor,
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Column(
                                                       children: [
-                                                        ClayContainer(
-                                                          color: Colors.white,
-                                                          height: 50,
-                                                          width: 50,
-                                                          borderRadius: 50,
-                                                          curveType: CurveType.concave,
-                                                          depth: 30,
-                                                          spread: 1,
-                                                        ),
-                                                        Center(
-                                                          child: ClayContainer(
-                                                            color: Colors.white,
-                                                            height: 40,
-                                                            width: 40,
-                                                            borderRadius: 40,
-                                                            curveType: CurveType.convex,
-                                                            depth: 30,
-                                                            spread: 1,
-                                                            child: Center(
-                                                              child: Icon(Icons.directions,
-                                                                color: colorsFile.ProfileIcon,
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              "V5VP+RH La Marsa",
+                                                              style: GoogleFonts.montserrat(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 13,
+                                                                color: colorsFile.titleCard,
                                                               ),
                                                             ),
+                                                            IconButton(
+                                                              onPressed: () {},
+                                                              icon: const Icon(
+                                                                Icons.delete,
+                                                                color: colorsFile.skyBlue,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              "V5VP+RH La Marsa",
+                                                              style: GoogleFonts.montserrat(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 13,
+                                                                color: colorsFile.titleCard,
+                                                              ),
+                                                            ),
+                                                            IconButton(
+                                                              onPressed: () {},
+                                                              icon: const Icon(
+                                                                Icons.delete,
+                                                                color: colorsFile.skyBlue,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () {},
+                                                          icon: const Icon(
+                                                            Icons.add,
+                                                            color: colorsFile.skyBlue,
                                                           ),
-                                                        )
+                                                        ),
                                                       ],
                                                     ),
-                                                  )),
+                                                  ],
+                                                ),
+                                                const Spacer(),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(16.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      // Call your void method or add logic for the entire structure
+                                                      // _showModalBottomSheet1(context);
+                                                    },
+                                                    child: Container(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 50,
+                                                            width: 50,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType.concave,
+                                                            depth: 30,
+                                                            spread: 1,
+                                                          ),
+                                                          Center(
+                                                            child: ClayContainer(
+                                                              color: Colors.white,
+                                                              height: 40,
+                                                              width: 40,
+                                                              borderRadius: 40,
+                                                              curveType: CurveType.convex,
+                                                              depth: 30,
+                                                              spread: 1,
+                                                              child: const Center(
+                                                                child: Icon(
+                                                                  Icons.directions,
+                                                                  color: colorsFile.ProfileIcon,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                      ],
-
+                                      ),
                                     ),
-
-
-                                  ),
-                                )
-                              ],
-                            ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ]
+                      ],
+                    ),
 
-                      ),
-                    )
-                  ],
-                )
-              )
-          ),
+                  ),
+                ),
+              ],
+            ),
+            body: Container(),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
+            ),
+            color: Colors.transparent,
+            boxShadow: [],
+            onPanelSlide: (double pos) {
+              setState(() {
+                bottomSheetVisible = pos > 0.5;
+              });
+            },
+          )
+
+
         ],
       ),
     );

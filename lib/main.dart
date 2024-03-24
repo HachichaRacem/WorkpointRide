@@ -1,10 +1,4 @@
-
-
-
-import 'package:osmflutter/Users/bottom_nav.dart';
-import 'package:osmflutter/login/choose_role.dart';
 import 'package:flutter/material.dart';
-
 import 'package:osmflutter/login/login.dart';
 
 void main() {
@@ -22,7 +16,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.transparent,
       ),
-     
       home:  Login(),
       //home:  ChooseRole(),
     );

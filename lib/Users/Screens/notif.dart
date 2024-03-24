@@ -74,19 +74,21 @@ class _NotifState extends State<Notif> with SingleTickerProviderStateMixin {
                     Container(
                       width: _width * 0.9,
                       height: kToolbarHeight - 0.0,
-                      
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(  color: colorsFile.icons,)
                       ),
                       child: TabBar(
                         controller: _tabController,
                         indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.0),
+                          borderRadius: BorderRadius.circular(8.0),
                           color: colorsFile.icons,
                         ),
                         labelColor: Colors.white,
+                        dividerColor: Colors.transparent,
                         unselectedLabelColor: colorsFile.tabbar,
+                        indicatorSize: TabBarIndicatorSize.tab,
                         tabs: _tabs,
                       ),
                     ),
