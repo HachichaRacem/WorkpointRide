@@ -73,15 +73,24 @@ class _AddRidesState extends State<AddRides>
 
   bool check = false;
 
+
+
+
   google_map_for_origin(GoogleMapController? map_controller) async {
+
     current_lat1 = await sharedpreferences.getlat();
     current_lng1 = await sharedpreferences.getlng();
 
     current_lat2 = await sharedpreferences.getlat();
     current_lng2 = await sharedpreferences.getlng();
 
-    print("Shared data is ");
+    print("Shared data # 01 is ");
     print("${current_lng1} : ${current_lat1}");
+
+    print("Shared data # 02 is ");
+    print("${current_lng2} : ${current_lat2}");
+
+
 
     setState(() {
       check = true;
@@ -114,8 +123,7 @@ class _AddRidesState extends State<AddRides>
                                 children: [
                                   GoogleMap(
                                     initialCameraPosition: CameraPosition(
-                                      target: LatLng(current_lat1,
-                                          current_lng1), // Should be LatLng(current_lat,current_lng)
+                                      target: LatLng(current_lat1,current_lng1), // Should be LatLng(current_lat,current_lng)
                                       zoom: 14,
                                     ),
                                     markers: Set<Marker>.of(myMarker),
@@ -253,6 +261,9 @@ class _AddRidesState extends State<AddRides>
   List<Marker> markers1 = [];
 
   google_map_for_origin1(GoogleMapController? map_controller1) {
+
+    //print("Current location is === ${currentLocation}");
+
     showDialog(
         context: context,
         builder: (context) {
@@ -275,7 +286,7 @@ class _AddRidesState extends State<AddRides>
                       if (snapshot.hasData) {
                         return GoogleMap(
                           initialCameraPosition: CameraPosition(
-                            target: LatLng(current_lat2, current_lng2),
+                            target: LatLng(current_lat2,current_lng2),
                             zoom: 14,
                           ),
                           markers: Set<Marker>.of(myMarker1),
@@ -1102,7 +1113,7 @@ class _AddRidesState extends State<AddRides>
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   child: GlassmorphicContainer(
-                      height: _height * 0.08,
+                      height: _height * 0.18,
                       width: _width * 0.4,
                       borderRadius: 5,
                       blur: 2,
@@ -1127,14 +1138,35 @@ class _AddRidesState extends State<AddRides>
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Total Duration = ${totalDurationInMinutes} Minutes ",
-                              style: TextStyle(fontSize: 10),
+                             Padding(
+                              padding:  EdgeInsets.only(top: 6,bottom: 2),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                      onTap: ()
+                                      {
+                                        box_check=false;
+                                        setState(() {
+
+                                        });
+                                      },
+                                      child: Icon(Icons.close,size: 18))
+                                ],
+                              ),
                             ),
-                            Text("Total Kilometer = ${total_km} km",
-                                style: const TextStyle(fontSize: 10))
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Total Duration = ${totalDurationInMinutes} Minutes ",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                                Text("Total Kilometer = ${total_km} km",
+                                    style: const TextStyle(fontSize: 10))
+                              ],
+                            ),
                           ],
                         ),
                       )),

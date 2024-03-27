@@ -105,9 +105,8 @@ class _CalendarState extends State<Calendar> {
       body: Stack(
         children: [
 
-          // Background Photo
-
           //MapsGoogleExample(),
+
 
           check == true
               ? MapsGoogleExample()
@@ -136,7 +135,7 @@ class _CalendarState extends State<Calendar> {
                   child: Column(
                     children: [
                       Container(
-                        height: 121,
+                        height: 127,
                         decoration: const BoxDecoration(
                           color: colorsFile.ProfileIcon,
                           borderRadius: BorderRadius.vertical(
@@ -145,7 +144,7 @@ class _CalendarState extends State<Calendar> {
                         ),
                         child: Column(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Container(

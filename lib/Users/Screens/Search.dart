@@ -1,7 +1,9 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:osmflutter/GoogleMaps/passenger_map.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
@@ -11,12 +13,12 @@ import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../../GoogleMaps/driver_polyline_map.dart';
+import '../../GoogleMaps/pass_route_map.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -26,6 +28,15 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  //Map new Theme
+  Future<String> _loadNightStyle() async {
+    // Load the JSON style file from assets
+    String nightStyleJson = await DefaultAssetBundle.of(context)
+        .loadString('assets/themes/aubergine_style.json');
+    return nightStyleJson;
+  }
+
+  late GoogleMapController mapController;
 
   //Google Maps For Home
 
@@ -33,17 +44,25 @@ class _SearchState extends State<Search> {
 
   var origin_address_name = 'Home';
 
+  dynamic selected_lat1, selected_lng1;
+  dynamic selected_lat2, selected_lng2;
+
   void origin_address_method(dynamic newlat, dynamic newlng) async {
+    selected_lat1 = newlat;
+    selected_lng1 = newlng;
+    print("Selected HOME Lat & Lng is: $selected_lat1 : $selected_lng1 ");
+
+    await sharedpreferences.set_pass_poly_lat1(selected_lat1);
+    await sharedpreferences.set_pass_poly_lng1(selected_lng1);
+
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     origin_address_name =
-    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+        "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
     print("Origin Name == ${origin_address_name}");
 
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   List<Marker> myMarker = [];
@@ -52,28 +71,23 @@ class _SearchState extends State<Search> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  dynamic  current_lat1, current_lng1, current_lat2, current_lng2;
+  dynamic current_lat1, current_lng1, current_lat2, current_lng2;
 
   bool check = false;
 
-
   google_map_for_origin(GoogleMapController? map_controller) async {
-
-
     current_lat1 = await sharedpreferences.getlat();
     current_lng1 = await sharedpreferences.getlng();
 
     current_lat2 = await sharedpreferences.getlat();
     current_lng2 = await sharedpreferences.getlng();
 
-
     print("Shared data is ");
     print("${current_lng1} : ${current_lat1}");
 
     setState(() {
-      check=true;
+      check = true;
     });
-
 
     showDialog(
         context: context,
@@ -81,9 +95,8 @@ class _SearchState extends State<Search> {
           final height = MediaQuery.of(context).size.height;
           final width = MediaQuery.of(context).size.width;
 
-
           print("Fetched lat & lnng is ${current_lat1} & ${current_lng1}");
-          return  Dialog(
+          return Dialog(
             child: Stack(
               children: [
                 Container(
@@ -94,49 +107,82 @@ class _SearchState extends State<Search> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.transparent,
                   ),
-                  child: check==true ?
-                  GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(current_lat1,current_lng1), // Should be LatLng(current_lat,current_lng)
-                      zoom: 14,
-                    ),
-                    markers: Set<Marker>.of(myMarker),
-                    onMapCreated: (GoogleMapController controller) {
-                      // _controller.complete(controller);
-                      setState(() {
-                        map_controller = controller;
-                      });
-                    },
-                    onTap: (position) {
-                      mapGoogle(position);
-                      setState(() {});
-                    },
-                  ) : Center(child: CircularProgressIndicator(color: Colors.black,),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                  child: SearchMapPlaceWidget(
-                      hasClearButton: true,
-                      iconColor: Colors.black,
-                      placeType: PlaceType.address,
-                      bgColor: Colors.white,
-                      textColor: Colors.black,
-                      placeholder: "Search Any Location",
-                      apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
-                      onSelected: (Place place) async {
-                        Geolocation? geo_location = await place.geolocation;
-                        print("running-----");
-                        map_controller!.animateCamera(
-                            CameraUpdate.newLatLng(geo_location?.coordinates));
-                        map_controller!.animateCamera(
-                            CameraUpdate.newLatLngBounds(
-                                geo_location?.bounds, 0));
-                      }),
+                  child: check == true
+                      ? FutureBuilder<String>(
+                          future: _loadNightStyle(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Stack(
+                                children: [
+                                  GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: LatLng(current_lat1,
+                                          current_lng1), // Should be LatLng(current_lat,current_lng)
+                                      zoom: 14,
+                                    ),
+                                    markers: Set<Marker>.of(myMarker),
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      // _controller.complete(controller);
+                                      setState(() {
+                                        map_controller = controller;
+                                        mapController = controller;
+                                        mapController
+                                            .setMapStyle(snapshot.data);
+                                      });
+                                    },
+                                    onTap: (position) {
+                                      mapGoogle(position);
+                                      setState(() {});
+                                    },
+                                    buildingsEnabled: true,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8, left: 8, right: 8),
+                                    child: SearchMapPlaceWidget(
+                                        hasClearButton: true,
+                                        iconColor: Colors.black,
+                                        placeType: PlaceType.address,
+                                        bgColor: Colors.white,
+                                        textColor: Colors.black,
+                                        placeholder: "Search Any Location",
+                                        apiKey:
+                                            "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
+                                        onSelected: (Place place) async {
+                                          Geolocation? geo_location =
+                                              await place.geolocation;
+                                          print("running-----");
+                                          map_controller!.animateCamera(
+                                              CameraUpdate.newLatLng(
+                                                  geo_location?.coordinates));
+                                          map_controller!.animateCamera(
+                                              CameraUpdate.newLatLngBounds(
+                                                  geo_location?.bounds, 0));
+                                        }),
+                                  ),
+                                ],
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                  child: Text('Error loading night style'));
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white));
+                            }
+                          },
+                        )
+                      : const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        ),
                 ),
               ],
             ),
-          );;
-
+          );
+          ;
         });
   }
 
@@ -160,7 +206,7 @@ class _SearchState extends State<Search> {
     setState(() {});
     //Setting camera position in setstate
     CameraPosition camera_position =
-    CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
+        CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
 
     GoogleMapController controller = await _controller.future;
 
@@ -171,17 +217,23 @@ class _SearchState extends State<Search> {
     // print(lng);
   }
 
-
-
   //For EV Tower
 
   var destination_address_name = 'EV Tower';
 
+  bool map_check = false;
   void destination_address_method(double newlat, double newlng) async {
+    selected_lat2 = newlat;
+    selected_lng2 = newlng;
+    print("Selected EV TOWER Lat & Lng is: $selected_lat2 : $selected_lng2 ");
+
+    await sharedpreferences.set_pass_poly_lat2(selected_lat2);
+    await sharedpreferences.set_pass_poly_lng2(selected_lng2);
+
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     destination_address_name =
-    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+        "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
     print("Destination Name == ${destination_address_name}");
   }
@@ -193,7 +245,6 @@ class _SearchState extends State<Search> {
   List<Marker> myMarker1 = [];
 
   List<Marker> markers1 = [];
-
 
   google_map_for_origin1(GoogleMapController? map_controller1) {
     showDialog(
@@ -212,21 +263,38 @@ class _SearchState extends State<Search> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.transparent,
                   ),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(current_lat2, current_lng2),
-                      zoom: 14,
-                    ),
-                    markers: Set<Marker>.of(myMarker1),
-                    onMapCreated: (GoogleMapController controller1) {
-                      setState(() {
-                        map_controller1 = controller1;
-                      });
-                      _controller1.complete(controller1);
-                    },
-                    onTap: (position) {
-                      mapGoogle1(position);
-                      setState(() {});
+                  child: FutureBuilder<String>(
+                    future: _loadNightStyle(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(current_lat2, current_lng2),
+                            zoom: 14,
+                          ),
+                          markers: Set<Marker>.of(myMarker1),
+                          onMapCreated: (GoogleMapController controller1) {
+                            setState(() {
+                              map_controller1 = controller1;
+                              _controller1.complete(controller1);
+                              mapController = controller1;
+                              mapController.setMapStyle(snapshot.data);
+                            });
+                          },
+                          onTap: (position) {
+                            mapGoogle1(position);
+                            setState(() {});
+                          },
+                          buildingsEnabled: true,
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Center(
+                            child: Text('Error loading night style'));
+                      } else {
+                        return const Center(
+                            child:
+                                CircularProgressIndicator(color: Colors.white));
+                      }
                     },
                   ),
                 ),
@@ -276,7 +344,7 @@ class _SearchState extends State<Search> {
     setState(() {});
     //Setting camera position in setstate
     CameraPosition camera_position1 =
-    CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
+        CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
 
     GoogleMapController controller = await _controller1.future;
 
@@ -285,13 +353,7 @@ class _SearchState extends State<Search> {
     print("-----------Updated-----------");
     print(current_lat2);
     print(current_lng2);
-
-
   }
-
-
-
-
 
   int selectedIndex = 0;
   DateTime now = DateTime.now();
@@ -305,37 +367,121 @@ class _SearchState extends State<Search> {
   late double _width;
   bool condition = true;
 
+  //Getting driver home & evtower lat & lng
+
+  // dynamic driver_lat1,driver_lng1,driver_lat2,driver_lng2;
+  //
+  // get_shared() async
+  // {
+  //   final prefs1 = await sharedpreferences.get_poly_lat1();
+  //   final prefs2 = await sharedpreferences.get_poly_lng1();
+  //   final prefs3 = await sharedpreferences.get_poly_lat2();
+  //   final prefs4 = await sharedpreferences.get_poly_lng2();
+  //
+  //   driver_lat1 = prefs1;
+  //   driver_lng1 = prefs2;
+  //   driver_lat2 = prefs3;
+  //   driver_lng2 = prefs4;
+  //
+  //   print("Driver lat & lng is:");
+  //   print("Driver_Lat1 = ${driver_lat1}");
+  //   print("Driver_Lng1 = ${driver_lng1}");
+  //   print("Driver_Lat2 = ${driver_lat2}");
+  //   print("Driver_Lng2 = ${driver_lng2}");
+  //
+  //   setState(() {
+  //     //_fetchRoute();
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
+    get_shared();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
+
+  bool check_shared_data = true;
+
+  dynamic sp_data_poly_lat1,
+      sp_data_poly_lng1,
+      sp_data_poly_lat2,
+      sp_data_poly_lng2;
+  get_shared() async {
+    print("Getting the shared data");
+
+    final prefs = await sharedpreferences.get_pass_poly_lat1();
+    sp_data_poly_lat1 = prefs;
+    print("Poly_lat1 = ${sp_data_poly_lat1}");
+
+    final prefs1 = await sharedpreferences.get_pass_poly_lng1();
+    sp_data_poly_lng1 = prefs1;
+    print("Poly_lng1 = ${sp_data_poly_lng1}");
+
+    final prefs2 = await sharedpreferences.get_pass_poly_lat2();
+    sp_data_poly_lat2 = prefs2;
+    print("Poly_lat2 = ${sp_data_poly_lat2}");
+
+    final prefs3 = await sharedpreferences.get_pass_poly_lng2();
+    sp_data_poly_lng2 = prefs3;
+    print("Poly_lng2 = ${sp_data_poly_lng2}");
+
+    setState(() {});
+
+    if (sp_data_poly_lat1 == null ||
+        sp_data_poly_lng1 == null ||
+        sp_data_poly_lat2 == null ||
+        sp_data_poly_lng2 == null) {
+      print("Shared data values are null");
+      check_shared_data = true;
+      setState(() {
+
+      });
+    } else {
+      print("Shared data values are not null");
+      check_shared_data = false;
+      setState(() {
+
+      });
+    }
+
+  }
+
   _showSearchRides() {
     setState(() {
-      isSearchPoPupVisible=true;
-      bottomSheetVisible=false;
+      isSearchPoPupVisible = true;
+      bottomSheetVisible = false;
       condition = false;
     });
   }
+
   _showMyRides() {
     print("tttttttttttttt");
     setState(() {
-      myRidesbottomSheetVisible=true;
-      listSearchBottomSheet=false;
+      myRidesbottomSheetVisible = true;
+      listSearchBottomSheet = false;
     });
   }
+
   showRide() {
     print("tttttttttttttt");
     setState(() {
-      ridesIsVisible=!ridesIsVisible;
+      ridesIsVisible = !ridesIsVisible;
     });
   }
 
-
-
-
-
-
+  // dynamic sp_lat1, sp_lng1, sp_lat2, sp_lng2;
+  // shared_data() async {
+  //   sp_lat1 = await sharedpreferences.get_pass_poly_lat1();
+  //   sp_lng1 = await sharedpreferences.get_pass_poly_lng1();
+  //   sp_lat2 = await sharedpreferences.get_pass_poly_lat2();
+  //   sp_lng2 = await sharedpreferences.get_pass_poly_lng2();
+  //
+  //   print(
+  //       "Shareddd values aree: ${sp_lng1} : ${sp_lng1} ? ${sp_lat2} : ${sp_lng2}");
+  //
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -384,7 +530,6 @@ class _SearchState extends State<Search> {
                               height: 42.0,
                               width: 42.0,
                               alignment: Alignment.center,
-                            
                               child: Text(
                                 "${index + 1}",
                                 style: TextStyle(
@@ -397,7 +542,6 @@ class _SearchState extends State<Search> {
                               ),
                             ),
                             const SizedBox(height: 4),
-
                             Text(
                               dayName.substring(0, 3),
                               style: TextStyle(
@@ -410,7 +554,6 @@ class _SearchState extends State<Search> {
                                     : FontWeight.normal,
                               ),
                             ),
-                            
                           ],
                         ),
                       ),
@@ -423,46 +566,22 @@ class _SearchState extends State<Search> {
         ),
       ),
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           setState(() {
-             isSearchPoPupVisible = false;
-             listSearchBottomSheet = false;
-             bottomSheetVisible = true;
-             myRidesbottomSheetVisible = false;
+            isSearchPoPupVisible = false;
+            listSearchBottomSheet = false;
+            bottomSheetVisible = true;
+            myRidesbottomSheetVisible = false;
           });
         },
         child: Stack(
           children: [
             // Background Photo
-            Positioned(
 
-              child: MapsGoogleExample(),
+            //pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2)
 
-            ),
-
-            // Content on top of the background
-            // Visibility(
-            //   visible: bottomSheetVisible,
-            //   child: Positioned(
-            //     left: 0,
-            //     right: 0,
-            //     bottom: 0,
-            //     child: Container(
-            //       height: 150,
-            //       decoration: BoxDecoration(
-            //         color: colorsFile.cardColor,
-            //         borderRadius: BorderRadius.only(
-            //           topLeft: Radius.circular(50.0),
-            //           topRight: Radius.circular(50.0),
-            //         ),
-            //       ),
-            //       child: SingleChildScrollView(
-            //        // controller: scrollController,
-            //         child: WantToBook("", "Want to Book a ride ? press + botton!",_showSearchRides),
-            //       ),
-            //     )
-            //   ),
-            // ),
+           check_shared_data ==true ?
+            map_check == false ? PassengerMap(condition: true) : pass_route_map(lat1: selected_lat1, lng1: selected_lng1, lat2: selected_lat2, lng2: selected_lng2,): pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2),
 
             SlidingUpPanel(
               maxHeight: _height * 0.99,
@@ -474,13 +593,13 @@ class _SearchState extends State<Search> {
                   },
                   child: WantToBook(
                     "Your proposed rides",
-                    "Want to add a ride? Press + button!",
+                    "Want to book a ride? Press + button!",
                     _showSearchRides,
                   ),
                 ),
               ),
               body: Container(), // Your body widget here
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(50.0),
                 topRight: Radius.circular(50.0),
               ),
@@ -505,7 +624,7 @@ class _SearchState extends State<Search> {
                     setState(() {
                       condition = true;
                       isSearchPoPupVisible = false;
-                      bottomSheetVisible=true;
+                      bottomSheetVisible = true;
                     });
                   },
                   child: GlassmorphicContainer(
@@ -517,18 +636,18 @@ class _SearchState extends State<Search> {
                     border: 2,
                     linearGradient: LinearGradient(
                       colors: [
-                        Color(0xFF003A5A).withOpacity(0.37),
-                        Color(0xFF003A5A).withOpacity(1),
-                        Color(0xFF003A5A).withOpacity(0.36),
+                        const Color(0xFF003A5A).withOpacity(0.37),
+                        const Color(0xFF003A5A).withOpacity(1),
+                        const Color(0xFF003A5A).withOpacity(0.36),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     borderGradient: LinearGradient(
                       colors: [
-                        Color(0xFF003A5A).withOpacity(0.37),
-                        Color(0xFF003A5A).withOpacity(1),
-                        Color(0xFF003A5A).withOpacity(0.36),
+                        const Color(0xFF003A5A).withOpacity(0.37),
+                        const Color(0xFF003A5A).withOpacity(1),
+                        const Color(0xFF003A5A).withOpacity(0.36),
                       ],
                     ),
                     child: Padding(
@@ -544,8 +663,8 @@ class _SearchState extends State<Search> {
                                 onTap: () {
                                   setState(() {
                                     isSearchPoPupVisible = false;
-                                    bottomSheetVisible=true;
-                                    condition=true;
+                                    bottomSheetVisible = true;
+                                    condition = true;
                                   });
                                 },
                                 child: const Icon(
@@ -573,164 +692,187 @@ class _SearchState extends State<Search> {
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              hintText: "${origin_address_name}",
-                                              prefixIcon: Container(
-                                                width: 37.0,
-                                                height: 37.0,
-                                                margin: EdgeInsets.only(left:5,right: 10),
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(color: Colors.white, width: 2.0,),
-                                                  color: Colors.white,
-                                                ),
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    //Calling the map functions
-                                                    print("On Tapped-origin");
-                                                    GoogleMapController?
-                                                    map_controller;
-                                                    google_map_for_origin(
-                                                        map_controller);
-                                                  },
-                                                  child: Icon(
-                                                    Icons.place,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(30.0),
-                                                borderSide: BorderSide(
+                                            child: TextField(
+                                          onTap: () {
+                                            //Calling the map functions
+                                            print("On Tapped-origin");
+                                            GoogleMapController? map_controller;
+                                            google_map_for_origin(
+                                                map_controller);
+                                          },
+                                          keyboardType: TextInputType.none,
+                                          decoration: InputDecoration(
+                                            hintText: "${origin_address_name}",
+                                            prefixIcon: Container(
+                                              width: 37.0,
+                                              height: 37.0,
+                                              margin: const EdgeInsets.only(
+                                                  left: 5, right: 10),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
                                                   color: Colors.white,
                                                   width: 2.0,
-
                                                 ),
-
+                                                color: Colors.white,
                                               ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(30.0),
-                                                borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 2.0,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  //Calling the map functions
+                                                  print("On Tapped-origin");
+                                                  GoogleMapController?
+                                                      map_controller;
+                                                  google_map_for_origin(
+                                                      map_controller);
+                                                },
+                                                child: const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
                                                 ),
                                               ),
                                             ),
-                                          )
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.blue,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                          ),
+                                        )),
+                                        const SizedBox(width: 5),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: GestureDetector(
+                                              onTap: () {},
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.swap_vert,
+                                                  color: Colors.white,
+                                                  size: 35,
+                                                ),
+                                              )),
                                         ),
-                                        SizedBox(width: 5),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                            onTap: () {
-                            },
-                            child:  Center(
-                              child: Icon(
-                                Icons.swap_vert,
-                                color:Colors.white,
-                                size: 35,
-
-
-                              ),
-                            )),
-                      ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Container(
-height: 50,
+                                  height: 50,
                                   child: Padding(
                                     padding: const EdgeInsets.all(3),
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child:  TextField(
-                                            decoration: InputDecoration(
-                                              hintText: '${destination_address_name}',
-                                              prefixIcon: Container(
-                                                width: 37.0,
-                                                height: 37.0,
-                                                margin: EdgeInsets.only(left:5,right: 10),
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(color: Colors.white, width: 2.0,),
-                                                  color: Colors.white,
-                                                ),
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    GoogleMapController?
-                                                    map_controller1;
-                                                    google_map_for_origin1(
-                                                        map_controller1);
-                                                  },
-                                                  child: Icon(
-                                                    Icons.place,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(30.0),
-                                                borderSide: BorderSide(
+                                            child: TextField(
+                                          onTap: () {
+                                            GoogleMapController?
+                                                map_controller1;
+                                            google_map_for_origin1(
+                                                map_controller1);
+                                          },
+                                          keyboardType: TextInputType.none,
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                '${destination_address_name}',
+                                            prefixIcon: Container(
+                                              width: 37.0,
+                                              height: 37.0,
+                                              margin: const EdgeInsets.only(
+                                                  left: 5, right: 10),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
                                                   color: Colors.white,
                                                   width: 2.0,
-
                                                 ),
-
+                                                color: Colors.white,
                                               ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(30.0),
-                                                borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 2.0,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  GoogleMapController?
+                                                      map_controller1;
+                                                  google_map_for_origin1(
+                                                      map_controller1);
+                                                },
+                                                child: const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
                                                 ),
                                               ),
                                             ),
-                                          )
-                                        ),
-                                        SizedBox(width: 10), // Adjust the space between the two icons
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.blue,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                          ),
+                                        )),
+                                        const SizedBox(
+                                            width:
+                                                10), // Adjust the space between the two icons
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 8.0),
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
                                           child: GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  listSearchBottomSheet=true;
-                                                  isSearchPoPupVisible=false;
+                                                  listSearchBottomSheet = true;
+                                                  isSearchPoPupVisible = false;
+                                                  map_check = true;
                                                 });
                                               },
                                               child: Container(
-                                                height: 45,
-                                                width: 45,
-                                                  decoration: BoxDecoration(
+                                                  height: 45,
+                                                  width: 45,
+                                                  decoration:
+                                                      const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: Colors.white60,
-
                                                   ),
-                                                child:   Center(
-                                                  child: ClayContainer(
-                                                    color: Colors.white,
-                                                    height: 35,
-                                                    width: 35,
-                                                    borderRadius: 40,
-                                                    curveType: CurveType.concave,
-                                                    depth: 30,
-                                                    spread: 2,
-                                                    child: Center(
-                                                      child: Icon(
-                                                        Icons.send,
-                                                        color: colorsFile.buttonIcons,
+                                                  child: Center(
+                                                    child: ClayContainer(
+                                                      color: Colors.white,
+                                                      height: 35,
+                                                      width: 35,
+                                                      borderRadius: 40,
+                                                      curveType:
+                                                          CurveType.concave,
+                                                      depth: 30,
+                                                      spread: 2,
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          Icons.send,
+                                                          color: colorsFile
+                                                              .buttonIcons,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                )
-                                              )),
-                                        ),// Adjust the space between the two icons
-
+                                                  ))),
+                                        ), // Adjust the space between the two icons
                                       ],
                                     ),
                                   ),
@@ -752,7 +894,7 @@ height: 50,
                   right: 0,
                   bottom: 0,
                   child: Container(
-                 //   height: 310,
+                    //   height: 310,
                     decoration: const BoxDecoration(
                       //color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
@@ -760,9 +902,8 @@ height: 50,
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: ChooseRide(_showMyRides,showRide),
-                  )
-              ),
+                    child: ChooseRide(_showMyRides, showRide),
+                  )),
             ),
             Visibility(
               visible: myRidesbottomSheetVisible,
@@ -771,7 +912,7 @@ height: 50,
                   right: 0,
                   bottom: 0,
                   child: Container(
-                  //  height: 300,
+                    //  height: 300,
                     decoration: const BoxDecoration(
                       color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
@@ -779,9 +920,8 @@ height: 50,
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: MyRides(),
-                  )
-              ),
+                    child: const MyRides(),
+                  )),
             ),
           ],
         ),

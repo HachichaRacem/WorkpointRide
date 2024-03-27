@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -36,21 +37,27 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   void initState() {
     super.initState();
     getCurrentLocation();
+    print("------------------------Getting current location------------------------G");
   }
 
   void getCurrentLocation() async {
     LocationPermission permission;
-    permission = await Geolocator.checkPermission();
+    permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       // Handle location permissions denied
+      print("------------------------DENIED");
       setState(() {
         loading = false;
       });
     } else {
       Position position = await Geolocator.getCurrentPosition();
+      print("------------------------ACCEPT");
+      await sharedpreferences.setlat(position.latitude);
+      await sharedpreferences.setlng(position.longitude);
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
+
         loading = false;
       });
       addMarker(currentLocation);
@@ -104,7 +111,7 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
                     markers: markers,
                   );
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error loading aubergine style'));
+                  return Center(child: Text('Error loading night style'));
                 } else {
                   return Center(
                       child: CircularProgressIndicator(color: Colors.white));

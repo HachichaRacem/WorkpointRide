@@ -111,4 +111,74 @@ class sharedpreferences
   }
 
 
+  //For passenger polylines
+
+  //For Polylines lat1 & lng1
+
+
+
+  static  dynamic pass_poly_lat1,pass_poly_lng1 ;
+
+  static Future<void> set_pass_poly_lat1(double cu_lat) async {
+    final prefs = await SharedPreferences.getInstance();
+    if(cu_lat!=null){
+      await prefs.setDouble("pass_poly_lat1", cu_lat);}
+
+  }
+
+  static Future<dynamic?> get_pass_poly_lat1() async {
+    print("Getting pass_poly_lat1 ${pass_poly_lat1}");
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble("pass_poly_lat1");
+
+  }
+
+  static Future<void> set_pass_poly_lng1(double cu_lat) async {
+    print("Before setting lng1 ${poly_lng1}");
+    final prefs = await SharedPreferences.getInstance();
+    if(cu_lat!=null){
+      await prefs.setDouble("pass_poly_lng1", cu_lat);}
+    print("After setting poly_lng1 = ${poly_lng1} ");
+  }
+
+  static Future<dynamic?> get_pass_poly_lng1() async {
+    print("Getting pass_poly_lng1 ${pass_poly_lng1}");
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble("pass_poly_lng1");
+  }
+
+
+  //For Polylines lat
+
+
+
+  static  dynamic pass_poly_lat2,pass_poly_lng2 ;
+
+  static Future<void> set_pass_poly_lat2(double cu_lat) async {
+    final prefs = await SharedPreferences.getInstance();
+    if(cu_lat!=null){
+      await prefs.setDouble("pass_poly_lat2", cu_lat);}
+
+  }
+
+  static Future<dynamic?> get_pass_poly_lat2() async {
+    print("Getting pass_poly_lat2 ${pass_poly_lat2}");
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble("pass_poly_lat2");
+
+  }
+
+  static Future<void> set_pass_poly_lng2(double cu_lat) async {
+    final prefs = await SharedPreferences.getInstance();
+    if(cu_lat!=null){
+      await prefs.setDouble("pass_poly_lng2", cu_lat);}
+
+  }
+
+  static Future<dynamic?> get_pass_poly_lng2() async {
+    print("Getting pass_poly_lng2 ${pass_poly_lng2}");
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble("pass_poly_lng2");
+  }
+
 }

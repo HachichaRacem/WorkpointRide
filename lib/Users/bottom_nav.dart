@@ -5,6 +5,8 @@ import 'package:osmflutter/Users/Screens/Search.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+
+import 'Screens/pass_profile.dart';
 class BottomNav extends StatefulWidget {
   const BottomNav({Key? key}) : super(key: key);
 
@@ -44,7 +46,7 @@ class _BottomNavState extends State<BottomNav>
         controller: controller,
         children: [
           //SearchDestinationPage(),
-          Profile(),
+          pass_profile(),
           Search(),
           Notif(),
         ],

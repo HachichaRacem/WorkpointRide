@@ -65,12 +65,59 @@ class _MainExampleState extends State<OldMainExample>
   dynamic current_lat, current_lng;
   bool check = false;
 
+  // Future<void> getCurrentLocation() async {
+  //   print("--------Inside the get location method --------");
+  //
+  //   await Geolocator.requestPermission()
+  //       .then((value) {})
+  //       .onError((error, stackTrace) {});
+  //
+  //   Position position = await Geolocator.getCurrentPosition();
+  //
+  //   setState(() {
+  //     current_lat = position.latitude;
+  //     current_lng = position.longitude;
+  //
+  //     check = true;
+  //
+  //     print("Current Lat & Lng is: ");
+  //     print(current_lat);
+  //     print(current_lng);
+  //
+  //     myMarker.add(Marker(
+  //       markerId: const MarkerId("First"),
+  //       position: LatLng(current_lng, current_lng),
+  //       infoWindow: const InfoWindow(title: "Current Location"),
+  //     ));
+  //   });
+  //
+  //   //storing values in shared preferences
+  //
+  //   print("Current lat & lng is ${current_lng} : ${current_lat}" );
+  //   //setting
+  //   sharedpreferences.setlat(current_lat);
+  //   sharedpreferences.setlng(current_lng);
+  //
+  //
+  //
+  // }
+
   Future<void> getCurrentLocation() async {
     print("--------Inside the get location method --------");
 
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) {});
+    bool permissionGranted = false;
+
+    do {
+      LocationPermission permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        permissionGranted = true;
+      } else {
+        // Show permission request again
+        // You can display a dialog or any UI prompt here
+      }
+    } while (!permissionGranted);
 
     Position position = await Geolocator.getCurrentPosition();
 
@@ -86,21 +133,17 @@ class _MainExampleState extends State<OldMainExample>
 
       myMarker.add(Marker(
         markerId: const MarkerId("First"),
-        position: LatLng(current_lng, current_lng),
+        position: LatLng(current_lat, current_lng), // corrected lng and lat order
         infoWindow: const InfoWindow(title: "Current Location"),
       ));
     });
 
-    //storing values in shared preferences
-
+    // Storing values in shared preferences
     print("Current lat & lng is ${current_lng} : ${current_lat}" );
-    //setting
     sharedpreferences.setlat(current_lat);
     sharedpreferences.setlng(current_lng);
-
-
-
   }
+
 
   @override
   void initState() {

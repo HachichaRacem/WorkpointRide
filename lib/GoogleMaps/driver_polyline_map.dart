@@ -83,9 +83,6 @@ class _DriverOnMapState extends State<DriverOnMap> {
     }
   }
 
-
-
-
   List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> points = [];
     int index = 0, len = encoded.length;
@@ -149,7 +146,6 @@ class _DriverOnMapState extends State<DriverOnMap> {
                   },
                   polylines: _polyline,
                   markers: _markers,
-                  // myLocationEnabled: true,
                   mapType: MapType.normal,
                   buildingsEnabled: true,
                   onTap: (_) {},
