@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
@@ -24,6 +26,7 @@ class MapsGoogleExample extends StatefulWidget {
 }
 
 class _MapsGoogleExampleState extends State<MapsGoogleExample> {
+
   late GoogleMapController mapController;
   late LatLng currentLocation =
       LatLng(0.0, 0.0); // Initialize with default location
@@ -64,7 +67,10 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
     }
   }
 
-  void addMarker(LatLng position) {
+
+
+  void addMarker(LatLng position) async{
+
     markers.add(
       Marker(
         markerId: MarkerId("currentLocation"),
@@ -78,7 +84,13 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
         icon: BitmapDescriptor.defaultMarker, // Use the default marker icon
       ),
     );
+
   }
+
+
+
+
+
 
   Future<String> _loadNightStyle() async {
     // Load the JSON style file from assets
@@ -86,8 +98,6 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
         .loadString('assets/themes/aubergine_style.json');
     return nightStyleJson;
   }
-
-
 
 
   @override
@@ -106,6 +116,9 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
                     ),
                     onMapCreated: (controller) {
                       mapController = controller;
+                      setState(() {
+
+                      });
                       mapController.setMapStyle(snapshot.data!);
                     },
                     markers: markers,

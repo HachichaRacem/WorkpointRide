@@ -157,8 +157,13 @@ class _AddRidesState extends State<AddRides>
                                         apiKey:
                                             "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
                                         onSelected: (Place place) async {
+                                          print("------------Selected origin location from search:----------");
                                           Geolocation? geo_location =
                                               await place.geolocation;
+                                          print("--------- Coordinates are: ${geo_location?.coordinates}");
+
+                                          //Finalize the lat & lng and then call the GoogleMap Method for origin name!
+                                          
                                           print("running-----");
                                           map_controller!.animateCamera(
                                               CameraUpdate.newLatLng(
@@ -286,7 +291,7 @@ class _AddRidesState extends State<AddRides>
                       if (snapshot.hasData) {
                         return GoogleMap(
                           initialCameraPosition: CameraPosition(
-                            target: LatLng(current_lat2,current_lng2),
+                            target: LatLng(current_lat1,current_lng1),
                             zoom: 14,
                           ),
                           markers: Set<Marker>.of(myMarker1),
@@ -335,7 +340,8 @@ class _AddRidesState extends State<AddRides>
                         map_controller1!.animateCamera(
                             CameraUpdate.newLatLngBounds(
                                 geo_location1?.bounds, 0));
-                      }),
+                      }
+                      ),
                 ),
               ],
             ),
@@ -704,8 +710,8 @@ class _AddRidesState extends State<AddRides>
         child: Stack(
           children: [
             // Background Photo
-            check_shared_data == true
-                ? Positioned(
+
+                Positioned(
                     child: Container(
                       child: check_map == true
                           ? MapsGoogleExample()
@@ -714,14 +720,9 @@ class _AddRidesState extends State<AddRides>
                               poly_lng1: sp_poly_lng1,
                               poly_lat2: sp_poly_lat2,
                               poly_lng2: sp_poly_lng2,
+                        route_id: 'route',
                             ),
                     ),
-                  )
-                : DriverOnMap(
-                    poly_lat1: sp_data_poly_lat1,
-                    poly_lng1: sp_data_poly_lng1,
-                    poly_lat2: sp_data_poly_lat2,
-                    poly_lng2: sp_data_poly_lng2,
                   ),
 
             // SlidingUpPanel
@@ -1113,7 +1114,7 @@ class _AddRidesState extends State<AddRides>
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   child: GlassmorphicContainer(
-                      height: _height * 0.18,
+                      height: _height * 0.14,
                       width: _width * 0.4,
                       borderRadius: 5,
                       blur: 2,

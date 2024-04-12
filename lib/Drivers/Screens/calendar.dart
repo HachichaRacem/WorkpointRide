@@ -7,6 +7,7 @@ import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../../GoogleMaps/calendar_map.dart';
 import '../../GoogleMaps/driver_polyline_map.dart';
 
 class Person {
@@ -106,16 +107,17 @@ class _CalendarState extends State<Calendar> {
         children: [
 
           //MapsGoogleExample(),
-
-
-          check == true
-              ? MapsGoogleExample()
-              : DriverOnMap(
-            poly_lat1: sp_poly_lat1,
-            poly_lng1: sp_poly_lng1,
-            poly_lat2: sp_poly_lat2,
-            poly_lng2: sp_poly_lng2,
-          ),
+          //
+          // check == true
+          //     ?
+          calendarMap(),
+          //     : DriverOnMap(
+          //   poly_lat1: sp_poly_lat1,
+          //   poly_lng1: sp_poly_lng1,
+          //   poly_lat2: sp_poly_lat2,
+          //   poly_lng2: sp_poly_lng2,
+          //   route_id: 'route',
+          // ),
 
           //Updated Code
 
@@ -343,6 +345,16 @@ class _CalendarState extends State<Calendar> {
                                 onTap: () {
                                   setState(() {
                                     selectedPerson = people[0];
+                                    //inkwell call another polyline.......
+                                    print("First passenger selected");
+                                    DriverOnMap(
+                                      poly_lat1: 37.43316,
+                                      poly_lng1: -122.083061,
+                                      poly_lat2: 37.427847,
+                                      poly_lng2: -122.097320,
+                                      route_id: 'route12',
+                                    );
+                                    print("state set");
                                   });
                                 },
                                 child: Column(

@@ -7,13 +7,15 @@ import 'package:osmflutter/constant/colorsFile.dart';
 
 class DriverOnMap extends StatefulWidget {
   final double poly_lat1, poly_lng1, poly_lat2, poly_lng2;
+  var route_id;
 
-  const DriverOnMap({
+   DriverOnMap({
     Key? key,
     required this.poly_lat1,
     required this.poly_lng1,
     required this.poly_lat2,
     required this.poly_lng2,
+    required this.route_id
   }) : super(key: key);
 
   @override
@@ -54,7 +56,7 @@ class _DriverOnMapState extends State<DriverOnMap> {
 
       setState(() {
         _polyline.add(Polyline(
-          polylineId: PolylineId('route'),
+          polylineId: PolylineId('${widget.route_id}'),
           visible: true,
           points: routeCoords,
           color: Colors.white,
@@ -66,7 +68,7 @@ class _DriverOnMapState extends State<DriverOnMap> {
           Marker(
             markerId: MarkerId('start'),
             position: LatLng(widget.poly_lat1, widget.poly_lng1),
-            infoWindow: InfoWindow(title: 'Start'),
+            infoWindow: InfoWindow(title: 'start'),
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
