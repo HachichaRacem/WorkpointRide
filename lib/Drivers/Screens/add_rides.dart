@@ -149,8 +149,9 @@ class _AddRidesState extends State<AddRides>
                                         top: 8, left: 8, right: 8),
                                     child: SearchMapPlaceWidget(
                                         hasClearButton: true,
+
                                         iconColor: Colors.black,
-                                        placeType: PlaceType.address,
+                                        placeType: PlaceType.region,
                                         bgColor: Colors.white,
                                         textColor: Colors.black,
                                         placeholder: "Search Any Location",
@@ -224,14 +225,12 @@ class _AddRidesState extends State<AddRides>
 
     controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
 
-    // print("-----------Updated-----------");
-    // print(lat);
-    // print(lng);
+    
   }
 
-  //For EV Tower
+ 
 
-  var destination_address_name = 'EV Tower';
+  var destination_address_name = 'EY Tower';
 
   void destination_address_method(double newlat, double newlng) async {
     print("Our required lat and lng for Destination-polyline is: ");
@@ -363,7 +362,7 @@ class _AddRidesState extends State<AddRides>
     myMarker1.add(Marker(
       markerId: const MarkerId("First"),
       position: LatLng(current_lat2, current_lng2),
-      infoWindow: const InfoWindow(title: "EV Tower Location"),
+      infoWindow: const InfoWindow(title: "EY Tower Location"),
     ));
 
     setState(() {});
@@ -690,7 +689,7 @@ class _AddRidesState extends State<AddRides>
             ),
           ),
         ),
-        toolbarHeight: 120.0,
+        toolbarHeight: 40.0,
         title: Container(
           color: Colors.transparent, // Adjust as needed
         ),
@@ -779,7 +778,7 @@ class _AddRidesState extends State<AddRides>
                     });
                   },
                   child: GlassmorphicContainer(
-                    height: 220,
+                    height: 270,
                     width: _width * 0.85,
                     borderRadius: 15,
                     blur: 2,
@@ -807,6 +806,7 @@ class _AddRidesState extends State<AddRides>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               IconButton(
                                 onPressed: () {
@@ -823,23 +823,7 @@ class _AddRidesState extends State<AddRides>
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
-                              RatingBar.builder(
-                                initialRating: 3,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                itemCount: 4,
-                                itemBuilder: (context, _) => Image.asset(
-                                  'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                  width:
-                                      10, // Adjust width and height as per your image size
-                                  height: 10,
-                                  color: colorsFile
-                                      .done, // You can also apply color to the image if needed
-                                ),
-                                onRatingUpdate: (rating) {
-                                  print(rating);
-                                },
-                              ),
+                              
                               //SizedBox(width: 15.0),
                               Container(
                                 margin: const EdgeInsets.only(top: 8),
@@ -877,6 +861,7 @@ class _AddRidesState extends State<AddRides>
                                   child: Padding(
                                     padding: const EdgeInsets.all(3),
                                     child: Row(
+                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Expanded(
                                             child: TextField(
@@ -944,9 +929,9 @@ class _AddRidesState extends State<AddRides>
                                               onTap: () {},
                                               child: const Center(
                                                 child: Icon(
-                                                  Icons.swap_vert,
-                                                  color: Colors.white,
-                                                  size: 35,
+                                                  Icons.favorite,
+                                                  color: Colors.pink,
+                                                  size: 40,
                                                 ),
                                               )),
                                         ),
@@ -1066,6 +1051,94 @@ class _AddRidesState extends State<AddRides>
                                                       spread: 2,
                                                       child: const Center(
                                                         child: Icon(
+                                                          size: 30.0,
+                                                          Icons.swap_vert,
+                                                          color: colorsFile
+                                                              .buttonIcons,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ))),
+                                        ), // Adjust the space between the two icons
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+
+
+                                //start  
+                                const SizedBox(height: 10),
+                                Container(
+                                  height: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                            child: RatingBar.builder(
+                                initialRating: 3,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                itemCount: 4,
+                                itemBuilder: (context, _) => Image.asset(
+                                  'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
+                                  width:
+                                      10, // Adjust width and height as per your image size
+                                  height: 10,
+                                  color: colorsFile
+                                      .done, // You can also apply color to the image if needed
+                                ),
+                                onRatingUpdate: (rating) {
+                                  print(rating);
+                                },
+                              ),
+                                        ),
+                                        const SizedBox(
+                                            width:
+                                                10), // Adjust the space between the two icons
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  listSearchBottomSheet = true;
+                                                  isSearchPoPupVisible = false;
+                                                  box_check = true;
+                                                });
+                                                print("Navigate to polylines");
+                                                setState(() {
+                                                  check_map = false;
+                                                  shared_data();
+                                                  print(
+                                                      "displaying the shared preferences values");
+                                                  print(
+                                                      "SP_Poly_Lat1 = ${sp_poly_lat1}");
+                                                  print(
+                                                      "------Check value is now false - means that Driver_polyline method will be called-------");
+                                                });
+                                              },
+                                              child: Container(
+                                                  height: 45,
+                                                  width: 45,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.white60,
+                                                  ),
+                                                  child: Center(
+                                                    child: ClayContainer(
+                                                      color: Colors.white,
+                                                      height: 35,
+                                                      width: 35,
+                                                      borderRadius: 40,
+                                                      curveType:
+                                                          CurveType.concave,
+                                                      depth: 30,
+                                                      spread: 2,
+                                                      child: const Center(
+                                                        child: Icon(
                                                           Icons.send,
                                                           color: colorsFile
                                                               .buttonIcons,
@@ -1078,6 +1151,7 @@ class _AddRidesState extends State<AddRides>
                                     ),
                                   ),
                                 ),
+                                // end 
                               ],
                             ),
                           ),

@@ -22,9 +22,6 @@ class colorsFile {
   static const Color TextbuttonRole = Color(0xFFE1EBE8);
   static const Color card2 = Color(0xFFD8E6EE);
   static const Color tabbar = Color(0xFF5A5A5A);
-
- 
  
 
 }
-

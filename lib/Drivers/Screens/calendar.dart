@@ -6,7 +6,7 @@ import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
+import 'package:intl/intl.dart';
 import '../../GoogleMaps/calendar_map.dart';
 import '../../GoogleMaps/driver_polyline_map.dart';
 
@@ -28,12 +28,15 @@ class _CalendarState extends State<Calendar> {
   late String selectedTime = '07:20';
   late List<Person> people;
   Person? selectedPerson;
-
+int selectedIndex = 0;
+  DateTime now = DateTime.now();
+  late DateTime lastDayOfMonth;
   bool bottomSheetVisible = true;
 
   @override
   void initState() {
     super.initState();
+    lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
     // Populate the list of people
     people = [
       Person(name: 'Foulen Ben Foulen', phoneNumber: '25658997'),
@@ -87,7 +90,7 @@ class _CalendarState extends State<Calendar> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment(0.8, 1),
-              colors: [
+              colors: <Color>[
                 Color.fromRGBO(94, 149, 180, 1),
                 Color.fromRGBO(77, 140, 175, 1),
               ],
@@ -95,11 +98,66 @@ class _CalendarState extends State<Calendar> {
             ),
           ),
         ),
-        toolbarHeight: 80.0,
-        title: const Column(
+        toolbarHeight: 100.0,
+        title: Column(
           children: [
-            SizedBox(height: 16.0),
-            // Add your title widgets here
+            const SizedBox(height: 16.0),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const ClampingScrollPhysics(),
+              child: Row(
+                children: List.generate(
+                  lastDayOfMonth.day,
+                  (index) {
+                    final currentDate =
+                        lastDayOfMonth.add(Duration(days: index + 1));
+                    final dayName = DateFormat('EEE').format(currentDate);
+                    return Padding(
+                      padding: EdgeInsets.only(
+                          left: index == 0 ? 16.0 : 0.0, right: 16.0),
+                      child: GestureDetector(
+                        onTap: () => setState(() {
+                          selectedIndex = index;
+                        }),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 42.0,
+                              width: 42.0,
+                              alignment: Alignment.center,
+                              child: Text(
+                                "${index + 1}",
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: selectedIndex == index
+                                      ? Colors.white
+                                      : colorsFile.titleCard,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              dayName.substring(0, 3),
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: selectedIndex == index
+                                    ? Colors.white
+                                    : Colors.white30,
+                                fontWeight: selectedIndex == index
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -122,8 +180,8 @@ class _CalendarState extends State<Calendar> {
           //Updated Code
 
           SlidingUpPanel(
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-            minHeight: MediaQuery.of(context).size.height  * 0.34,
+            maxHeight: MediaQuery.of(context).size.height * 0.45,
+            minHeight: MediaQuery.of(context).size.height  * 0.11,
             panel: Column(
               children: [
                 Container(

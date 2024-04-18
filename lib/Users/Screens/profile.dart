@@ -83,7 +83,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
         ),
-        toolbarHeight: 80.0,
+        toolbarHeight: 40.0,
         title: const Column(
           children: [
             SizedBox(height: 16.0),
@@ -106,8 +106,8 @@ class _ProfileState extends State<Profile> {
           ),
 
           SlidingUpPanel(
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-            minHeight: MediaQuery.of(context).size.height * 0.45,
+            maxHeight: MediaQuery.of(context).size.height * 0.5,
+            minHeight: MediaQuery.of(context).size.height * 0.18,
             panel: Stack(
               alignment: Alignment.topCenter,
               clipBehavior: Clip.none,
@@ -261,10 +261,33 @@ class _ProfileState extends State<Profile> {
                                 color: colorsFile.titleCard,
                               ),
                             ),
+                            SizedBox(
+                              height: 6,
+                            ),
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.phone,
+                                                  size: 20,
+                                                  color: colorsFile.titleCard,
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  textAlign: TextAlign.center,
+                                                  "55 555 555",
+                                                  style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: colorsFile.titleCard,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
                           ],
                         ),
                         GlassmorphicContainer(
-                          height: 250,
+                          height: 210,
                           width: MediaQuery.of(context).size.width * 0.9,
                           borderRadius: 15,
                           blur: 100,
@@ -296,34 +319,17 @@ class _ProfileState extends State<Profile> {
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            const SizedBox(height: 10),
-                                            Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.phone,
-                                                  color: colorsFile.detailColor,
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                  "55 555 555",
-                                                  style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                    color: colorsFile.titleCard,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                            
                                             const SizedBox(height: 5),
                                             Row(
                                               children: [
                                                 const Icon(
-                                                  Icons.home,
-                                                  color: colorsFile.detailColor,
-                                                ),
-                                                const SizedBox(width: 10),
+                                                      Icons.favorite,
+                                                      color: colorsFile.detailColor,
+                                                    ),
+                                                    const SizedBox(width: 10),
                                                 Text(
-                                                  "V5VP+RH La Marsa",
+                                                  "V5VP+RH La Marsa1",
                                                   style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 13,
@@ -339,7 +345,31 @@ class _ProfileState extends State<Profile> {
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(height: 5),
+                                            SizedBox(height: 10,),
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                      Icons.favorite,
+                                                      color: colorsFile.detailColor,
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                Text(
+                                                  "V5VP+RH La Marsa2",
+                                                  style: GoogleFonts.montserrat(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13,
+                                                    color: colorsFile.titleCard,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {},
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: colorsFile.skyBlue,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
@@ -350,12 +380,14 @@ class _ProfileState extends State<Profile> {
                                                       color: colorsFile.detailColor,
                                                     ),
                                                     const SizedBox(width: 10),
-                                                    Column(
-                                                      children: [
+                                                    
+                                                       
+                                                        
                                                         Row(
                                                           children: [
+                                                            
                                                             Text(
-                                                              "V5VP+RH La Marsa",
+                                                              "V5VP+RH La Marsa3",
                                                               style: GoogleFonts.montserrat(
                                                                 fontWeight: FontWeight.bold,
                                                                 fontSize: 13,
@@ -371,37 +403,11 @@ class _ProfileState extends State<Profile> {
                                                             ),
                                                           ],
                                                         ),
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "V5VP+RH La Marsa",
-                                                              style: GoogleFonts.montserrat(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 13,
-                                                                color: colorsFile.titleCard,
-                                                              ),
-                                                            ),
-                                                            IconButton(
-                                                              onPressed: () {},
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color: colorsFile.skyBlue,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        IconButton(
-                                                          onPressed: () {},
-                                                          icon: const Icon(
-                                                            Icons.add,
-                                                            color: colorsFile.skyBlue,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                        
+                                                     
                                                   ],
                                                 ),
-                                                const Spacer(),
+                                                //const Spacer(),
                                                 Padding(
                                                   padding: const EdgeInsets.all(16.0),
                                                   child: GestureDetector(
@@ -434,7 +440,8 @@ class _ProfileState extends State<Profile> {
                                                               spread: 1,
                                                               child: const Center(
                                                                 child: Icon(
-                                                                  Icons.directions,
+                                                                  Icons.add,
+                                                                  size: 35,
                                                                   color: colorsFile.ProfileIcon,
                                                                 ),
                                                               ),

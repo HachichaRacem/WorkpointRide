@@ -217,15 +217,15 @@ class _SearchState extends State<Search> {
     // print(lng);
   }
 
-  //For EV Tower
+ 
 
-  var destination_address_name = 'EV Tower';
+  var destination_address_name = 'EY Tower';
 
   bool map_check = false;
   void destination_address_method(double newlat, double newlng) async {
     selected_lat2 = newlat;
     selected_lng2 = newlng;
-    print("Selected EV TOWER Lat & Lng is: $selected_lat2 : $selected_lng2 ");
+    print("Selected EY TOWER Lat & Lng is: $selected_lat2 : $selected_lng2 ");
 
     await sharedpreferences.set_pass_poly_lat2(selected_lat2);
     await sharedpreferences.set_pass_poly_lng2(selected_lng2);
@@ -338,7 +338,7 @@ class _SearchState extends State<Search> {
     myMarker1.add(Marker(
       markerId: const MarkerId("First"),
       position: LatLng(current_lat2, current_lng2),
-      infoWindow: const InfoWindow(title: "EV Tower Location"),
+      infoWindow: const InfoWindow(title: "EY Tower Location"),
     ));
 
     setState(() {});

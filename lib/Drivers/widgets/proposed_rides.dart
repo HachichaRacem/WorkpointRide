@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -29,8 +30,8 @@ class _ProposedRidesState extends State<ProposedRides> {
     _width = MediaQuery.of(context).size.width;
 
     return SlidingUpPanel(
-      maxHeight: _height * 0.4,
-      minHeight: _height * 0.35,
+      maxHeight: _height * 0.38,
+      minHeight: _height * 0.11,
       panel:
       Stack(
         alignment: Alignment.topCenter,
@@ -56,7 +57,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
                       child: Text(
-                        "Your proposed rides",
+                        "Your  rides",
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -98,8 +99,9 @@ class _ProposedRidesState extends State<ProposedRides> {
                                   child: const Center(
                                     child: Icon(
                                       Icons.add,
+                                      size:30,
                                       color: colorsFile.buttonIcons,
-                                      size: 20,
+                                      
                                     ),
                                   ),
                                 ),
@@ -113,104 +115,205 @@ class _ProposedRidesState extends State<ProposedRides> {
                 ),
                 Column(
                   children: [
-                    GlassmorphicContainer(
-                      height: 100,
-                      width: _width * 0.8,
-                      borderRadius: 15,
-                      blur: 100,
-                      alignment: Alignment.center,
-                      border: 2,
-                      linearGradient: const LinearGradient(
-                        colors: [
-                          colorsFile.card2,
-                          colorsFile.card2,
-                          colorsFile.card2
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderGradient: LinearGradient(
-                        colors: [
-                          Colors.white24.withOpacity(0.2),
-                          Colors.white70.withOpacity(0.2),
-                        ],
-                      ),
-                      child: Container(
-                          child: Column(
-                            children: [
-                              Row(
+                  SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                      4,
+                          (index) => GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            // Toggle the clicked state
+                            containerColors[index] =
+                            (containerColors[index] == colorsFile.cardColor)
+                                ? colorsFile.icons
+                                : colorsFile.cardColor;
+                          });
+                          widget.ridesVisible();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            right: 16.0,
+                          ),
+                          child: GlassmorphicContainer(
+                            height: 185,
+                            width: _width * 0.3,
+                            borderRadius: 15,
+                            blur: 100,
+                            alignment: Alignment.center,
+                            border: 2,
+                            linearGradient: LinearGradient(
+                              colors: [
+                                (containerColors[index] == colorsFile.cardColor)
+                                    ? Color(0xFFD8E6EE)
+                                    : containerColors[index],
+                                (containerColors[index] == colorsFile.cardColor)
+                                    ? Color(0xFFD8E6EE)
+                                    : containerColors[index],
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            borderGradient: LinearGradient(
+                              colors: [
+                                Colors.white24.withOpacity(0.2),
+                                Colors.white70.withOpacity(0.2),
+                              ],
+                            ),
+                            child: Container(
+                              
+                              child: Row(
+                                
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,10,5,10),
-                                    child: Text(
-                                      "Home",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(height: 5),
+                                          Center(
+                                            child: Container(
+                                              height: 60,
+                                              padding: EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                color: colorsFile.buttonIcons,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Container(
+                        height: 50,
+                        width: 50,
+                        child: Stack(
+                          children: [
+                            ClayContainer(
+                              color: Colors.white,
+                              height: 50,
+                              width: 50,
+                              borderRadius: 50,
+                              curveType: CurveType.concave,
+                              depth: 30,
+                              spread: 1,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // print("heloooo");
+                                // widget.showMyRides();
+                              },
+                              child: Center(
+                                child: ClayContainer(
+                                  color: Colors.white,
+                                  height: 30,
+                                  width: 30,
+                                  borderRadius: 40,
+                                  curveType: CurveType.convex,
+                                  depth: 30,
+                                  spread: 1,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.route,
+                                      size:30,
+                                      color: colorsFile.buttonIcons,
+                                      
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      "--->",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      "EY Tower",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              Row(
+                            )
+                          ],
+                        ),
+                      ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Home",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                              color: (containerColors[index] ==
+                                                  colorsFile.cardColor)
+                                                  ? colorsFile.titleCard
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                          
+                                              Text(
+                                                "|",
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.montserrat(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                  color:
+                                                  (containerColors[index] ==
+                                                      colorsFile
+                                                          .cardColor)
+                                                      ? colorsFile.titleCard
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_downward,
+                                                color: (containerColors[index] ==
+                                                    colorsFile.cardColor)
+                                                    ? colorsFile.icons
+                                                    : Colors.white,
+                                                size: 15,
+                                              ),
+                                              SizedBox(width: 10),
+                                              
+                                           
+                                          Text(
+                                                "EY Tower",
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.montserrat(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                  color:
+                                                  (containerColors[index] ==
+                                                      colorsFile
+                                                          .cardColor)
+                                                      ? colorsFile.titleCard
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                          //SizedBox(height: 10),
+                                          Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,5,5),
+                                    padding: const EdgeInsets.fromLTRB(10.0,5,5,5),
                                     child: Row(
                                       children: [
                                         Container(child:
                                         Image.asset(
                                           'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
+                                          width: 12, // Adjust width and height as per your image size
+                                          height: 12,
                                           color: colorsFile.done, // You can also apply color to the image if needed
                                         ),),
                                         Container(child:
                                         Image.asset(
                                           'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
+                                         width: 12, // Adjust width and height as per your image size
+                                          height: 12,
                                           color: colorsFile.done, // You can also apply color to the image if needed
                                         ),),
                                         Container(child:
                                         Image.asset(
                                           'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
+                                          width: 12, // Adjust width and height as per your image size
+                                          height: 12,
                                           color: colorsFile.done, // You can also apply color to the image if needed
                                         ),),
                                         Container(child:
                                         Image.asset(
                                           'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
+                                          width: 12, // Adjust width and height as per your image size
+                                          height: 12,
                                           color: colorsFile.done, // You can also apply color to the image if needed
                                         ),),
 
@@ -219,176 +322,34 @@ class _ProposedRidesState extends State<ProposedRides> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,18,5),
+                                    padding: const EdgeInsets.fromLTRB(0.0,5,10,5),
                                     child: Text(
                                       "07 : 20",
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.montserrat(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 15,
+                                        fontSize: 8,
                                         color: colorsFile.detailColor,
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,5,5),
-                                    child: Row(
-                                      children: [
-                                        Container(child:
-                                        const Icon(Icons.delete,color: colorsFile.skyBlue,)),
-                                        const SizedBox(width: 5,),
-                                        Container(child:
-                                        const Icon(Icons.edit,color: colorsFile.skyBlue,)),
-
-
-
-                                      ],
+                                 
+                                ],
+                              )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
-                              )
-                            ],
-                          )
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height:10),
-                    GlassmorphicContainer(
-                      height: 100,
-                      width: _width * 0.8,
-                      borderRadius: 15,
-                      blur: 100,
-                      alignment: Alignment.center,
-                      border: 2,
-                      linearGradient: const LinearGradient(
-                        colors: [
-                          colorsFile.card2,
-                          colorsFile.card2,
-                          colorsFile.card2
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderGradient: LinearGradient(
-                        colors: [
-                          Colors.white24.withOpacity(0.2),
-                          Colors.white70.withOpacity(0.2),
-                        ],
-                      ),
-                      child: Container(
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,10,5,10),
-                                    child: Text(
-                                      "Home",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      "--->",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      "EY Tower",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: colorsFile.icons,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,5,5),
-                                    child: Row(
-                                      children: [
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 25, // Adjust width and height as per your image size
-                                          height: 25,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-
-
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,18,5),
-                                    child: Text(
-                                      "07 : 20",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: colorsFile.detailColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(18.0,5,5,5),
-                                    child: Row(
-                                      children: [
-                                        Container(child:
-                                        const Icon(Icons.delete,color: colorsFile.skyBlue,)),
-                                        const SizedBox(width: 5,),
-                                        Container(child:
-                                        const Icon(Icons.edit,color: colorsFile.skyBlue,)),
-
-
-
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          )),
-                    )
+                  ),
+                ),
+                    
                   ],
                 )
               ],
