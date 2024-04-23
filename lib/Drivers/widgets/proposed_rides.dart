@@ -30,7 +30,7 @@ class _ProposedRidesState extends State<ProposedRides> {
     _width = MediaQuery.of(context).size.width;
 
     return SlidingUpPanel(
-      maxHeight: _height * 0.38,
+      maxHeight: _height * 0.35,
       minHeight: _height * 0.11,
       panel:
       Stack(
@@ -51,13 +51,13 @@ class _ProposedRidesState extends State<ProposedRides> {
           Positioned(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
+                      padding: const EdgeInsets.fromLTRB(30,8.0, 0, 8),
                       child: Text(
-                        "Your  rides",
+                        "Your rides",
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -67,7 +67,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     ),
                     const Spacer(),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Container(
                         height: 50,
                         width: 50,
@@ -136,7 +136,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                             right: 16.0,
                           ),
                           child: GlassmorphicContainer(
-                            height: 185,
+                            height: 170,
                             width: _width * 0.3,
                             borderRadius: 15,
                             blur: 100,
@@ -280,62 +280,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                       : Colors.white,
                                                 ),
                                               ),
-                                          //SizedBox(height: 10),
-                                          Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(10.0,5,5,5),
-                                    child: Row(
-                                      children: [
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 12, // Adjust width and height as per your image size
-                                          height: 12,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                         width: 12, // Adjust width and height as per your image size
-                                          height: 12,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 12, // Adjust width and height as per your image size
-                                          height: 12,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-                                        Container(child:
-                                        Image.asset(
-                                          'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                          width: 12, // Adjust width and height as per your image size
-                                          height: 12,
-                                          color: colorsFile.done, // You can also apply color to the image if needed
-                                        ),),
-
-
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0.0,5,10,5),
-                                    child: Text(
-                                      "07 : 20",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 8,
-                                        color: colorsFile.detailColor,
-                                      ),
-                                    ),
-                                  ),
-                                 
-                                ],
-                              )
+                                          
                                         ],
                                       ),
                                     ),

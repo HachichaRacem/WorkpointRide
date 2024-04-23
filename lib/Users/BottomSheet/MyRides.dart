@@ -6,6 +6,7 @@ import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyRides extends StatefulWidget {
   const MyRides({super.key});
@@ -27,8 +28,8 @@ class _MyRidesState extends State<MyRides> {
     _width = MediaQuery.of(context).size.width;
     return
       SlidingUpPanel(
-        maxHeight: MediaQuery.of(context).size.height * 0.72,
-        minHeight: MediaQuery.of(context).size.height * 0.315,
+        maxHeight: MediaQuery.of(context).size.height * 0.4,
+        minHeight: MediaQuery.of(context).size.height * 0.2,
         panel:  Stack(
           alignment: AlignmentDirectional.topCenter,
           clipBehavior: Clip.none,
@@ -53,7 +54,7 @@ class _MyRidesState extends State<MyRides> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
                       child: Text(
-                        'Your rides',
+                        'Your rides pass',
                         style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -106,8 +107,8 @@ class _MyRidesState extends State<MyRides> {
                   ],
                 ),
                 GlassmorphicContainer(
-                    height: 150,
-                    width: _width * 0.85,
+                    height: 200,
+                    width: _width * 0.6,
                     borderRadius: 15,
                     blur: 100,
                     alignment: Alignment.center,
@@ -123,18 +124,28 @@ class _MyRidesState extends State<MyRides> {
                     child: Container(
                       child: Row(
                         children: [
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Container(
-                            height: 90,
+                          
+                          
+                          
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                  Container(
+                            height: 70,
                             padding: EdgeInsets.all(5), // Border width
                             decoration: BoxDecoration(
                                 color: colorsFile.borderCircle,
                                 shape: BoxShape.circle),
                             child: ClipOval(
                               child: SizedBox.fromSize(
-                                size: Size.fromRadius(40), // Image radius
+                                size: Size.fromRadius(30), // Image radius
                                 child: Image(
                                   image: AssetImage("assets/images/homme1.jpg"),
                                   fit: BoxFit.cover,
@@ -142,19 +153,6 @@ class _MyRidesState extends State<MyRides> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 3,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 10,
-                                  ),
                                   Row(
                                     children: [
                                       Text(
@@ -173,15 +171,58 @@ class _MyRidesState extends State<MyRides> {
                                           )),
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
+                                 
                                   Row(
                                     children: [
-                                      Icon(
-                                        Icons.phone,
-                                        color: colorsFile.icons,
-                                      ),
+                                      Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 30,
+                                                            width: 30,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType
+                                                                .concave,
+                                                            depth: 20,
+                                                            spread: 1,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              print("heloooo");
+                                                              _launchPhone("55555555");
+                                                            },
+                                                            child: Center(
+                                                              child:
+                                                                  ClayContainer(
+                                                                color: Colors
+                                                                    .white,
+                                                                height: 20,
+                                                                width: 20,
+                                                                borderRadius:
+                                                                    40,
+                                                                curveType:
+                                                                    CurveType
+                                                                        .convex,
+                                                                depth: 30,
+                                                                spread: 1,
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                    Icons.phone,
+                                                                    size: 20,
+                                                                    color: colorsFile
+                                                                        .buttonIcons,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
                                       SizedBox(
                                         width: 10,
                                       ),
@@ -195,7 +236,7 @@ class _MyRidesState extends State<MyRides> {
                                     ],
                                   ),
                                   SizedBox(
-                                    height: 10,
+                                    height: 8,
                                   ),
                                   Row(
                                     mainAxisAlignment:
@@ -262,6 +303,15 @@ class _MyRidesState extends State<MyRides> {
 
 
   }
-
+  _launchPhone(String phoneNumber) async {
+    final url = 'tel:$phoneNumber';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 }
+
+
 

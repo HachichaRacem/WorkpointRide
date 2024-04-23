@@ -9,7 +9,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:intl/intl.dart';
 import '../../GoogleMaps/calendar_map.dart';
 import '../../GoogleMaps/driver_polyline_map.dart';
-
+import 'package:clay_containers/clay_containers.dart';
+import 'package:url_launcher/url_launcher.dart';
 class Person {
   final String name;
   final String phoneNumber;
@@ -28,7 +29,7 @@ class _CalendarState extends State<Calendar> {
   late String selectedTime = '07:20';
   late List<Person> people;
   Person? selectedPerson;
-int selectedIndex = 0;
+  int selectedIndex = 0;
   DateTime now = DateTime.now();
   late DateTime lastDayOfMonth;
   bool bottomSheetVisible = true;
@@ -48,11 +49,9 @@ int selectedIndex = 0;
     getshared();
   }
 
-
-  bool check=true;
-  dynamic sp_poly_lat1,sp_poly_lng1,sp_poly_lat2,sp_poly_lng2;
-  getshared()async
-  {
+  bool check = true;
+  dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
+  getshared() async {
     final prefs = await sharedpreferences.get_poly_lat1();
     sp_poly_lat1 = prefs;
     print("Poly_lat1 = ${sp_poly_lat1}");
@@ -69,17 +68,15 @@ int selectedIndex = 0;
     sp_poly_lng2 = prefs3;
     print("Poly_lng2 = ${sp_poly_lng2}");
 
-
-    if(sp_poly_lng1!=null || sp_poly_lat1!=null || sp_poly_lng2!=null || sp_poly_lat2!=null) {
+    if (sp_poly_lng1 != null ||
+        sp_poly_lat1 != null ||
+        sp_poly_lng2 != null ||
+        sp_poly_lat2 != null) {
       setState(() {
         check = false;
       });
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +160,6 @@ int selectedIndex = 0;
       ),
       body: Stack(
         children: [
-
           //MapsGoogleExample(),
           //
           // check == true
@@ -181,7 +177,7 @@ int selectedIndex = 0;
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.45,
-            minHeight: MediaQuery.of(context).size.height  * 0.11,
+            minHeight: MediaQuery.of(context).size.height * 0.11,
             panel: Column(
               children: [
                 Container(
@@ -245,11 +241,17 @@ int selectedIndex = 0;
                                       Text(
                                         '07:20',
                                         style: TextStyle(
-                                          color: selectedTime == '07:20' ? Colors.white : Colors.grey,
-                                          decoration: selectedTime == '07:20' ? TextDecoration.underline : TextDecoration.none,
+                                          color: selectedTime == '07:20'
+                                              ? Colors.white
+                                              : Colors.grey,
+                                          decoration: selectedTime == '07:20'
+                                              ? TextDecoration.underline
+                                              : TextDecoration.none,
                                         ),
                                       ),
-                                      if (selectedTime == '07:20') const Icon(Icons.edit, color: Colors.white),
+                                      if (selectedTime == '07:20')
+                                        const Icon(Icons.edit,
+                                            color: Colors.white),
                                     ],
                                   ),
                                 ),
@@ -264,11 +266,17 @@ int selectedIndex = 0;
                                       Text(
                                         '18:30',
                                         style: TextStyle(
-                                          color: selectedTime == '18:30' ? Colors.white : Colors.grey,
-                                          decoration: selectedTime == '18:30' ? TextDecoration.underline : TextDecoration.none,
+                                          color: selectedTime == '18:30'
+                                              ? Colors.white
+                                              : Colors.grey,
+                                          decoration: selectedTime == '18:30'
+                                              ? TextDecoration.underline
+                                              : TextDecoration.none,
                                         ),
                                       ),
-                                      if (selectedTime == '18:30') const Icon(Icons.edit, color: Colors.white),
+                                      if (selectedTime == '18:30')
+                                        const Icon(Icons.edit,
+                                            color: Colors.white),
                                     ],
                                   ),
                                 ),
@@ -279,270 +287,552 @@ int selectedIndex = 0;
                       ),
                       selectedTime == '07:20'
                           ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
-                                child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          5.0, 5, 5, 5),
+                                      child: Row(
+                                        children: [
+                                          const Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                5.0, 10, 5, 10),
+                                            child: Text(
+                                              "Home",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                                color: colorsFile.icons,
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 8.0),
+                                            child: Text(
+                                              "--->",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                                color: colorsFile.icons,
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 8.0),
+                                            child: Text(
+                                              "EY Tower",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                                color: colorsFile.icons,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Image.asset(
+                                              'assets/images/seat.png',
+                                              width: 15,
+                                              height: 15,
+                                              color: colorsFile.done,
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Image.asset(
+                                              'assets/images/seat.png',
+                                              width: 15,
+                                              height: 15,
+                                              color: colorsFile.done,
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Image.asset(
+                                              'assets/images/seat.png',
+                                              width: 15,
+                                              height: 15,
+                                              color: colorsFile.done,
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Image.asset(
+                                              'assets/images/seat.png',
+                                              width: 15,
+                                              height: 15,
+                                              color: colorsFile.done,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     const Padding(
-                                      padding: EdgeInsets.fromLTRB(5.0, 10, 5, 10),
+                                      padding:
+                                          EdgeInsets.fromLTRB(5.0, 5, 18, 5),
                                       child: Text(
-                                        "Home",
+                                        "07 : 20",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
-                                          color: colorsFile.icons,
+                                          color: colorsFile.detailColor,
                                         ),
                                       ),
                                     ),
-                                    const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: Text(
-                                        "--->",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: colorsFile.icons,
-                                        ),
-                                      ),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: Text(
-                                        "EY Tower",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: colorsFile.icons,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Image.asset(
-                                        'assets/images/seat.png',
-                                        width: 15,
-                                        height: 15,
-                                        color: colorsFile.done,
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Image.asset(
-                                        'assets/images/seat.png',
-                                        width: 15,
-                                        height: 15,
-                                        color: colorsFile.done,
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Image.asset(
-                                        'assets/images/seat.png',
-                                        width: 15,
-                                        height: 15,
-                                        color: colorsFile.done,
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Image.asset(
-                                        'assets/images/seat.png',
-                                        width: 15,
-                                        height: 15,
-                                        color: colorsFile.done,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(5.0, 5, 18, 5),
-                                child: Text(
-                                  "07 : 20",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: colorsFile.detailColor,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      child: const Icon(
-                                        Icons.delete,
-                                        color: colorsFile.skyBlue,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Container(
-                                      child: const Icon(
-                                        Icons.edit,
-                                        color: colorsFile.skyBlue,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              // First avatar
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedPerson = people[0];
-                                    //inkwell call another polyline.......
-                                    print("First passenger selected");
-                                    DriverOnMap(
-                                      poly_lat1: 37.43316,
-                                      poly_lng1: -122.083061,
-                                      poly_lat2: 37.427847,
-                                      poly_lng2: -122.097320,
-                                      route_id: 'route12',
-                                    );
-                                    print("state set");
-                                  });
-                                },
-                                child: Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: const AssetImage('assets/images/homme1.jpg'),
-                                      radius: 30,
-                                      backgroundColor: selectedPerson == people[0] ? Colors.blue : null,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    if (selectedPerson == people[0])
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          5.0, 5, 5, 5),
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            selectedPerson!.name,
-                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard),
+                                          Container(
+                                            child: const Icon(
+                                              Icons.delete,
+                                              color: colorsFile.skyBlue,
+                                            ),
                                           ),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.phone),
-                                              const SizedBox(width: 8),
-                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard)),
-                                            ],
+                                          const SizedBox(width: 2),
+                                          Container(
+                                            child: const Icon(
+                                              Icons.edit,
+                                              color: colorsFile.skyBlue,
+                                            ),
                                           ),
                                         ],
                                       ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              // Second avatar
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedPerson = people[1];
-                                  });
-                                },
-                                child: Column(
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    CircleAvatar(
-                                      backgroundImage: const AssetImage('assets/images/homme2.jpg'),
-                                      radius: 30,
-                                      backgroundColor: selectedPerson == people[1] ? Colors.blue : null,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    if (selectedPerson == people[1])
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    // First avatar
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedPerson = people[0];
+                                          //inkwell call another polyline.......
+                                          print("First passenger selected");
+                                          DriverOnMap(
+                                            poly_lat1: 37.43316,
+                                            poly_lng1: -122.083061,
+                                            poly_lat2: 37.427847,
+                                            poly_lng2: -122.097320,
+                                            route_id: 'route12',
+                                          );
+                                          print("state set");
+                                        });
+                                      },
+                                      child: Column(
                                         children: [
-                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.phone),
-                                              const SizedBox(width: 8),
-                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
-                                            ],
+                                          CircleAvatar(
+                                            backgroundImage: const AssetImage(
+                                                'assets/images/homme1.jpg'),
+                                            radius: 30,
+                                            backgroundColor:
+                                                selectedPerson == people[0]
+                                                    ? Colors.blue
+                                                    : null,
                                           ),
+                                          const SizedBox(height: 8),
+                                          if (selectedPerson == people[0])
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  selectedPerson!.name,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color:
+                                                          colorsFile.titleCard),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 30,
+                                                            width: 30,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType
+                                                                .concave,
+                                                            depth: 20,
+                                                            spread: 1,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              print("heloooo");
+                                                              _launchPhone(people[0].phoneNumber);
+                                                            },
+                                                            child: Center(
+                                                              child:
+                                                                  ClayContainer(
+                                                                color: Colors
+                                                                    .white,
+                                                                height: 20,
+                                                                width: 20,
+                                                                borderRadius:
+                                                                    40,
+                                                                curveType:
+                                                                    CurveType
+                                                                        .convex,
+                                                                depth: 30,
+                                                                spread: 1,
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                    Icons.phone,
+                                                                    size: 20,
+                                                                    color: colorsFile
+                                                                        .buttonIcons,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                        selectedPerson!
+                                                            .phoneNumber,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 15,
+                                                            color: colorsFile
+                                                                .titleCard)),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                         ],
                                       ),
-                                  ],
-                                ),
-                              ),
-                              // Third avatar
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedPerson = people[2];
-                                  });
-                                },
-                                child: Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: const AssetImage('assets/images/femme1.jpg'),
-                                      radius: 30,
-                                      backgroundColor: selectedPerson == people[2] ? Colors.blue : null,
                                     ),
-                                    const SizedBox(height: 8),
-                                    if (selectedPerson == people[2])
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    // Second avatar
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedPerson = people[1];
+                                        });
+                                      },
+                                      child: Column(
                                         children: [
-                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.phone),
-                                              const SizedBox(width: 8),
-                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
-                                            ],
+                                          CircleAvatar(
+                                            backgroundImage: const AssetImage(
+                                                'assets/images/homme2.jpg'),
+                                            radius: 30,
+                                            backgroundColor:
+                                                selectedPerson == people[1]
+                                                    ? Colors.blue
+                                                    : null,
                                           ),
+                                          const SizedBox(height: 8),
+                                          if (selectedPerson == people[1])
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  selectedPerson!.name,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color:
+                                                          colorsFile.titleCard),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 30,
+                                                            width: 30,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType
+                                                                .concave,
+                                                            depth: 20,
+                                                            spread: 1,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              print("heloooo");
+                                                              
+                                                              _launchPhone(people[1].phoneNumber);
+                                                            },
+                                                            child: Center(
+                                                              child:
+                                                                  ClayContainer(
+                                                                color: Colors
+                                                                    .white,
+                                                                height: 20,
+                                                                width: 20,
+                                                                borderRadius:
+                                                                    40,
+                                                                curveType:
+                                                                    CurveType
+                                                                        .convex,
+                                                                depth: 30,
+                                                                spread: 1,
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                    Icons.phone,
+                                                                    size: 20,
+                                                                    color: colorsFile
+                                                                        .buttonIcons,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                        selectedPerson!
+                                                            .phoneNumber,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 15,
+                                                            color: colorsFile
+                                                                .titleCard)),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                         ],
                                       ),
-                                  ],
-                                ),
-                              ),
-                              // Fourth avatar
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedPerson = people[3];
-                                  });
-                                },
-                                child: Column(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: const AssetImage('assets/images/femme2.jpg'),
-                                      radius: 30,
-                                      backgroundColor: selectedPerson == people[3] ? Colors.blue : null,
                                     ),
-                                    const SizedBox(height: 8),
-                                    if (selectedPerson == people[3])
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    // Third avatar
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedPerson = people[2];
+                                        });
+                                      },
+                                      child: Column(
                                         children: [
-                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.phone),
-                                              const SizedBox(width: 8),
-                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
-                                            ],
+                                          CircleAvatar(
+                                            backgroundImage: const AssetImage(
+                                                'assets/images/femme1.jpg'),
+                                            radius: 30,
+                                            backgroundColor:
+                                                selectedPerson == people[2]
+                                                    ? Colors.blue
+                                                    : null,
                                           ),
+                                          const SizedBox(height: 8),
+                                          if (selectedPerson == people[2])
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  selectedPerson!.name,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color:
+                                                          colorsFile.titleCard),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 30,
+                                                            width: 30,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType
+                                                                .concave,
+                                                            depth: 20,
+                                                            spread: 1,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              print("heloooo");
+                                                              _launchPhone(people[2].phoneNumber);
+                                                            },
+                                                            child: Center(
+                                                              child:
+                                                                  ClayContainer(
+                                                                color: Colors
+                                                                    .white,
+                                                                height: 20,
+                                                                width: 20,
+                                                                borderRadius:
+                                                                    40,
+                                                                curveType:
+                                                                    CurveType
+                                                                        .convex,
+                                                                depth: 30,
+                                                                spread: 1,
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                    Icons.phone,
+                                                                    size: 20,
+                                                                    color: colorsFile
+                                                                        .buttonIcons,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                        selectedPerson!
+                                                            .phoneNumber,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 15,
+                                                            color: colorsFile
+                                                                .titleCard)),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                         ],
                                       ),
+                                    ),
+                                    // Fourth avatar
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedPerson = people[3];
+                                        });
+                                      },
+                                      child: Column(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundImage: const AssetImage(
+                                                'assets/images/femme2.jpg'),
+                                            radius: 30,
+                                            backgroundColor:
+                                                selectedPerson == people[3]
+                                                    ? Colors.blue
+                                                    : null,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          if (selectedPerson == people[3])
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  selectedPerson!.name,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color:
+                                                          colorsFile.titleCard),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      child: Stack(
+                                                        children: [
+                                                          ClayContainer(
+                                                            color: Colors.white,
+                                                            height: 30,
+                                                            width: 30,
+                                                            borderRadius: 50,
+                                                            curveType: CurveType
+                                                                .concave,
+                                                            depth: 20,
+                                                            spread: 1,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              print("heloooo");
+                                                               _launchPhone(people[3].phoneNumber);
+                                                            },
+                                                            child: Center(
+                                                              child:
+                                                                  ClayContainer(
+                                                                color: Colors
+                                                                    .white,
+                                                                height: 20,
+                                                                width: 20,
+                                                                borderRadius:
+                                                                    40,
+                                                                curveType:
+                                                                    CurveType
+                                                                        .convex,
+                                                                depth: 30,
+                                                                spread: 1,
+                                                                child:
+                                                                    const Center(
+                                                                  child: Icon(
+                                                                    Icons.phone,
+                                                                    size: 20,
+                                                                    color: colorsFile
+                                                                        .buttonIcons,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                        selectedPerson!
+                                                            .phoneNumber,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 15,
+                                                            color: colorsFile
+                                                                .titleCard)),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
+                              ],
+                            )
                           : const SizedBox(), // Placeholder, you can add content for '18:30' here
                     ],
                   ),
@@ -561,10 +851,17 @@ int selectedIndex = 0;
               });
             },
           ),
-
-
         ],
       ),
     );
+  }
+  // Function to launch the phone app
+  _launchPhone(String phoneNumber) async {
+    final url = 'tel:$phoneNumber';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

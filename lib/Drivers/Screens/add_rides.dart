@@ -929,8 +929,10 @@ class _AddRidesState extends State<AddRides>
                                               onTap: () {},
                                               child: const Center(
                                                 child: Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.pink,
+                                                  Icons.favorite_outline,
+                                                  // Icons.favorite,
+                                                  //     color: colorsFile.detailColor,
+                                                  // color: Colors.pink,
                                                   size: 40,
                                                 ),
                                               )),
@@ -1008,58 +1010,27 @@ class _AddRidesState extends State<AddRides>
                                         )),
                                         const SizedBox(
                                             width:
-                                                10), // Adjust the space between the two icons
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
+                                                8), // Adjust the space between the two icons
+                                       
+                                              Padding(
+                                          padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  listSearchBottomSheet = true;
-                                                  isSearchPoPupVisible = false;
-                                                  box_check = true;
-                                                });
-                                                print("Navigate to polylines");
-                                                setState(() {
-                                                  check_map = false;
-                                                  shared_data();
-                                                  print(
-                                                      "displaying the shared preferences values");
-                                                  print(
-                                                      "SP_Poly_Lat1 = ${sp_poly_lat1}");
-                                                  print(
-                                                      "------Check value is now false - means that Driver_polyline method will be called-------");
-                                                });
-                                              },
-                                              child: Container(
-                                                  height: 45,
-                                                  width: 45,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.white60,
-                                                  ),
-                                                  child: Center(
-                                                    child: ClayContainer(
-                                                      color: Colors.white,
-                                                      height: 35,
-                                                      width: 35,
-                                                      borderRadius: 40,
-                                                      curveType:
-                                                          CurveType.concave,
-                                                      depth: 30,
-                                                      spread: 2,
-                                                      child: const Center(
-                                                        child: Icon(
-                                                          size: 30.0,
-                                                          Icons.swap_vert,
-                                                          color: colorsFile
-                                                              .buttonIcons,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ))),
-                                        ), // Adjust the space between the two icons
+                                              onTap: () {},
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.swap_vert,
+                                                  // Icons.favorite,
+                                                  //     color: colorsFile.detailColor,
+                                                  // color: Colors.pink,
+                                                  size: 40,
+                                                ),
+                                              )),
+                                        ),
+
+                                              
+                                              
+                                                  
+                                         // Adjust the space between the two icons
                                       ],
                                     ),
                                   ),
@@ -1096,7 +1067,7 @@ class _AddRidesState extends State<AddRides>
                                         ),
                                         const SizedBox(
                                             width:
-                                                10), // Adjust the space between the two icons
+                                                80), // Adjust the space between the two icons
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 8.0),
