@@ -23,6 +23,33 @@ class _ProposedRidesState extends State<ProposedRides> {
   bool bottomSheetVisible = false;
   List<Color> containerColors = List.filled(
       4, colorsFile.cardColor); // Use the background color as the default color
+  int selectedIndex = -1; // Initialize the selected index
+  bool isCardSelected = false; // Initialize the selected state
+
+  void toggleSelection(int index) {
+    setState(() {
+      if (selectedIndex == index) {
+        // Toggle the selection state if the card is tapped again
+        isCardSelected = !isCardSelected;
+        // Reset card color to default when the second tab is selected
+        if (!isCardSelected) {
+          containerColors[index] = colorsFile.cardColor;
+        }
+      } else {
+        // If it's a new selection, update the selected index and set the selection state to true
+        selectedIndex = index;
+        isCardSelected = true;
+        // Deselect other cards
+        for (int i = 0; i < containerColors.length; i++) {
+          if (i != index) {
+            containerColors[i] = colorsFile.cardColor;
+          }
+        }
+        containerColors[index] = colorsFile.icons;
+      }
+    });
+    widget.ridesVisible();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +59,7 @@ class _ProposedRidesState extends State<ProposedRides> {
     return SlidingUpPanel(
       maxHeight: _height * 0.35,
       minHeight: _height * 0.11,
-      panel:
-      Stack(
+      panel: Stack(
         alignment: Alignment.topCenter,
         children: [
           Positioned(
@@ -55,7 +81,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                 Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(30,8.0, 0, 8),
+                      padding: const EdgeInsets.fromLTRB(30, 8.0, 0, 8),
                       child: Text(
                         "Your rides",
                         style: GoogleFonts.montserrat(
@@ -96,12 +122,11 @@ class _ProposedRidesState extends State<ProposedRides> {
                                   curveType: CurveType.convex,
                                   depth: 30,
                                   spread: 1,
-                                  child: const Center(
+                                  child: Center(
                                     child: Icon(
-                                      Icons.add,
-                                      size:30,
+                                      isCardSelected ? Icons.calendar_today : Icons.add,
+                                      size: 30,
                                       color: colorsFile.buttonIcons,
-                                      
                                     ),
                                   ),
                                 ),
@@ -113,23 +138,14 @@ class _ProposedRidesState extends State<ProposedRides> {
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                  SingleChildScrollView(
+                SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(
                       4,
                           (index) => GestureDetector(
                         onTap: () {
-                          setState(() {
-                            // Toggle the clicked state
-                            containerColors[index] =
-                            (containerColors[index] == colorsFile.cardColor)
-                                ? colorsFile.icons
-                                : colorsFile.cardColor;
-                          });
-                          widget.ridesVisible();
+                          toggleSelection(index);
                         },
                         child: Padding(
                           padding: EdgeInsets.only(
@@ -161,9 +177,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                               ],
                             ),
                             child: Container(
-                              
                               child: Row(
-                                
                                 children: [
                                   Expanded(
                                     child: Padding(
@@ -184,47 +198,45 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Container(
-                        height: 50,
-                        width: 50,
-                        child: Stack(
-                          children: [
-                            ClayContainer(
-                              color: Colors.white,
-                              height: 50,
-                              width: 50,
-                              borderRadius: 50,
-                              curveType: CurveType.concave,
-                              depth: 30,
-                              spread: 1,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                // print("heloooo");
-                                // widget.showMyRides();
-                              },
-                              child: Center(
-                                child: ClayContainer(
-                                  color: Colors.white,
-                                  height: 30,
-                                  width: 30,
-                                  borderRadius: 40,
-                                  curveType: CurveType.convex,
-                                  depth: 30,
-                                  spread: 1,
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.route,
-                                      size:30,
-                                      color: colorsFile.buttonIcons,
-                                      
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                                                height: 50,
+                                                width: 50,
+                                                child: Stack(
+                                                  children: [
+                                                    ClayContainer(
+                                                      color: Colors.white,
+                                                      height: 50,
+                                                      width: 50,
+                                                      borderRadius: 50,
+                                                      curveType: CurveType.concave,
+                                                      depth: 30,
+                                                      spread: 1,
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        // Handle onTap for the icon
+                                                      },
+                                                      child: Center(
+                                                        child: ClayContainer(
+                                                          color: Colors.white,
+                                                          height: 30,
+                                                          width: 30,
+                                                          borderRadius: 40,
+                                                          curveType: CurveType.convex,
+                                                          depth: 30,
+                                                          spread: 1,
+                                                          child: const Center(
+                                                            child: Icon(
+                                                              Icons.route,
+                                                              size: 30,
+                                                              color: colorsFile.buttonIcons,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(height: 8),
@@ -240,47 +252,41 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                   : Colors.white,
                                             ),
                                           ),
-                                          
-                                              Text(
-                                                "|",
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color:
-                                                  (containerColors[index] ==
-                                                      colorsFile
-                                                          .cardColor)
-                                                      ? colorsFile.titleCard
-                                                      : Colors.white,
-                                                ),
-                                              ),
-                                              Icon(
-                                                Icons.arrow_downward,
-                                                color: (containerColors[index] ==
-                                                    colorsFile.cardColor)
-                                                    ? colorsFile.icons
-                                                    : Colors.white,
-                                                size: 15,
-                                              ),
-                                              SizedBox(width: 10),
-                                              
-                                           
                                           Text(
-                                                "EY Tower",
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color:
-                                                  (containerColors[index] ==
-                                                      colorsFile
-                                                          .cardColor)
-                                                      ? colorsFile.titleCard
-                                                      : Colors.white,
-                                                ),
-                                              ),
-                                          
+                                            "|",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                              color:
+                                              (containerColors[index] ==
+                                                  colorsFile.cardColor)
+                                                  ? colorsFile.titleCard
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_downward,
+                                            color: (containerColors[index] ==
+                                                colorsFile.cardColor)
+                                                ? colorsFile.icons
+                                                : Colors.white,
+                                            size: 15,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            "EY Tower",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                              color:
+                                              (containerColors[index] ==
+                                                  colorsFile.cardColor)
+                                                  ? colorsFile.titleCard
+                                                  : Colors.white,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -294,9 +300,6 @@ class _ProposedRidesState extends State<ProposedRides> {
                     ),
                   ),
                 ),
-                    
-                  ],
-                )
               ],
             ),
           ),
@@ -308,7 +311,6 @@ class _ProposedRidesState extends State<ProposedRides> {
         topRight: Radius.circular(50.0),
       ),
       color: colorsFile.cardColor,
-      //isDraggable: true,
       onPanelSlide: (double pos) {
         print("objectasdasdasda");
         setState(() {
@@ -317,6 +319,5 @@ class _ProposedRidesState extends State<ProposedRides> {
       },
       isDraggable: true,
     );
-
   }
 }
