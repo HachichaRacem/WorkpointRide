@@ -3,16 +3,19 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 
-class AlertCancelled extends StatefulWidget {
+class History extends StatefulWidget {
   @override
-  _AlertCancelledState createState() => _AlertCancelledState();
+  _HistoryState createState() => _HistoryState();
 }
 
-class _AlertCancelledState extends State<AlertCancelled> {
+class _HistoryState extends State<History> {
+  late double _height;
+  late double _width;
+
   @override
   Widget build(BuildContext context) {
-    final _height = MediaQuery.of(context).size.height;
-    final _width = MediaQuery.of(context).size.width;
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Container(
@@ -27,7 +30,7 @@ class _AlertCancelledState extends State<AlertCancelled> {
             children: List.generate(
               4,
               (index) => Padding(
-                padding: EdgeInsets.only(right: 16.0, top: 16.0),
+                padding: const EdgeInsets.only(right: 16.0, top: 16.0),
                 child: GlassmorphicContainer(
                   height: _height * 0.1,
                   width: _width * 0.8,
@@ -88,39 +91,19 @@ class _AlertCancelledState extends State<AlertCancelled> {
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    SizedBox(height: 5),
-                                    SizedBox(height: 13),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "--->",
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor,
-                                          ),
-                                        ),
-                                        Text(
-                                          "EY Tower",
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor,
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      "--->",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 12,
+                                        color: colorsFile.tabbar,
+                                      ),
                                     ),
-                                    Spacer(),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: Text(
-                                        "Cancelled",
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 10,
-                                          color: colorsFile.cancel,
-                                        ),
+                                    Text(
+                                      "EY Tower",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 12,
+                                        color: colorsFile.tabbar,
                                       ),
                                     ),
                                   ],

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:osmflutter/Users/Screens/history.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
@@ -167,8 +168,12 @@ class _ProfileState extends State<Profile> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Call your void method or add logic for the entire structure
-                                      // _showModalBottomSheet1(context);
+                                      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => History(),
+          ),
+        );
                                     },
                                     child: Container(
                                       height: 50,
