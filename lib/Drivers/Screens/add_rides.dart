@@ -1,21 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+
+import 'package:clay_containers/clay_containers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/Drivers/widgets/proposed_rides.dart';
-import 'package:flutter/material.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:clay_containers/clay_containers.dart';
-import 'package:clay_containers/widgets/clay_container.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -32,12 +28,8 @@ class AddRides extends StatefulWidget {
 
 class _AddRidesState extends State<AddRides>
     with SingleTickerProviderStateMixin {
-  //Google Maps For Home
-
   late GoogleMapController mapController;
   bool check_map = true;
-
-  //For home
 
   var origin_address_name = 'Home';
 
@@ -73,11 +65,7 @@ class _AddRidesState extends State<AddRides>
 
   bool check = false;
 
-
-
-
   google_map_for_origin(GoogleMapController? map_controller) async {
-
     current_lat1 = await sharedpreferences.getlat();
     current_lng1 = await sharedpreferences.getlng();
 
@@ -89,8 +77,6 @@ class _AddRidesState extends State<AddRides>
 
     print("Shared data # 02 is ");
     print("${current_lng2} : ${current_lat2}");
-
-
 
     setState(() {
       check = true;
@@ -123,7 +109,8 @@ class _AddRidesState extends State<AddRides>
                                 children: [
                                   GoogleMap(
                                     initialCameraPosition: CameraPosition(
-                                      target: LatLng(current_lat1,current_lng1), // Should be LatLng(current_lat,current_lng)
+                                      target: LatLng(current_lat1,
+                                          current_lng1), // Should be LatLng(current_lat,current_lng)
                                       zoom: 14,
                                     ),
                                     markers: Set<Marker>.of(myMarker),
@@ -149,7 +136,6 @@ class _AddRidesState extends State<AddRides>
                                         top: 8, left: 8, right: 8),
                                     child: SearchMapPlaceWidget(
                                         hasClearButton: true,
-
                                         iconColor: Colors.black,
                                         placeType: PlaceType.region,
                                         bgColor: Colors.white,
@@ -158,13 +144,15 @@ class _AddRidesState extends State<AddRides>
                                         apiKey:
                                             "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
                                         onSelected: (Place place) async {
-                                          print("------------Selected origin location from search:----------");
+                                          print(
+                                              "------------Selected origin location from search:----------");
                                           Geolocation? geo_location =
                                               await place.geolocation;
-                                          print("--------- Coordinates are: ${geo_location?.coordinates}");
+                                          print(
+                                              "--------- Coordinates are: ${geo_location?.coordinates}");
 
                                           //Finalize the lat & lng and then call the GoogleMap Method for origin name!
-                                          
+
                                           print("running-----");
                                           map_controller!.animateCamera(
                                               CameraUpdate.newLatLng(
@@ -224,11 +212,7 @@ class _AddRidesState extends State<AddRides>
     GoogleMapController controller = await _controller.future;
 
     controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
-
-    
   }
-
- 
 
   var destination_address_name = 'EY Tower';
 
@@ -258,16 +242,11 @@ class _AddRidesState extends State<AddRides>
 
   Completer<GoogleMapController> _controller1 = Completer();
 
-  // Markers
-
   List<Marker> myMarker1 = [];
 
   List<Marker> markers1 = [];
 
   google_map_for_origin1(GoogleMapController? map_controller1) {
-
-    //print("Current location is === ${currentLocation}");
-
     showDialog(
         context: context,
         builder: (context) {
@@ -290,7 +269,7 @@ class _AddRidesState extends State<AddRides>
                       if (snapshot.hasData) {
                         return GoogleMap(
                           initialCameraPosition: CameraPosition(
-                            target: LatLng(current_lat1,current_lng1),
+                            target: LatLng(current_lat1, current_lng1),
                             zoom: 14,
                           ),
                           markers: Set<Marker>.of(myMarker1),
@@ -339,8 +318,7 @@ class _AddRidesState extends State<AddRides>
                         map_controller1!.animateCamera(
                             CameraUpdate.newLatLngBounds(
                                 geo_location1?.bounds, 0));
-                      }
-                      ),
+                      }),
                 ),
               ],
             ),
@@ -474,82 +452,79 @@ class _AddRidesState extends State<AddRides>
   late double _height;
   late double _width;
   bool condition = true; //true
-
-  List<DateTime> _selectedDates = [];
   TimeOfDay _selectedTime = TimeOfDay.now();
-  double _rating = 0;
 
-void _selectDateRange(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: colorsFile.icons, // Change background color to blue
-        content: Container(
-          width: 300,
-          height: 500,
-          child: Column(
-            children: [
-              Expanded(
-                child: SfDateRangePicker(
-                  view: DateRangePickerView.month,
-                  headerStyle: const DateRangePickerHeaderStyle(
-                    textStyle: TextStyle(color: colorsFile.icons),
-                  ),
-                  monthViewSettings: const DateRangePickerMonthViewSettings(
-                    weekendDays: [7, 6],
-                    dayFormat: 'EEE',
-                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
+  void _selectDateRange(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: colorsFile.icons, // Change background color to blue
+          content: Container(
+            width: 300,
+            height: 500,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SfDateRangePicker(
+                    view: DateRangePickerView.month,
+                    headerStyle: const DateRangePickerHeaderStyle(
                       textStyle: TextStyle(color: colorsFile.icons),
                     ),
-                    showTrailingAndLeadingDates: true,
+                    monthViewSettings: const DateRangePickerMonthViewSettings(
+                      weekendDays: [7, 6],
+                      dayFormat: 'EEE',
+                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                        textStyle: TextStyle(color: colorsFile.icons),
+                      ),
+                      showTrailingAndLeadingDates: true,
+                    ),
+                    monthCellStyle: const DateRangePickerMonthCellStyle(
+                      textStyle: TextStyle(color: colorsFile.icons),
+                    ),
+                    selectionMode:
+                        DateRangePickerSelectionMode.multiple, // or .multiRange
                   ),
-                  monthCellStyle: const DateRangePickerMonthCellStyle(
-                    textStyle: TextStyle(color: colorsFile.icons),
-                  ),
-                  selectionMode: DateRangePickerSelectionMode.multiple, // or .multiRange
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Dismiss the dialog
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          colorsFile.buttonRole), // Change the color here
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Dismiss the dialog
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            colorsFile.buttonRole), // Change the color here
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: colorsFile.icons),
+                      ),
                     ),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: colorsFile.icons),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add your submit logic here
+                        Navigator.of(context).pop(); // Dismiss the dialog
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            colorsFile.buttonRole), // Change the color here
+                      ),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(color: colorsFile.icons),
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Add your submit logic here
-                      Navigator.of(context).pop(); // Dismiss the dialog
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          colorsFile.buttonRole), // Change the color here
-                    ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(color: colorsFile.icons),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -653,27 +628,11 @@ void _selectDateRange(BuildContext context) {
     });
   }
 
-  void _scheduleMyRides() {
-  setState(() {
-    // Perform any necessary state updates or functionality when the calendar icon is clicked
-  });
-}
-
-  //Map new Theme
   Future<String> _loadNightStyle() async {
-    // Load the JSON style file from assets
     String nightStyleJson = await DefaultAssetBundle.of(context)
         .loadString('assets/themes/aubergine_style.json');
     return nightStyleJson;
   }
-
-  //slide moving
-
-  bool _bottomSheetVisible = true;
-  double _expandedHeight = 300;
-  double _collapsedHeight = 150;
-
-  //Polylines LatLng
 
   dynamic poly1_lat, poly1_lng;
   dynamic poly2_lat, poly2_lng;
@@ -721,19 +680,19 @@ void _selectDateRange(BuildContext context) {
           children: [
             // Background Photo
 
-                Positioned(
-                    child: Container(
-                      child: check_map == true
-                          ? MapsGoogleExample()
-                          : DriverOnMap(
-                              poly_lat1: sp_poly_lat1,
-                              poly_lng1: sp_poly_lng1,
-                              poly_lat2: sp_poly_lat2,
-                              poly_lng2: sp_poly_lng2,
+            Positioned(
+              child: Container(
+                child: check_map == true
+                    ? MapsGoogleExample()
+                    : DriverOnMap(
+                        poly_lat1: sp_poly_lat1,
+                        poly_lng1: sp_poly_lng1,
+                        poly_lat2: sp_poly_lat2,
+                        poly_lng2: sp_poly_lng2,
                         route_id: 'route',
-                            ),
-                    ),
-                  ),
+                      ),
+              ),
+            ),
 
             // SlidingUpPanel
 
@@ -834,7 +793,7 @@ void _selectDateRange(BuildContext context) {
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
-                              
+
                               //SizedBox(width: 15.0),
                               Container(
                                 margin: const EdgeInsets.only(top: 8),
@@ -1022,8 +981,8 @@ void _selectDateRange(BuildContext context) {
                                         const SizedBox(
                                             width:
                                                 8), // Adjust the space between the two icons
-                                       
-                                              Padding(
+
+                                        Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
                                               onTap: () {},
@@ -1038,18 +997,13 @@ void _selectDateRange(BuildContext context) {
                                               )),
                                         ),
 
-                                              
-                                              
-                                                  
-                                         // Adjust the space between the two icons
+                                        // Adjust the space between the two icons
                                       ],
                                     ),
                                   ),
                                 ),
 
-
-
-                                //start  
+                                //start
                                 const SizedBox(height: 10),
                                 Container(
                                   height: 50,
@@ -1058,23 +1012,24 @@ void _selectDateRange(BuildContext context) {
                                     child: Row(
                                       children: [
                                         Expanded(
-                                            child: RatingBar.builder(
-                                initialRating: 3,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                itemCount: 4,
-                                itemBuilder: (context, _) => Image.asset(
-                                  'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                  width:
-                                      10, // Adjust width and height as per your image size
-                                  height: 10,
-                                  color: colorsFile
-                                      .done, // You can also apply color to the image if needed
-                                ),
-                                onRatingUpdate: (rating) {
-                                  print(rating);
-                                },
-                              ),
+                                          child: RatingBar.builder(
+                                            initialRating: 3,
+                                            minRating: 1,
+                                            direction: Axis.horizontal,
+                                            itemCount: 4,
+                                            itemBuilder: (context, _) =>
+                                                Image.asset(
+                                              'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
+                                              width:
+                                                  10, // Adjust width and height as per your image size
+                                              height: 10,
+                                              color: colorsFile
+                                                  .done, // You can also apply color to the image if needed
+                                            ),
+                                            onRatingUpdate: (rating) {
+                                              print(rating);
+                                            },
+                                          ),
                                         ),
                                         const SizedBox(
                                             width:
@@ -1133,7 +1088,7 @@ void _selectDateRange(BuildContext context) {
                                     ),
                                   ),
                                 ),
-                                // end 
+                                // end
                               ],
                             ),
                           ),
@@ -1160,8 +1115,10 @@ void _selectDateRange(BuildContext context) {
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: ProposedRides(_showMyRides, showRide, ),
-
+                    child: ProposedRides(
+                      _showMyRides,
+                      showRide,
+                    ),
                   )),
             ),
 
@@ -1197,20 +1154,17 @@ void _selectDateRange(BuildContext context) {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Column(
                           children: [
-                             Padding(
-                              padding:  EdgeInsets.only(top: 6,bottom: 2),
+                            Padding(
+                              padding: EdgeInsets.only(top: 6, bottom: 2),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   InkWell(
-                                      onTap: ()
-                                      {
-                                        box_check=false;
-                                        setState(() {
-
-                                        });
+                                      onTap: () {
+                                        box_check = false;
+                                        setState(() {});
                                       },
-                                      child: Icon(Icons.close,size: 18))
+                                      child: Icon(Icons.close, size: 18))
                                 ],
                               ),
                             ),
@@ -1235,8 +1189,6 @@ void _selectDateRange(BuildContext context) {
     );
   }
 
-
-  
   void scheduleRide() {
     setState(() {
       isSearchPoPupVisible = true;

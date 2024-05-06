@@ -1,7 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:osmflutter/login/login.dart';
 
-void main() {
+import 'Services/API.dart';
+
+void main() async {
+  addInterceptors(Dio dio) {
+    dio.interceptors.add(DioInterceptor());
+  }
+
   runApp(const MyApp());
 }
 
@@ -16,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.transparent,
       ),
-      home:  Login(),
+      home: Login(),
       //home:  ChooseRole(),
     );
   }
