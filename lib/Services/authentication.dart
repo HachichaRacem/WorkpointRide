@@ -20,11 +20,13 @@ class authentication {
 
       return response;
     } on DioException catch (e) {
+      print("ERROR: $e");
       if (e.response != null) {
         print(e.response?.data);
         print(e.response?.headers);
         print(e.response?.requestOptions);
       } else {
+        print("response: ${e.response}");
         print(e.requestOptions);
         print(e.message);
       }

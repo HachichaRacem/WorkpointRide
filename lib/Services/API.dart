@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:osmflutter/Services/authentication.dart';
+import 'package:osmflutter/constant/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DioInterceptor extends Interceptor {
-  Dio dio = Dio(BaseOptions(baseUrl: "http://192.168.1.11:5000/"));
+  Dio dio = Dio(BaseOptions(baseUrl: link.url));
   late SharedPreferences _prefs;
 
   @override

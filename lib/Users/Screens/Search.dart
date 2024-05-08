@@ -217,8 +217,6 @@ class _SearchState extends State<Search> {
     // print(lng);
   }
 
- 
-
   var destination_address_name = 'EY Tower';
 
   bool map_check = false;
@@ -366,6 +364,7 @@ class _SearchState extends State<Search> {
   late double _height;
   late double _width;
   bool condition = true;
+  Map selectedRouteCardInfo = {};
 
   //Getting driver home & evtower lat & lng
 
@@ -434,17 +433,12 @@ class _SearchState extends State<Search> {
         sp_data_poly_lng2 == null) {
       print("Shared data values are null");
       check_shared_data = true;
-      setState(() {
-
-      });
+      setState(() {});
     } else {
       print("Shared data values are not null");
       check_shared_data = false;
-      setState(() {
-
-      });
+      setState(() {});
     }
-
   }
 
   _showSearchRides() {
@@ -468,6 +462,12 @@ class _SearchState extends State<Search> {
     setState(() {
       ridesIsVisible = !ridesIsVisible;
     });
+  }
+
+  updateSelectedRouteCardInfo(Map data) {
+    debugPrint(
+        "[DATA]: updateSelectedRouteCardInfo has been called with data = $data");
+    selectedRouteCardInfo = data;
   }
 
   // dynamic sp_lat1, sp_lng1, sp_lat2, sp_lng2;
@@ -580,8 +580,20 @@ class _SearchState extends State<Search> {
 
             //pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2)
 
-           check_shared_data ==true ?
-            map_check == false ? PassengerMap(condition: true) : pass_route_map(lat1: selected_lat1, lng1: selected_lng1, lat2: selected_lat2, lng2: selected_lng2,): pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2),
+            check_shared_data == true
+                ? map_check == false
+                    ? PassengerMap(condition: true)
+                    : pass_route_map(
+                        lat1: selected_lat1,
+                        lng1: selected_lng1,
+                        lat2: selected_lat2,
+                        lng2: selected_lng2,
+                      )
+                : pass_route_map(
+                    lat1: sp_data_poly_lat1,
+                    lng1: sp_data_poly_lng1,
+                    lat2: sp_data_poly_lat2,
+                    lng2: sp_data_poly_lng2),
 
             SlidingUpPanel(
               maxHeight: _height * 0.99,
@@ -902,7 +914,8 @@ class _SearchState extends State<Search> {
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: ChooseRide(_showMyRides, showRide),
+                    child: ChooseRide(
+                        _showMyRides, showRide, updateSelectedRouteCardInfo),
                   )),
             ),
             Visibility(
@@ -920,7 +933,9 @@ class _SearchState extends State<Search> {
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: const MyRides(),
+                    child: MyRides(
+                      selectedRouteCardInfo: selectedRouteCardInfo,
+                    ),
                   )),
             ),
           ],

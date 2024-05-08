@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatelessWidget {
   final authentication _auth = authentication();
-  TextEditingController email = new TextEditingController();
-  TextEditingController password = new TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,8 +66,8 @@ class Login extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              const BoxShadow(
+                            boxShadow: const [
+                              BoxShadow(
                                 color: colorsFile.ProfileIcon,
                                 blurRadius: 20,
                                 offset: Offset(0, 10),
@@ -153,6 +153,8 @@ class Login extends StatelessWidget {
   }
 
   Future<void> _login(context) async {
+    debugPrint("EMAIL: ${email.text}");
+    debugPrint("PASS: ${password.text}");
     await _auth.login(email.text, password.text).then((value) async {
       if (value.statusCode == 200) {
         Map<String, dynamic> payload = JwtDecoder.decode(

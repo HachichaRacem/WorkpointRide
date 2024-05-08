@@ -15,18 +15,17 @@ class DriverRides extends StatefulWidget {
 }
 
 class _DriverRidesState extends State<DriverRides> {
-
   late double _height;
   late double _width;
   bool isContainerVisible = false;
   @override
   void initState() {
-
     Future.delayed(Duration(seconds: 0)).then((_) {
       _showModalBottomSheet(context);
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
@@ -37,7 +36,6 @@ class _DriverRidesState extends State<DriverRides> {
           Positioned(
             child: MapsGoogleExample(),
           ),
-
           Visibility(
             visible: isContainerVisible,
             child: Positioned(
@@ -115,27 +113,34 @@ class _DriverRidesState extends State<DriverRides> {
                                           decoration: InputDecoration(
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                color: Color(0xFFFFFFFF), // White color
+                                                color: Color(
+                                                    0xFFFFFFFF), // White color
                                                 width: 1.0,
                                               ),
-                                              borderRadius: BorderRadius.circular(50.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(50.0),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                color:  Color(0xFFFFFFFF), // White color
+                                                color: Color(
+                                                    0xFFFFFFFF), // White color
                                                 width: 1.0,
                                               ),
-                                              borderRadius: BorderRadius.circular(50.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(50.0),
                                             ),
                                             hintText: 'Home',
                                             hintStyle: TextStyle(
-                                              color: Color(0xFFFFFFFF), // White color
+                                              color: Color(
+                                                  0xFFFFFFFF), // White color
                                             ),
                                             prefixIcon: Icon(Icons.location_on),
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 5), // Adjust the space between the two icons
+                                      SizedBox(
+                                          width:
+                                              5), // Adjust the space between the two icons
                                       Icon(
                                         Icons.face,
                                         color: Color(0xFFFFFFFF), // White color
@@ -159,27 +164,34 @@ class _DriverRidesState extends State<DriverRides> {
                                           decoration: InputDecoration(
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                color: Color(0xFFFFFFFF), // White color
+                                                color: Color(
+                                                    0xFFFFFFFF), // White color
                                                 width: 1.0,
                                               ),
-                                              borderRadius: BorderRadius.circular(8.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                color: Color(0xFFFFFFFF), // White color
+                                                color: Color(
+                                                    0xFFFFFFFF), // White color
                                                 width: 1.0,
                                               ),
-                                              borderRadius: BorderRadius.circular(50.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(50.0),
                                             ),
                                             hintText: 'Ey tower',
                                             hintStyle: TextStyle(
-                                              color: Color(0xFFFFFFFF), // White color
+                                              color: Color(
+                                                  0xFFFFFFFF), // White color
                                             ),
                                             prefixIcon: Icon(Icons.location_on),
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 5), // Adjust the space between the two icons
+                                      SizedBox(
+                                          width:
+                                              5), // Adjust the space between the two icons
                                       Icon(
                                         Icons.change_circle_outlined,
                                         color: Color(0xFFFFFFFF), // White color
@@ -202,6 +214,7 @@ class _DriverRidesState extends State<DriverRides> {
       ),
     );
   }
+
   void _showModalBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -234,10 +247,10 @@ class _DriverRidesState extends State<DriverRides> {
       ),
     );
   }
+
   void AddRides(BuildContext context) {
     setState(() {
       isContainerVisible = true;
     });
   }
-
 }

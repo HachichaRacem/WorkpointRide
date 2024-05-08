@@ -183,7 +183,6 @@ class _AddRidesState extends State<AddRides>
               ],
             ),
           );
-          ;
         });
   }
 
@@ -453,6 +452,8 @@ class _AddRidesState extends State<AddRides>
   late double _width;
   bool condition = true; //true
   TimeOfDay _selectedTime = TimeOfDay.now();
+  List<DateTime> selectedDates = List.empty();
+  double selectedSeates = 3;
 
   void _selectDateRange(BuildContext context) {
     showDialog(
@@ -467,30 +468,38 @@ class _AddRidesState extends State<AddRides>
               children: [
                 Expanded(
                   child: SfDateRangePicker(
-                    view: DateRangePickerView.month,
-                    headerStyle: const DateRangePickerHeaderStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
-                    ),
-                    monthViewSettings: const DateRangePickerMonthViewSettings(
-                      weekendDays: [7, 6],
-                      dayFormat: 'EEE',
-                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                      view: DateRangePickerView.month,
+                      headerStyle: const DateRangePickerHeaderStyle(
                         textStyle: TextStyle(color: colorsFile.icons),
                       ),
-                      showTrailingAndLeadingDates: true,
-                    ),
-                    monthCellStyle: const DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
-                    ),
-                    selectionMode:
-                        DateRangePickerSelectionMode.multiple, // or .multiRange
-                  ),
+                      monthViewSettings: const DateRangePickerMonthViewSettings(
+                        weekendDays: [7, 6],
+                        dayFormat: 'EEE',
+                        viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                          textStyle: TextStyle(color: colorsFile.icons),
+                        ),
+                        showTrailingAndLeadingDates: true,
+                      ),
+                      monthCellStyle: const DateRangePickerMonthCellStyle(
+                        textStyle: TextStyle(color: colorsFile.icons),
+                      ),
+                      initialSelectedDates: selectedDates,
+                      selectionMode: DateRangePickerSelectionMode
+                          .multiple, // or .multiRange
+
+                      onSelectionChanged:
+                          (dateRangePickerSelectionChangedArgs) {
+                        selectedDates =
+                            dateRangePickerSelectionChangedArgs.value;
+                        debugPrint("Selecte dates : $selectedDates");
+                      }),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ElevatedButton(
                       onPressed: () {
+                        selectedDates = List.empty();
                         Navigator.of(context).pop(); // Dismiss the dialog
                       },
                       style: ButtonStyle(
@@ -552,10 +561,12 @@ class _AddRidesState extends State<AddRides>
         );
       },
     );
-    if (picked != null && picked != _selectedTime)
+    if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
+        debugPrint("selected time : $_selectedTime");
       });
+    }
   }
 
   @override
@@ -1013,7 +1024,7 @@ class _AddRidesState extends State<AddRides>
                                       children: [
                                         Expanded(
                                           child: RatingBar.builder(
-                                            initialRating: 3,
+                                            initialRating: selectedSeates,
                                             minRating: 1,
                                             direction: Axis.horizontal,
                                             itemCount: 4,
@@ -1027,6 +1038,8 @@ class _AddRidesState extends State<AddRides>
                                                   .done, // You can also apply color to the image if needed
                                             ),
                                             onRatingUpdate: (rating) {
+                                              setState(() =>
+                                                  selectedSeates = rating);
                                               print(rating);
                                             },
                                           ),
