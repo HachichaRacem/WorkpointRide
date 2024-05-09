@@ -1,10 +1,7 @@
-import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
-import 'package:osmflutter/constant/colorsFile.dart';
-
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:osmflutter/constant/colorsFile.dart';
 
 class WantToBook extends StatelessWidget {
   String title;
@@ -113,37 +110,4 @@ class WantToBook extends StatelessWidget {
       ],
     );
   }
-
-  // void _showModalBottomSheet1(BuildContext context) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(
-  //         top: Radius.circular(50),
-  //       ),
-  //     ),
-  //     builder: (context) => DraggableScrollableSheet(
-  //       initialChildSize: 0.4,
-  //       maxChildSize: 0.9,
-  //       minChildSize: 0.32,
-  //       expand: false,
-  //       builder: (context, scrollController) {
-  //         return Container(
-  //           decoration: BoxDecoration(
-  //             color: colorsFile.cardColor,
-  //             borderRadius: BorderRadius.only(
-  //               topLeft: Radius.circular(50.0),
-  //               topRight: Radius.circular(50.0),
-  //             ),
-  //           ),
-  //           child: SingleChildScrollView(
-  //             controller: scrollController,
-  //             child: ChooseRide(),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 }

@@ -158,9 +158,11 @@ class Login extends StatelessWidget {
         Map<String, dynamic> payload = JwtDecoder.decode(
           value.data["accessToken"].toString(),
         );
+        print("pppppppppppppppppppppppayload ${payload}");
+        print("uuuuuuuuuuuuuuuuuuuuuseeeeerrr ${value.data["user"]["_id"]}");
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        prefs.setString("user", payload["_id"].toString());
+        await prefs.setString("user", value.data["user"]["_id"].toString());
 
         prefs.setString(
           "token",

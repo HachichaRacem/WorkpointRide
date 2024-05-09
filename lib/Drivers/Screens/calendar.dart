@@ -1,16 +1,13 @@
+import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:intl/intl.dart';
-import '../../GoogleMaps/calendar_map.dart';
-import '../../GoogleMaps/driver_polyline_map.dart';
-import 'package:clay_containers/clay_containers.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../GoogleMaps/calendar_map.dart';
+
 class Person {
   final String name;
   final String phoneNumber;
@@ -421,13 +418,13 @@ class _CalendarState extends State<Calendar> {
                                           selectedPerson = people[0];
                                           //inkwell call another polyline.......
                                           print("First passenger selected");
-                                          DriverOnMap(
+                                          /*    DriverOnMap(
                                             poly_lat1: 37.43316,
                                             poly_lng1: -122.083061,
                                             poly_lat2: 37.427847,
                                             poly_lng2: -122.097320,
                                             route_id: 'route12',
-                                          );
+                                          );*/
                                           print("state set");
                                         });
                                       },
@@ -477,7 +474,9 @@ class _CalendarState extends State<Calendar> {
                                                           GestureDetector(
                                                             onTap: () {
                                                               print("heloooo");
-                                                              _launchPhone(people[0].phoneNumber);
+                                                              _launchPhone(people[
+                                                                      0]
+                                                                  .phoneNumber);
                                                             },
                                                             child: Center(
                                                               child:
@@ -578,8 +577,10 @@ class _CalendarState extends State<Calendar> {
                                                           GestureDetector(
                                                             onTap: () {
                                                               print("heloooo");
-                                                              
-                                                              _launchPhone(people[1].phoneNumber);
+
+                                                              _launchPhone(people[
+                                                                      1]
+                                                                  .phoneNumber);
                                                             },
                                                             child: Center(
                                                               child:
@@ -680,7 +681,9 @@ class _CalendarState extends State<Calendar> {
                                                           GestureDetector(
                                                             onTap: () {
                                                               print("heloooo");
-                                                              _launchPhone(people[2].phoneNumber);
+                                                              _launchPhone(people[
+                                                                      2]
+                                                                  .phoneNumber);
                                                             },
                                                             child: Center(
                                                               child:
@@ -781,7 +784,9 @@ class _CalendarState extends State<Calendar> {
                                                           GestureDetector(
                                                             onTap: () {
                                                               print("heloooo");
-                                                               _launchPhone(people[3].phoneNumber);
+                                                              _launchPhone(people[
+                                                                      3]
+                                                                  .phoneNumber);
                                                             },
                                                             child: Center(
                                                               child:
@@ -855,6 +860,7 @@ class _CalendarState extends State<Calendar> {
       ),
     );
   }
+
   // Function to launch the phone app
   _launchPhone(String phoneNumber) async {
     final url = 'tel:$phoneNumber';

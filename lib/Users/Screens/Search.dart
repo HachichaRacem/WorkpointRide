@@ -1,23 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'package:clay_containers/clay_containers.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:osmflutter/Drivers/Screens/addSchedule/want_to_book.dart';
 import 'package:osmflutter/GoogleMaps/passenger_map.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
-import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:clay_containers/clay_containers.dart';
-import 'package:clay_containers/widgets/clay_container.dart';
-import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-import 'package:intl/intl.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../../GoogleMaps/driver_polyline_map.dart';
 import '../../GoogleMaps/pass_route_map.dart';
 
 class Search extends StatefulWidget {
@@ -216,8 +213,6 @@ class _SearchState extends State<Search> {
     // print(lat);
     // print(lng);
   }
-
- 
 
   var destination_address_name = 'EY Tower';
 
@@ -434,17 +429,12 @@ class _SearchState extends State<Search> {
         sp_data_poly_lng2 == null) {
       print("Shared data values are null");
       check_shared_data = true;
-      setState(() {
-
-      });
+      setState(() {});
     } else {
       print("Shared data values are not null");
       check_shared_data = false;
-      setState(() {
-
-      });
+      setState(() {});
     }
-
   }
 
   _showSearchRides() {
@@ -580,8 +570,20 @@ class _SearchState extends State<Search> {
 
             //pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2)
 
-           check_shared_data ==true ?
-            map_check == false ? PassengerMap(condition: true) : pass_route_map(lat1: selected_lat1, lng1: selected_lng1, lat2: selected_lat2, lng2: selected_lng2,): pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2),
+            check_shared_data == true
+                ? map_check == false
+                    ? PassengerMap(condition: true)
+                    : pass_route_map(
+                        lat1: selected_lat1,
+                        lng1: selected_lng1,
+                        lat2: selected_lat2,
+                        lng2: selected_lng2,
+                      )
+                : pass_route_map(
+                    lat1: sp_data_poly_lat1,
+                    lng1: sp_data_poly_lng1,
+                    lat2: sp_data_poly_lat2,
+                    lng2: sp_data_poly_lng2),
 
             SlidingUpPanel(
               maxHeight: _height * 0.99,

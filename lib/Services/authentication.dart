@@ -12,7 +12,6 @@ class authentication {
   }
 
   Future<Response<dynamic>> login(String email, String password) async {
-    print("${dio.getUri}");
     try {
       var response = await dio.post("api/users/login",
           data: {'email': email, 'password': password},
@@ -25,7 +24,7 @@ class authentication {
         print(e.response?.headers);
         print(e.response?.requestOptions);
       } else {
-        print(e.requestOptions);
+        print(e);
         print(e.message);
       }
       return e.response!;
