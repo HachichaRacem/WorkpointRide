@@ -3,6 +3,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:osmflutter/Services/authentication.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/login/choose_role.dart';
+import 'package:osmflutter/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatelessWidget {
@@ -153,21 +154,18 @@ class Login extends StatelessWidget {
   }
 
   Future<void> _login(context) async {
-    debugPrint("EMAIL: ${email.text}");
-    debugPrint("PASS: ${password.text}");
     await _auth.login(email.text, password.text).then((value) async {
       if (value.statusCode == 200) {
         Map<String, dynamic> payload = JwtDecoder.decode(
           value.data["accessToken"].toString(),
         );
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        prefs.setString("user", payload["_id"].toString());
-
+        prefs.setString("user", payload["userId"].toString());
         prefs.setString(
           "token",
           value.data["accessToken"].toString(),
         );
+        User().updateFromJSON(value.data['user']);
         Navigator.of(context).push(PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const ChooseRole(),

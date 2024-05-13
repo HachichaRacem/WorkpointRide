@@ -10,6 +10,7 @@ import 'package:osmflutter/Services/route.dart' as route;
 import 'package:osmflutter/Services/schedule.dart';
 
 import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ChooseRide extends StatefulWidget {
@@ -37,15 +38,16 @@ class _ChooseRideState extends State<ChooseRide> {
 
   Future _createReservation() async {
     if (schedules.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      final userID = prefs.getString("user");
       final reqBody = {
-        "user": schedules[selectedRouteCardIndex]["user"][
-            '_id'], // Should be the current user's ID but using the driver's ID for now till we make a model for the user
+        "user": userID,
         "schedule": schedules[selectedRouteCardIndex]["_id"],
         "status": "pending",
         "pickupTime": DateTime.now().toString(),
       };
       try {
-        final response = await Reservation().createReservation(reqBody);
+        await Reservation().createReservation(reqBody);
         widget.showMyRides();
       } catch (e) {
         debugPrint("ERROR: $e");
@@ -200,6 +202,7 @@ class _ChooseRideState extends State<ChooseRide> {
   }
 }
 
+// Available routes once the passenger picks the route, time and date
 class RouteCard extends StatefulWidget {
   final String? driverName;
   final String? driverNum;

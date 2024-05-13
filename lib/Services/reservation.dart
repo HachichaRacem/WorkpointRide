@@ -14,4 +14,26 @@ class Reservation {
       return e.response!;
     }
   }
+
+  Future<Response> getReservations(String userID) async {
+    try {
+      return await dio.get("api/reservations/$userID");
+    } on DioException catch (e) {
+      print(e.response?.data);
+      print(e.response?.headers);
+      print(e.response?.requestOptions);
+      return e.response!;
+    }
+  }
+
+  Future<Response> deleteReservationByID(String id) async {
+    try {
+      return await dio.delete("api/reservations/$id");
+    } on DioException catch (e) {
+      print(e.response?.data);
+      print(e.response?.headers);
+      print(e.response?.requestOptions);
+      return e.response!;
+    }
+  }
 }

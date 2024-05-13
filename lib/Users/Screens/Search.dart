@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/GoogleMaps/passenger_map.dart';
+import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
+import 'package:osmflutter/Users/BottomSheet/ride_card.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
@@ -15,6 +18,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:intl/intl.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../GoogleMaps/driver_polyline_map.dart';
@@ -366,6 +370,14 @@ class _SearchState extends State<Search> {
   bool condition = true;
   Map selectedRouteCardInfo = {};
 
+  Future _loadReservation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userID = prefs.getString("user");
+    debugPrint("[DATA]: userID: $userID");
+    return (await Reservation().getReservations(userID!)).data;
+  }
+
+  late Future _getReservations = _loadReservation();
   //Getting driver home & evtower lat & lng
 
   // dynamic driver_lat1,driver_lng1,driver_lat2,driver_lng2;
@@ -447,6 +459,11 @@ class _SearchState extends State<Search> {
       bottomSheetVisible = false;
       condition = false;
     });
+  }
+
+  _updateRides() {
+    _getReservations = _loadReservation();
+    setState(() {});
   }
 
   _showMyRides() {
@@ -603,11 +620,111 @@ class _SearchState extends State<Search> {
                   onTap: () {
                     print("sddasdasddasd");
                   },
-                  child: WantToBook(
-                    "Your proposed rides",
-                    "Want to book a ride? Press + button!",
-                    _showSearchRides,
-                  ),
+                  child: FutureBuilder(
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.isNotEmpty) {
+                            debugPrint("[DATA]: ${snapshot.data}");
+                            return Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          50, 8.0, 0, 8),
+                                      child: Text(
+                                        'Your rides pass',
+                                        style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: colorsFile.titleCard),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: GestureDetector(
+                                          onTap: _showSearchRides,
+                                          child: Container(
+                                            height: 50,
+                                            width: 50,
+                                            child: Stack(
+                                              children: [
+                                                ClayContainer(
+                                                  color: Colors.white,
+                                                  height: 50,
+                                                  width: 50,
+                                                  borderRadius: 50,
+                                                  curveType: CurveType.concave,
+                                                  depth: 30,
+                                                  spread: 1,
+                                                ),
+                                                Center(
+                                                  child: ClayContainer(
+                                                    color: Colors.white,
+                                                    height: 40,
+                                                    width: 40,
+                                                    borderRadius: 40,
+                                                    curveType: CurveType.convex,
+                                                    depth: 30,
+                                                    spread: 1,
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.add,
+                                                        color: colorsFile
+                                                            .buttonIcons,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )),
+                                    ),
+                                  ],
+                                ),
+                                SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: List.generate(
+                                          snapshot.data.length, (index) {
+                                        final data = {
+                                          'id': snapshot.data[index]['_id'],
+                                          'driverName': snapshot.data[index]
+                                              ['user']['firstName'],
+                                          'driverNum': snapshot.data[index]
+                                              ['user']['phoneNumber'],
+                                          'scheduleStartTime': snapshot
+                                              .data[index]['pickupTime'],
+                                        };
+
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0),
+                                          child: RideCard(
+                                              selectedRouteCardInfo: data,
+                                              updateRides: _updateRides),
+                                        );
+                                      }),
+                                    )),
+                              ],
+                            );
+                          } else {
+                            return WantToBook(
+                              "Your proposed rides",
+                              "Want to book a ride? Press + button!",
+                              _showSearchRides,
+                            );
+                          }
+                        }
+                        return const Center(
+                            child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 0.8, color: Colors.white)));
+                      },
+                      future: _getReservations),
                 ),
               ),
               body: Container(), // Your body widget here

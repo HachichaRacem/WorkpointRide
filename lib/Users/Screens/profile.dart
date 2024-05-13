@@ -25,7 +25,7 @@ class _ProfileState extends State<Profile> {
   late double _width;
   Color baseColor = const Color(0xFFf2f2f2);
 
-  bool bottomSheetVisible =true;
+  bool bottomSheetVisible = true;
   bool check = true;
 
   @override
@@ -36,9 +36,8 @@ class _ProfileState extends State<Profile> {
     getshared();
   }
 
-  dynamic sp_poly_lat1,sp_poly_lng1,sp_poly_lat2,sp_poly_lng2;
-  getshared()async
-  {
+  dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
+  getshared() async {
     final prefs = await sharedpreferences.get_poly_lat1();
     sp_poly_lat1 = prefs;
     print("Poly_lat1 = ${sp_poly_lat1}");
@@ -55,15 +54,15 @@ class _ProfileState extends State<Profile> {
     sp_poly_lng2 = prefs3;
     print("Poly_lng2 = ${sp_poly_lng2}");
 
-
-    if(sp_poly_lng1!=null || sp_poly_lat1!=null || sp_poly_lng2!=null || sp_poly_lat2!=null)
-      {
-        setState(() {
-          check=false;
-        });
-      }
+    if (sp_poly_lng1 != null ||
+        sp_poly_lat1 != null ||
+        sp_poly_lng2 != null ||
+        sp_poly_lat2 != null) {
+      setState(() {
+        check = false;
+      });
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,17 +93,15 @@ class _ProfileState extends State<Profile> {
       body: Stack(
         children: [
           // Background Photo
-         // MapsGoogleExample(),
+          // MapsGoogleExample(),
           check == true
               ? MapsGoogleExample()
               : DriverOnMap(
-            poly_lat1: sp_poly_lat1,
-            poly_lng1: sp_poly_lng1,
-            poly_lat2: sp_poly_lat2,
-            poly_lng2: sp_poly_lng2,
-            route_id: 'route'
-
-          ),
+                  poly_lat1: sp_poly_lat1,
+                  poly_lng1: sp_poly_lng1,
+                  poly_lat2: sp_poly_lat2,
+                  poly_lng2: sp_poly_lng2,
+                  route_id: 'route'),
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.5,
@@ -122,7 +119,7 @@ class _ProfileState extends State<Profile> {
                       height: MediaQuery.of(context).size.height * 0.3,
                       decoration: const BoxDecoration(
                         color: colorsFile.cardColor,
-                        borderRadius:  BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(50.0),
                           topRight: Radius.circular(50.0),
                         ),
@@ -156,8 +153,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 Container(
                   child: SingleChildScrollView(
-                    child:
-                    Column(
+                    child: Column(
                       children: [
                         const SizedBox(height: 30),
                         Column(
@@ -169,11 +165,11 @@ class _ProfileState extends State<Profile> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => History(),
-          ),
-        );
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => History(),
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       height: 50,
@@ -244,7 +240,8 @@ class _ProfileState extends State<Profile> {
                                               spread: 1,
                                               child: const Center(
                                                 child: Icon(
-                                                  Icons.airline_seat_recline_normal_sharp,
+                                                  Icons
+                                                      .airline_seat_recline_normal_sharp,
                                                   color: colorsFile.ProfileIcon,
                                                 ),
                                               ),
@@ -269,26 +266,26 @@ class _ProfileState extends State<Profile> {
                             SizedBox(
                               height: 6,
                             ),
-                             Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                const Icon(
-                                                  Icons.phone,
-                                                  size: 20,
-                                                  color: colorsFile.titleCard,
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                  textAlign: TextAlign.center,
-                                                  "55 555 555",
-                                                  style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: colorsFile.titleCard,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
+                              children: [
+                                const Icon(
+                                  Icons.phone,
+                                  size: 20,
+                                  color: colorsFile.titleCard,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  "55 555 555",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: colorsFile.titleCard,
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                         GlassmorphicContainer(
@@ -321,18 +318,19 @@ class _ProfileState extends State<Profile> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(5.0),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            
                                             const SizedBox(height: 5),
                                             Row(
                                               children: [
                                                 const Icon(
-                                                      Icons.favorite,
-                                                      color: colorsFile.detailColor,
-                                                    ),
-                                                    const SizedBox(width: 10),
+                                                  Icons.favorite,
+                                                  color: colorsFile.detailColor,
+                                                ),
+                                                const SizedBox(width: 10),
                                                 Text(
                                                   "V5VP+RH La Marsa1",
                                                   style: GoogleFonts.montserrat(
@@ -350,14 +348,16 @@ class _ProfileState extends State<Profile> {
                                                 ),
                                               ],
                                             ),
-                                            SizedBox(height: 10,),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
                                             Row(
                                               children: [
                                                 const Icon(
-                                                      Icons.favorite,
-                                                      color: colorsFile.detailColor,
-                                                    ),
-                                                    const SizedBox(width: 10),
+                                                  Icons.favorite,
+                                                  color: colorsFile.detailColor,
+                                                ),
+                                                const SizedBox(width: 10),
                                                 Text(
                                                   "V5VP+RH La Marsa2",
                                                   style: GoogleFonts.montserrat(
@@ -376,45 +376,47 @@ class _ProfileState extends State<Profile> {
                                               ],
                                             ),
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Row(
                                                   children: [
                                                     const Icon(
                                                       Icons.favorite,
-                                                      color: colorsFile.detailColor,
+                                                      color: colorsFile
+                                                          .detailColor,
                                                     ),
                                                     const SizedBox(width: 10),
-                                                    
-                                                       
-                                                        
-                                                        Row(
-                                                          children: [
-                                                            
-                                                            Text(
-                                                              "V5VP+RH La Marsa3",
-                                                              style: GoogleFonts.montserrat(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 13,
-                                                                color: colorsFile.titleCard,
-                                                              ),
-                                                            ),
-                                                            IconButton(
-                                                              onPressed: () {},
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color: colorsFile.skyBlue,
-                                                              ),
-                                                            ),
-                                                          ],
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "V5VP+RH La Marsa3",
+                                                          style: GoogleFonts
+                                                              .montserrat(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13,
+                                                            color: colorsFile
+                                                                .titleCard,
+                                                          ),
                                                         ),
-                                                        
-                                                     
+                                                        IconButton(
+                                                          onPressed: () {},
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: colorsFile
+                                                                .skyBlue,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ],
                                                 ),
                                                 //const Spacer(),
                                                 Padding(
-                                                  padding: const EdgeInsets.all(16.0),
+                                                  padding: const EdgeInsets.all(
+                                                      16.0),
                                                   child: GestureDetector(
                                                     onTap: () {
                                                       // Call your void method or add logic for the entire structure
@@ -430,24 +432,31 @@ class _ProfileState extends State<Profile> {
                                                             height: 50,
                                                             width: 50,
                                                             borderRadius: 50,
-                                                            curveType: CurveType.concave,
+                                                            curveType: CurveType
+                                                                .concave,
                                                             depth: 30,
                                                             spread: 1,
                                                           ),
                                                           Center(
-                                                            child: ClayContainer(
-                                                              color: Colors.white,
+                                                            child:
+                                                                ClayContainer(
+                                                              color:
+                                                                  Colors.white,
                                                               height: 40,
                                                               width: 40,
                                                               borderRadius: 40,
-                                                              curveType: CurveType.convex,
+                                                              curveType:
+                                                                  CurveType
+                                                                      .convex,
                                                               depth: 30,
                                                               spread: 1,
-                                                              child: const Center(
+                                                              child:
+                                                                  const Center(
                                                                 child: Icon(
                                                                   Icons.add,
                                                                   size: 35,
-                                                                  color: colorsFile.ProfileIcon,
+                                                                  color: colorsFile
+                                                                      .ProfileIcon,
                                                                 ),
                                                               ),
                                                             ),
@@ -471,7 +480,6 @@ class _ProfileState extends State<Profile> {
                         ),
                       ],
                     ),
-
                   ),
                 ),
               ],
@@ -489,8 +497,6 @@ class _ProfileState extends State<Profile> {
               });
             },
           )
-
-
         ],
       ),
     );

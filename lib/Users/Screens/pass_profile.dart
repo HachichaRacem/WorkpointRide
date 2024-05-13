@@ -6,14 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
+import 'package:osmflutter/login/choose_role.dart';
 
 import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/models/user.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../GoogleMaps/driver_polyline_map.dart';
 import '../../GoogleMaps/passenger_map.dart';
+import 'history.dart';
 
 class pass_profile extends StatefulWidget {
   const pass_profile({super.key});
@@ -23,7 +26,6 @@ class pass_profile extends StatefulWidget {
 }
 
 class _pass_profileState extends State<pass_profile> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -32,6 +34,7 @@ class _pass_profileState extends State<pass_profile> {
     super.initState();
   }
 
+  List favLocations = User().favoritePlaces ?? [];
 
   bool check_shared_data = true;
 
@@ -66,19 +69,15 @@ class _pass_profileState extends State<pass_profile> {
         sp_data_poly_lng2 == null) {
       print("Shared data values are null");
       check_shared_data = true;
-      setState(() {
-
-      });
+      setState(() {});
     } else {
       print("Shared data values are not null");
       check_shared_data = false;
       setState(() {});
     }
-
   }
 
   bool bottomSheetVisible = true;
-
 
   // Function to launch the phone dialer
   Future<void> _launchPhoneDialer(String phoneNumber) async {
@@ -89,9 +88,6 @@ class _pass_profileState extends State<pass_profile> {
       throw 'Could not launch $url';
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -124,9 +120,13 @@ class _pass_profileState extends State<pass_profile> {
           // Background Photo
           // MapsGoogleExample(),
 
-          check_shared_data==true ?
-          PassengerMap(condition: false) : pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2),
-
+          check_shared_data == true
+              ? PassengerMap(condition: false)
+              : pass_route_map(
+                  lat1: sp_data_poly_lat1,
+                  lng1: sp_data_poly_lng1,
+                  lat2: sp_data_poly_lat2,
+                  lng2: sp_data_poly_lng2),
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
@@ -144,7 +144,7 @@ class _pass_profileState extends State<pass_profile> {
                       height: MediaQuery.of(context).size.height * 0.3,
                       decoration: const BoxDecoration(
                         color: colorsFile.cardColor,
-                        borderRadius:  BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(50.0),
                           topRight: Radius.circular(50.0),
                         ),
@@ -178,8 +178,7 @@ class _pass_profileState extends State<pass_profile> {
                 ),
                 Container(
                   child: SingleChildScrollView(
-                    child:
-                    Column(
+                    child: Column(
                       children: [
                         const SizedBox(height: 30),
                         Column(
@@ -190,8 +189,12 @@ class _pass_profileState extends State<pass_profile> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Call your void method or add logic for the entire structure
-                                      // _showModalBottomSheet1(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => History(),
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       height: 50,
@@ -234,8 +237,13 @@ class _pass_profileState extends State<pass_profile> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Call your void method or add logic for the entire structure
-                                      // _showModalBottomSheet1(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChooseRole(),
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       height: 50,
@@ -262,7 +270,8 @@ class _pass_profileState extends State<pass_profile> {
                                               spread: 1,
                                               child: const Center(
                                                 child: Icon(
-                                                  Icons.airline_seat_recline_normal_sharp,
+                                                  Icons
+                                                      .airline_seat_recline_normal_sharp,
                                                   color: colorsFile.ProfileIcon,
                                                 ),
                                               ),
@@ -276,7 +285,7 @@ class _pass_profileState extends State<pass_profile> {
                               ],
                             ),
                             Text(
-                              "Foulen Ben Foulen",
+                              "${User().firstName} ${User().lastName}",
                               textAlign: TextAlign.center,
                               style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold,
@@ -315,173 +324,139 @@ class _pass_profileState extends State<pass_profile> {
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.all(5.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(height: 10),
-                                            Row(
-                                              children: [
-                                                InkWell(
-                                                  onTap: (){
-                                                    _launchPhoneDialer('55555555');
-                                                  },
-                                                  child: const Icon(
-                                                    Icons.phone,
-                                                    color: colorsFile.detailColor,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                InkWell(
-                                                  onTap: (){
-                                                    _launchPhoneDialer('55555555');
-                                                  },
-                                                  child: Text(
-                                                    "55 555 555",
-                                                    style: GoogleFonts.montserrat(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 12,
-                                                      color: colorsFile.titleCard,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.home,
-                                                  color: colorsFile.detailColor,
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                  "V5VP+RH La Marsa",
+                                        child: favLocations.isEmpty
+                                            ? Center(
+                                                child: Text(
+                                                  "No favorite locations",
                                                   style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 13,
                                                     color: colorsFile.titleCard,
                                                   ),
                                                 ),
-                                                IconButton(
-                                                  onPressed: () {},
-                                                  icon: const Icon(
-                                                    Icons.delete,
-                                                    color: colorsFile.skyBlue,
+                                              )
+                                            : Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const SizedBox(height: 10),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.phone,
+                                                        color: colorsFile
+                                                            .detailColor,
+                                                      ),
+                                                      const SizedBox(width: 10),
+                                                      InkWell(
+                                                        onTap: () {
+                                                          _launchPhoneDialer(
+                                                              '${User().phoneNumber}');
+                                                        },
+                                                        child: Text(
+                                                          '${User().phoneNumber}',
+                                                          style: GoogleFonts
+                                                              .montserrat(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 12,
+                                                            color: colorsFile
+                                                                .titleCard,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.favorite,
-                                                      color: colorsFile.detailColor,
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                    Column(
+                                                  const SizedBox(height: 5),
+                                                  ...List.generate(
+                                                    favLocations.length,
+                                                    (index) => Row(
                                                       children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "V5VP+RH La Marsa",
-                                                              style: GoogleFonts.montserrat(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 13,
-                                                                color: colorsFile.titleCard,
-                                                              ),
-                                                            ),
-                                                            IconButton(
-                                                              onPressed: () {},
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color: colorsFile.skyBlue,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "V5VP+RH La Marsa",
-                                                              style: GoogleFonts.montserrat(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 13,
-                                                                color: colorsFile.titleCard,
-                                                              ),
-                                                            ),
-                                                            IconButton(
-                                                              onPressed: () {},
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color: colorsFile.skyBlue,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        IconButton(
-                                                          onPressed: () {},
-                                                          icon: const Icon(
-                                                            Icons.add,
-                                                            color: colorsFile.skyBlue,
+                                                        Text(
+                                                          favLocations[index]
+                                                              ['name'],
+                                                          style: GoogleFonts
+                                                              .montserrat(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13,
+                                                            color: colorsFile
+                                                                .titleCard,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
-                                                ),
-                                                const Spacer(),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(16.0),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      // Call your void method or add logic for the entire structure
-                                                      // _showModalBottomSheet1(context);
-                                                    },
-                                                    child: Container(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: Stack(
-                                                        children: [
-                                                          ClayContainer(
-                                                            color: Colors.white,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Spacer(),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(16.0),
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            // Call your void method or add logic for the entire structure
+                                                            // _showModalBottomSheet1(context);
+                                                          },
+                                                          child: Container(
                                                             height: 50,
                                                             width: 50,
-                                                            borderRadius: 50,
-                                                            curveType: CurveType.concave,
-                                                            depth: 30,
-                                                            spread: 1,
-                                                          ),
-                                                          Center(
-                                                            child: ClayContainer(
-                                                              color: Colors.white,
-                                                              height: 40,
-                                                              width: 40,
-                                                              borderRadius: 40,
-                                                              curveType: CurveType.convex,
-                                                              depth: 30,
-                                                              spread: 1,
-                                                              child: const Center(
-                                                                child: Icon(
-                                                                  Icons.directions,
-                                                                  color: colorsFile.ProfileIcon,
+                                                            child: Stack(
+                                                              children: [
+                                                                ClayContainer(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  height: 50,
+                                                                  width: 50,
+                                                                  borderRadius:
+                                                                      50,
+                                                                  curveType:
+                                                                      CurveType
+                                                                          .concave,
+                                                                  depth: 30,
+                                                                  spread: 1,
                                                                 ),
-                                                              ),
+                                                                Center(
+                                                                  child:
+                                                                      ClayContainer(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    height: 40,
+                                                                    width: 40,
+                                                                    borderRadius:
+                                                                        40,
+                                                                    curveType:
+                                                                        CurveType
+                                                                            .convex,
+                                                                    depth: 30,
+                                                                    spread: 1,
+                                                                    child:
+                                                                        const Center(
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .directions,
+                                                                        color: colorsFile
+                                                                            .ProfileIcon,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
                                                             ),
-                                                          )
-                                                        ],
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                                ],
+                                              ),
                                       ),
                                     ),
                                   ],
@@ -492,7 +467,6 @@ class _pass_profileState extends State<pass_profile> {
                         ),
                       ],
                     ),
-
                   ),
                 ),
               ],
@@ -503,15 +477,13 @@ class _pass_profileState extends State<pass_profile> {
               topRight: Radius.circular(50.0),
             ),
             color: Colors.transparent,
-            boxShadow: [],
+            boxShadow: const [],
             onPanelSlide: (double pos) {
               setState(() {
                 bottomSheetVisible = pos > 0.5;
               });
             },
           )
-
-
         ],
       ),
     );

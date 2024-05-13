@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
@@ -120,168 +121,170 @@ class _MyRidesState extends State<MyRides> {
                     Colors.white24.withOpacity(0.2),
                     Colors.white70.withOpacity(0.2)
                   ]),
-                  child: Container(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // SizedBox(
-                                //   height: 10,
-                                // ),
-                                Container(
-                                  height: 70,
-                                  padding: EdgeInsets.all(5), // Border width
-                                  decoration: BoxDecoration(
-                                      color: colorsFile.borderCircle,
-                                      shape: BoxShape.circle),
-                                  child: ClipOval(
-                                    child: SizedBox.fromSize(
-                                      size: Size.fromRadius(30), // Image radius
-                                      child: Image(
-                                        image: AssetImage(
-                                            widget.selectedRouteCardInfo![
-                                                    'image'] ??
-                                                "assets/images/homme1.jpg"),
-                                        fit: BoxFit.cover,
-                                      ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // SizedBox(
+                              //   height: 10,
+                              // ),
+                              Container(
+                                height: 70,
+                                padding:
+                                    const EdgeInsets.all(5), // Border width
+                                decoration: const BoxDecoration(
+                                    color: colorsFile.borderCircle,
+                                    shape: BoxShape.circle),
+                                child: ClipOval(
+                                  child: SizedBox.fromSize(
+                                    size: const Size.fromRadius(
+                                        30), // Image radius
+                                    child: Image(
+                                      image: AssetImage(
+                                          widget.selectedRouteCardInfo![
+                                                  'image'] ??
+                                              "assets/images/homme1.jpg"),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      widget.selectedRouteCardInfo![
-                                              'driverName'] ??
-                                          "Foulen Ben Falten",
-                                      style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: colorsFile.titleCard),
-                                    ),
-                                    Spacer(),
-                                    IconButton(
-                                        onPressed: () => {},
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: colorsFile.skyBlue,
-                                        )),
-                                  ],
-                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    widget.selectedRouteCardInfo![
+                                            'driverName'] ??
+                                        "Foulen Ben Falten",
+                                    style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: colorsFile.titleCard),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                      onPressed: () => {},
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: colorsFile.skyBlue,
+                                      )),
+                                ],
+                              ),
 
-                                Row(
-                                  children: [
-                                    Container(
-                                      height: 30,
-                                      width: 30,
-                                      child: Stack(
-                                        children: [
-                                          ClayContainer(
-                                            color: Colors.white,
-                                            height: 30,
-                                            width: 30,
-                                            borderRadius: 50,
-                                            curveType: CurveType.concave,
-                                            depth: 20,
-                                            spread: 1,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              print("heloooo");
-                                              _launchPhone("55555555");
-                                            },
-                                            child: Center(
-                                              child: ClayContainer(
-                                                color: Colors.white,
-                                                height: 20,
-                                                width: 20,
-                                                borderRadius: 40,
-                                                curveType: CurveType.convex,
-                                                depth: 30,
-                                                spread: 1,
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.phone,
-                                                    size: 20,
-                                                    color:
-                                                        colorsFile.buttonIcons,
-                                                  ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: Stack(
+                                      children: [
+                                        ClayContainer(
+                                          color: Colors.white,
+                                          height: 30,
+                                          width: 30,
+                                          borderRadius: 50,
+                                          curveType: CurveType.concave,
+                                          depth: 20,
+                                          spread: 1,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            print("heloooo");
+                                            _launchPhone("55555555");
+                                          },
+                                          child: Center(
+                                            child: ClayContainer(
+                                              color: Colors.white,
+                                              height: 20,
+                                              width: 20,
+                                              borderRadius: 40,
+                                              curveType: CurveType.convex,
+                                              depth: 30,
+                                              spread: 1,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.phone,
+                                                  size: 20,
+                                                  color: colorsFile.buttonIcons,
                                                 ),
                                               ),
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      widget.selectedRouteCardInfo![
-                                              'driverNum'] ??
-                                          "55 555 555",
-                                      style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          color: colorsFile.titleCard),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Home",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 12,
-                                              color: colorsFile.detailColor),
-                                        ),
-                                        Text(
-                                          "--->",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 12,
-                                              color: colorsFile.detailColor),
-                                        ),
-                                        Text(
-                                          "EY Tower",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 12,
-                                              color: colorsFile.detailColor),
-                                        ),
+                                          ),
+                                        )
                                       ],
                                     ),
-                                    Spacer(),
-                                    Padding(
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    widget.selectedRouteCardInfo![
+                                            'driverNum'] ??
+                                        "55 555 555",
+                                    style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: colorsFile.titleCard),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Home",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 12,
+                                            color: colorsFile.detailColor),
+                                      ),
+                                      Text(
+                                        "--->",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 12,
+                                            color: colorsFile.detailColor),
+                                      ),
+                                      Text(
+                                        "EY Tower",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 12,
+                                            color: colorsFile.detailColor),
+                                      ),
+                                    ],
+                                  ),
+                                  Flexible(
+                                    child: Padding(
                                       padding:
                                           const EdgeInsets.only(right: 8.0),
                                       child: Text(
                                         widget.selectedRouteCardInfo![
                                                 'scheduleStartTime'] ??
                                             '7:15',
+                                        overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.end,
                                         style: GoogleFonts.montserrat(
                                             fontSize: 12,
                                             color: colorsFile.detailColor),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   )),
             ]),
           )
