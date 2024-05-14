@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/Services/history.dart';
@@ -16,12 +15,18 @@ class _HistoryState extends State<History> {
   late double _width;
 
   List? histories;
+  HistoryService _historyService = HistoryService();
+  // late SharedPreferences _prefs;
+  Future<void> getHistorybyUser() async {
+    await _historyService.getHistoryByUser(User().id!).then((resp) {
+      print("ressssssssssssss${resp.data.toString()}");
+      setState(() => histories = resp.data);
+    });
+  }
 
   @override
   void initState() {
-    HistoryService().getHistoryByUser(User().id!).then((resp) {
-      setState(() => histories = resp.data);
-    });
+    getHistorybyUser();
     super.initState();
   }
 

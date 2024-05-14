@@ -9,7 +9,8 @@ class DioInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    String token = _prefs.getString('accessToken')!;
+    String token = _prefs.getString('token')!;
+    print("tttttttttttttt" + token);
 
     if (token != null) {
       options.headers.addAll({
@@ -37,7 +38,7 @@ class DioInterceptor extends Interceptor {
   }
 
   Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
-    String token = _prefs.getString('accessToken')!;
+    String token = _prefs.getString('token')!;
 
     final options = Options(
       method: requestOptions.method,

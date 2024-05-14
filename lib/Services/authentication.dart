@@ -14,9 +14,10 @@ class authentication {
   Future<Response<dynamic>> login(String email, String password) async {
     print("${dio.getUri}");
     try {
-      var response = await dio.post("api/users/login",
-          data: {'email': email, 'password': password},
-          options: Options(headers: {"Refresh-Token": "refresh-token"}));
+      var response = await dio.post(
+        "api/users/login",
+        data: {'email': email, 'password': password},
+      );
 
       return response;
     } on DioException catch (e) {

@@ -1,9 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:clay_containers/clay_containers.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:osmflutter/GoogleMaps/passenger_map.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
@@ -11,17 +14,11 @@ import 'package:osmflutter/Users/BottomSheet/ride_card.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:clay_containers/clay_containers.dart';
-import 'package:clay_containers/widgets/clay_container.dart';
-import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-import 'package:intl/intl.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../../GoogleMaps/driver_polyline_map.dart';
 import '../../GoogleMaps/pass_route_map.dart';
 
 class Search extends StatefulWidget {
@@ -688,15 +685,20 @@ class _SearchState extends State<Search> {
                                     child: Row(
                                       children: List.generate(
                                           snapshot.data.length, (index) {
-                                        final data = {
-                                          'id': snapshot.data[index]['_id'],
-                                          'driverName': snapshot.data[index]
-                                              ['user']['firstName'],
-                                          'driverNum': snapshot.data[index]
-                                              ['user']['phoneNumber'],
-                                          'scheduleStartTime': snapshot
-                                              .data[index]['pickupTime'],
-                                        };
+                                        late dynamic data;
+                                        print("tttttttttttt" +
+                                            snapshot.data.toString());
+                                        if (snapshot.data != null) {
+                                          data = {
+                                            'id': snapshot.data[index]['_id'],
+                                            'driverName': snapshot.data[index]
+                                                ['user']['firstName'],
+                                            'driverNum': snapshot.data[index]
+                                                ['user']['phoneNumber'],
+                                            'scheduleStartTime': snapshot
+                                                .data[index]['pickupTime'],
+                                          };
+                                        }
 
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(

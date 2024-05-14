@@ -1,13 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:osmflutter/constant/url.dart';
 import 'package:osmflutter/login/login.dart';
 
 import 'Services/API.dart';
 
 void main() async {
-  addInterceptors(Dio dio) {
-    dio.interceptors.add(DioInterceptor());
-  }
+  DioInterceptor dioInterceptor = DioInterceptor();
+
+  // Create a Dio instance and add the interceptor
+  Dio dio = Dio(BaseOptions(baseUrl: link.url));
+  dio.interceptors.add(dioInterceptor);
 
   runApp(const MyApp());
 }

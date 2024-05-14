@@ -1,10 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:osmflutter/constant/url.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Reservation {
   final Dio dio = Dio(BaseOptions(baseUrl: link.url));
   Future<Response> createReservation(Map data) async {
     try {
+      final SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      String? token = _prefs.getString('token');
+      if (token != null) {
+        dio.options.headers["Authorization"] = "$token";
+      }
       final response = await dio.post("api/reservations", data: data);
       return response;
     } on DioException catch (e) {
@@ -17,6 +24,12 @@ class Reservation {
 
   Future<Response> getReservations(String userID) async {
     try {
+      final SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      String? token = _prefs.getString('token');
+      if (token != null) {
+        dio.options.headers["Authorization"] = "$token";
+      }
       return await dio.get("api/reservations/$userID");
     } on DioException catch (e) {
       print(e.response?.data);
