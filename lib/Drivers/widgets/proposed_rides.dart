@@ -37,6 +37,7 @@ class _ProposedRidesState extends State<ProposedRides> {
     setState(() {
       if (selectedIndex == index) {
         // Toggle the selection state if the card is tapped again
+        selectedIndex = -1;
         isCardSelected = !isCardSelected;
         // Reset card color to default when the second tab is selected
         if (!isCardSelected) {
@@ -65,7 +66,7 @@ class _ProposedRidesState extends State<ProposedRides> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color.fromRGBO(94, 149, 180, 1),
+          backgroundColor: Colors.white,
           content: Container(
             width: 300,
             height: 500,
@@ -73,21 +74,45 @@ class _ProposedRidesState extends State<ProposedRides> {
               children: [
                 Expanded(
                   child: SfDateRangePicker(
+                    toggleDaySelection: true,
+                    selectionShape: DateRangePickerSelectionShape.rectangle,
+                    selectionRadius: 10,
                     view: DateRangePickerView.month,
-
+                    backgroundColor: Colors.white,
+                    selectionColor: colorsFile.backgroundNvavigaton,
                     headerStyle: const DateRangePickerHeaderStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
-                    ),
+                        textStyle: TextStyle(color: colorsFile.titlebotton),
+                        backgroundColor: Colors.white),
                     monthViewSettings: const DateRangePickerMonthViewSettings(
                       weekendDays: [7, 6],
                       dayFormat: 'EEE',
                       viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                        textStyle: TextStyle(color: colorsFile.icons),
+                        textStyle: TextStyle(color: colorsFile.titlebotton),
                       ),
                       showTrailingAndLeadingDates: true,
                     ),
-                    monthCellStyle: const DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
+                    monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: TextStyle(color: colorsFile.titlebotton),
+                      trailingDatesTextStyle: TextStyle(
+                          fontStyle: FontStyle.normal,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 11,
+                          color: Colors.black38),
+                      leadingDatesTextStyle: TextStyle(
+                          fontStyle: FontStyle.normal,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 11,
+                          color: Colors.black38),
+                      todayTextStyle: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12,
+                          color: colorsFile.done),
+                      todayCellDecoration: BoxDecoration(
+                          //  color: Colors.red,
+                          border: Border.all(
+                              color: colorsFile.titlebotton, width: 1),
+                          shape: BoxShape.circle),
                     ),
                     selectionMode: DateRangePickerSelectionMode.multiple,
                     onSelectionChanged:
@@ -144,26 +169,18 @@ class _ProposedRidesState extends State<ProposedRides> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
+      initialEntryMode: TimePickerEntryMode.input,
       initialTime: _selectedTime,
       builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData(
-            primaryColor:
-                Colors.blue, // Change the primary color of the TimePicker
-            hintColor:
-                Colors.green, // Change the accent color of the TimePicker
-            backgroundColor: Color.fromRGBO(94, 149, 180,
-                1), // Change the background color of the TimePicker
-            dialogBackgroundColor: Color.fromRGBO(
-                94, 149, 180, 1), // Change the dialog background color
-            textTheme: const TextTheme(
-              headline1:
-                  TextStyle(color: Colors.black), // Change the text color
-              button:
-                  TextStyle(color: Colors.red), // Change the button text color
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Theme(
+            data: ThemeData(
+              primaryColor: Colors.blue, // Change primary color
+              // Add more color customizations as needed
             ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
@@ -487,12 +504,12 @@ class _ProposedRidesState extends State<ProposedRides> {
                           border: 2,
                           linearGradient: LinearGradient(
                             colors: [
-                              (containerColors[index] == colorsFile.cardColor)
-                                  ? Color(0xFFD8E6EE)
-                                  : containerColors[index],
-                              (containerColors[index] == colorsFile.cardColor)
-                                  ? Color(0xFFD8E6EE)
-                                  : containerColors[index],
+                              index == selectedIndex && isCardSelected
+                                  ? colorsFile.cardColor
+                                  : Color(0xFFD8E6EE),
+                              index == selectedIndex && isCardSelected
+                                  ? colorsFile.cardColor
+                                  : Color(0xFFD8E6EE),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,

@@ -48,17 +48,47 @@ class _AddRidesState extends State<AddRides>
   var origin_address_name = 'Home';
   TextEditingController originController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
+
+  List<Marker> myMarker = [];
+
+  List<Marker> markers = [];
+  List<dynamic> listRoutes = [];
+
+  Completer<GoogleMapController> _controller = Completer();
+
+  double total_km = 0.0;
+  bool check = false;
+  List<LatLng> routeCoords = [];
+  int totalDurationInMinutes = 0;
+  double constantSpeed = 60.0; // Constant speed in km/h
+
+  int selectedIndex = 0;
+  DateTime now = DateTime.now();
+  late DateTime lastDayOfMonth;
+  bool isSearchPoPupVisible = false;
+  bool listSearchBottomSheet = false;
+  bool box_check = false;
+  bool bottomSheetVisible = true;
+  bool myRidesbottomSheetVisible = false;
+  bool ridesIsVisible = false;
+  late double _height;
+  late double _width;
+  bool condition = true; //true
+
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  List<DateTime> dates = [];
+  bool check_shared_data = true;
+
+  dynamic position1_lat, position1_lng;
+  dynamic currentPosition_lat, currentPosition_lng;
+
+  dynamic position2_lat = 36.84451734808181, position2_lng = 10.200780224955338;
+
+  bool check_visible = true;
   void origin_address_method(dynamic newlat, dynamic newlng) async {
-    print("Our required lat and lng for Origin-polyline is: ");
-    poly1_lat = newlat;
-    poly1_lng = newlng;
+    position1_lat = newlat;
+    position1_lng = newlng;
 
-    //Storing poly_lat and poly_lng in shared preferences
-
-    await sharedpreferences.set_poly_lat1(poly1_lat);
-    await sharedpreferences.set_poly_lng1(poly1_lng);
-
-    print("Lat: ${poly1_lat} & Lng: ${poly1_lng} ");
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     origin_address_name =
         "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
@@ -70,22 +100,11 @@ class _AddRidesState extends State<AddRides>
     });
   }
 
-  List<Marker> myMarker = [];
-
-  List<Marker> markers = [];
-  List<dynamic> listRoutes = [];
-
-  Completer<GoogleMapController> _controller = Completer();
-
-  dynamic current_lat1, current_lng1, current_lat2, current_lng2;
-
-  bool check = false;
-  List<LatLng> routeCoords = [];
   Future<void> _fetchRoute() async {
     final apiKey =
         'AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI'; // Replace with your Google Maps API key
-    final start = '${sp_poly_lat1},${sp_poly_lng1}';
-    final end = '${sp_poly_lat2},${sp_poly_lng2}';
+    final start = '${position1_lat},${position1_lng}';
+    final end = '${position2_lat},${position2_lng}';
     final apiUrl =
         'https://maps.googleapis.com/maps/api/directions/json?origin=$start&destination=$end&key=$apiKey';
 
@@ -114,7 +133,7 @@ class _AddRidesState extends State<AddRides>
         _markers.add(
           Marker(
             markerId: MarkerId('start'),
-            position: LatLng(sp_poly_lat1, sp_poly_lng1),
+            position: LatLng(position1_lat, position1_lng),
             infoWindow: InfoWindow(title: 'start'),
             icon: BitmapDescriptor.defaultMarker,
           ),
@@ -122,7 +141,7 @@ class _AddRidesState extends State<AddRides>
         _markers.add(
           Marker(
             markerId: MarkerId('end'),
-            position: LatLng(sp_poly_lat2, sp_poly_lng2),
+            position: LatLng(position2_lat, position2_lng),
             infoWindow: InfoWindow(title: 'End'),
             icon: BitmapDescriptor.defaultMarker,
           ),
@@ -186,17 +205,11 @@ class _AddRidesState extends State<AddRides>
   }
 
   google_map_for_origin(GoogleMapController? map_controller) async {
-    current_lat1 = await sharedpreferences.getlat();
-    current_lng1 = await sharedpreferences.getlng();
+    currentPosition_lat = await sharedpreferences.getlat();
+    currentPosition_lng = await sharedpreferences.getlng();
 
-    current_lat2 = await sharedpreferences.getlat();
-    current_lng2 = await sharedpreferences.getlng();
-
-    print("Shared data # 01 is ");
-    print("${current_lng1} : ${current_lat1}");
-
-    print("Shared data # 02 is ");
-    print("${current_lng2} : ${current_lat2}");
+    print(
+        "cccccccccc Shared data currentttt${currentPosition_lat} : ${currentPosition_lng}");
 
     setState(() {
       check = true;
@@ -208,13 +221,12 @@ class _AddRidesState extends State<AddRides>
           final height = MediaQuery.of(context).size.height;
           final width = MediaQuery.of(context).size.width;
 
-          print("Fetched lat & lnng is ${current_lat1} & ${current_lng1}");
           return Dialog(
             child: Stack(
               children: [
                 Container(
-                  height: height * 0.7,
-                  width: width * 0.8,
+                  height: height * 0.99,
+                  width: width,
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -227,29 +239,33 @@ class _AddRidesState extends State<AddRides>
                             if (snapshot.hasData) {
                               return Stack(
                                 children: [
-                                  GoogleMap(
-                                    initialCameraPosition: CameraPosition(
-                                      target: LatLng(current_lat1,
-                                          current_lng1), // Should be LatLng(current_lat,current_lng)
-                                      zoom: 14,
+                                  Container(
+                                    height: height * 0.99,
+                                    width: width,
+                                    child: GoogleMap(
+                                      initialCameraPosition: CameraPosition(
+                                        target: LatLng(currentPosition_lat,
+                                            currentPosition_lng), // Should be LatLng(current_lat,current_lng)
+                                        zoom: 14,
+                                      ),
+                                      markers: Set<Marker>.of(myMarker),
+                                      onMapCreated:
+                                          (GoogleMapController controller) {
+                                        // _controller.complete(controller);
+                                        setState(() {
+                                          map_controller = controller;
+                                          mapController = controller;
+                                          mapController
+                                              .setMapStyle(snapshot.data);
+                                        });
+                                      },
+                                      onTap: (position) {
+                                        mapGoogle(position);
+                                        setState(() {});
+                                      },
+                                      myLocationEnabled: true,
+                                      buildingsEnabled: true,
                                     ),
-                                    markers: Set<Marker>.of(myMarker),
-                                    onMapCreated:
-                                        (GoogleMapController controller) {
-                                      // _controller.complete(controller);
-                                      setState(() {
-                                        map_controller = controller;
-                                        mapController = controller;
-                                        mapController
-                                            .setMapStyle(snapshot.data);
-                                      });
-                                    },
-                                    onTap: (position) {
-                                      mapGoogle(position);
-                                      setState(() {});
-                                    },
-                                    myLocationEnabled: true,
-                                    buildingsEnabled: true,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(
@@ -309,25 +325,29 @@ class _AddRidesState extends State<AddRides>
 
   mapGoogle(position) async {
     myMarker.clear();
-    current_lat1 = position.latitude;
-    current_lng1 = position.longitude;
+    position1_lat = position.latitude;
+    position1_lng = position.longitude;
 
     Navigator.pop(context);
-    origin_address_method(current_lat1, current_lng1);
+    origin_address_method(position1_lat, position1_lng);
     myMarker.add(Marker(
       markerId: const MarkerId("First"),
-      position: LatLng(current_lat1, current_lng1),
+      position: LatLng(position1_lat, position1_lng),
+      infoWindow: const InfoWindow(title: "Home Location"),
+    ));
+
+    myMarker.add(Marker(
+      markerId: const MarkerId("First"),
+      position: LatLng(position2_lat, position2_lng),
       infoWindow: const InfoWindow(title: "Home Location"),
     ));
 
     print("After Selecting Origin: Lat & Lng is ");
-    print(current_lat1);
-    print(current_lng1);
 
     setState(() {});
 
     CameraPosition camera_position =
-        CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
+        CameraPosition(target: LatLng(position1_lat, position1_lng), zoom: 12);
 
     GoogleMapController controller = await _controller.future;
 
@@ -336,7 +356,7 @@ class _AddRidesState extends State<AddRides>
 
   var destination_address_name = 'EY Tower';
 
-  void destination_address_method(double newlat, double newlng) async {
+/*  void destination_address_method(double newlat, double newlng) async {
     print("Our required lat and lng for Destination-polyline is: ");
     poly2_lat = newlat;
     poly2_lng = newlng;
@@ -344,8 +364,7 @@ class _AddRidesState extends State<AddRides>
 
     //Storing poly_lat and poly_lng in shared preferences
 
-    await sharedpreferences.set_poly_lat2(poly2_lat);
-    await sharedpreferences.set_poly_lng2(poly2_lng);
+
 
     setState(() {});
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
@@ -358,7 +377,7 @@ class _AddRidesState extends State<AddRides>
     //Now getting shared preferences values
 
     get_shared();
-  }
+  }*/
 
   Completer<GoogleMapController> _controller1 = Completer();
 
@@ -368,88 +387,7 @@ class _AddRidesState extends State<AddRides>
 
   List<Marker> markers1 = [];
 
-  google_map_for_origin1(GoogleMapController? map_controller1) {
-    //print("Current location is === ${currentLocation}");
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          final height = MediaQuery.of(context).size.height;
-          final width = MediaQuery.of(context).size.width;
-          return Dialog(
-            child: Stack(
-              children: [
-                Container(
-                  height: height * 0.7,
-                  width: width * 0.8,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.transparent,
-                  ),
-                  child: FutureBuilder<String>(
-                    future: _loadNightStyle(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                            target: LatLng(current_lat1, current_lng1),
-                            zoom: 14,
-                          ),
-                          markers: Set<Marker>.of(myMarker1),
-                          onMapCreated: (GoogleMapController controller1) {
-                            setState(() {
-                              map_controller1 = controller1;
-                              _controller1.complete(controller1);
-                              mapController = controller1;
-                              mapController.setMapStyle(snapshot.data);
-                            });
-                          },
-                          onTap: (position) {
-                            mapGoogle1(position);
-                            setState(() {});
-                          },
-                          myLocationEnabled: true,
-                          mapType: MapType.normal,
-                          buildingsEnabled: true,
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Center(
-                            child: Text('Error loading night style'));
-                      } else {
-                        return const Center(
-                            child:
-                                CircularProgressIndicator(color: Colors.white));
-                      }
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                  child: SearchMapPlaceWidget(
-                      hasClearButton: true,
-                      iconColor: Colors.black,
-                      placeType: PlaceType.address,
-                      bgColor: Colors.white,
-                      textColor: Colors.black,
-                      placeholder: "Search Any Location",
-                      apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
-                      onSelected: (Place place) async {
-                        Geolocation? geo_location1 = await place.geolocation;
-                        print("running ----- ddestination");
-                        map_controller1!.animateCamera(
-                            CameraUpdate.newLatLng(geo_location1?.coordinates));
-                        map_controller1!.animateCamera(
-                            CameraUpdate.newLatLngBounds(
-                                geo_location1?.bounds, 0));
-                      }),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
+/*
   mapGoogle1(position) async {
     myMarker1.clear();
     current_lat2 = position.latitude;
@@ -480,12 +418,12 @@ class _AddRidesState extends State<AddRides>
     print(current_lat2);
     print(current_lng2);
   }
+*/
 
-  dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
   get_shared() async {
     print("Inside the method where I fetch the sp polylines values");
 
-    final prefs = await sharedpreferences.get_poly_lat1();
+/*    final prefs = await sharedpreferences.get_poly_lat1();
     sp_poly_lat1 = prefs;
     print("Poly_lat1 = ${sp_poly_lat1}");
 
@@ -503,16 +441,17 @@ class _AddRidesState extends State<AddRides>
 
     setState(() {});
 
+    print("Calling the total km function");*/
+
+    calculateDistance(
+        position1_lat, position1_lng, position2_lat, position2_lng);
+
     print("Calling the total km function");
 
-    calculateDistance(sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2);
-
-    print("Calling the total km function");
-
-    calculateDuration(sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2);
+    calculateDuration(
+        position1_lat, position1_lng, position2_lat, position2_lng);
   }
 
-  double total_km = 0.0;
   void calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -526,9 +465,6 @@ class _AddRidesState extends State<AddRides>
 
     setState(() {});
   }
-
-  int totalDurationInMinutes = 0;
-  double constantSpeed = 60.0; // Constant speed in km/h
 
   void calculateDuration(double lat1, double lon1, double lat2, double lon2) {
     // Convert latitude and longitude from degrees to radians
@@ -564,63 +500,72 @@ class _AddRidesState extends State<AddRides>
     setState(() {});
   }
 
-  int selectedIndex = 0;
-  DateTime now = DateTime.now();
-  late DateTime lastDayOfMonth;
-  bool isSearchPoPupVisible = false;
-  bool listSearchBottomSheet = false;
-  bool box_check = false;
-  bool bottomSheetVisible = true;
-  bool myRidesbottomSheetVisible = false;
-  bool ridesIsVisible = false;
-  late double _height;
-  late double _width;
-  bool condition = true; //true
-
-  List<DateTime> _selectedDates = [];
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  double _rating = 0;
-  List<DateTime> dates = [];
-
   void _selectDateRange(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color.fromRGBO(
-              94, 149, 180, 1), // Change background color to blue
+          backgroundColor: Colors.white, // Change background color to blue
           content: Container(
             width: 300,
             height: 500,
             child: Column(
               children: [
                 Expanded(
-                  child: SfDateRangePicker(
-                    view: DateRangePickerView.month,
-                    headerStyle: const DateRangePickerHeaderStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
-                    ),
-                    monthViewSettings: const DateRangePickerMonthViewSettings(
-                      weekendDays: [7, 6],
-                      dayFormat: 'EEE',
-                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                        textStyle: TextStyle(color: colorsFile.icons),
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: SfDateRangePicker(
+                      toggleDaySelection: true,
+                      selectionShape: DateRangePickerSelectionShape.rectangle,
+                      selectionRadius: 10,
+                      view: DateRangePickerView.month,
+                      backgroundColor: Colors.white,
+                      selectionColor: colorsFile.backgroundNvavigaton,
+                      headerStyle: const DateRangePickerHeaderStyle(
+                          textStyle: TextStyle(color: colorsFile.titlebotton),
+                          backgroundColor: Colors.white),
+                      monthViewSettings: const DateRangePickerMonthViewSettings(
+                        weekendDays: [7, 6],
+                        dayFormat: 'EEE',
+                        viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                          textStyle: TextStyle(color: colorsFile.titlebotton),
+                        ),
+                        showTrailingAndLeadingDates: true,
                       ),
-                      showTrailingAndLeadingDates: true,
-                    ),
-                    monthCellStyle: const DateRangePickerMonthCellStyle(
-                      textStyle: TextStyle(color: colorsFile.icons),
-                    ),
-                    selectionMode: DateRangePickerSelectionMode.multiple,
-                    onSelectionChanged:
-                        (DateRangePickerSelectionChangedArgs args) {
-                      // Handle selection change
-                      print(args.value);
+                      monthCellStyle: DateRangePickerMonthCellStyle(
+                        textStyle: TextStyle(color: colorsFile.titlebotton),
+                        trailingDatesTextStyle: TextStyle(
+                            fontStyle: FontStyle.normal,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 11,
+                            color: Colors.black38),
+                        leadingDatesTextStyle: TextStyle(
+                            fontStyle: FontStyle.normal,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 11,
+                            color: Colors.black38),
+                        todayTextStyle: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            color: colorsFile.done),
+                        todayCellDecoration: BoxDecoration(
+                            //  color: Colors.red,
+                            border: Border.all(
+                                color: colorsFile.titlebotton, width: 1),
+                            shape: BoxShape.circle),
+                      ),
+                      selectionMode: DateRangePickerSelectionMode.multiple,
+                      onSelectionChanged:
+                          (DateRangePickerSelectionChangedArgs args) {
+                        // Handle selection change
+                        print(args.value);
 
-                      setState(() {
-                        dates.addAll(args.value);
-                      });
-                    },
+                        setState(() {
+                          dates.addAll(args.value);
+                        });
+                      },
+                    ),
                   ),
                 ),
                 Row(
@@ -666,26 +611,18 @@ class _AddRidesState extends State<AddRides>
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
+      initialEntryMode: TimePickerEntryMode.input,
       initialTime: _selectedTime,
       builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData(
-            primaryColor:
-                Colors.blue, // Change the primary color of the TimePicker
-            hintColor:
-                Colors.green, // Change the accent color of the TimePicker
-            backgroundColor:
-                Colors.white, // Change the background color of the TimePicker
-            dialogBackgroundColor:
-                Colors.grey[200], // Change the dialog background color
-            textTheme: const TextTheme(
-              headline1:
-                  TextStyle(color: Colors.black), // Change the text color
-              button:
-                  TextStyle(color: Colors.red), // Change the button text color
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Theme(
+            data: ThemeData(
+              primaryColor: Colors.blue, // Change primary color
+              // Add more color customizations as needed
             ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
@@ -699,16 +636,11 @@ class _AddRidesState extends State<AddRides>
   void initState() {
     super.initState();
     getRoutes();
-    shared_data();
+    //  shared_data();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
 
-  bool check_shared_data = true;
-
-  dynamic sp_data_poly_lat1,
-      sp_data_poly_lng1,
-      sp_data_poly_lat2,
-      sp_data_poly_lng2;
+/*
   shared_data() async {
     print("Getting the shared data");
 
@@ -741,6 +673,7 @@ class _AddRidesState extends State<AddRides>
       }
     });
   }
+*/
 
   _showSearchRides() {
     setState(() {
@@ -775,17 +708,6 @@ class _AddRidesState extends State<AddRides>
   }
 
   //slide moving
-
-  bool _bottomSheetVisible = true;
-  double _expandedHeight = 300;
-  double _collapsedHeight = 150;
-
-  //Polylines LatLng
-
-  dynamic poly1_lat, poly1_lng;
-  dynamic poly2_lat, poly2_lng;
-
-  bool check_visible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -833,10 +755,10 @@ class _AddRidesState extends State<AddRides>
                 child: check_map == true
                     ? MapsGoogleExample()
                     : DriverOnMap(
-                        poly_lat1: sp_poly_lat1,
-                        poly_lng1: sp_poly_lng1,
-                        poly_lat2: sp_poly_lat2,
-                        poly_lng2: sp_poly_lng2,
+                        poly_lat1: position1_lat,
+                        poly_lng1: position1_lng,
+                        poly_lat2: position2_lat,
+                        poly_lng2: position2_lng,
                         route_id: 'route',
                         polyline: _polyline,
                         markers: _markers,
@@ -904,7 +826,7 @@ class _AddRidesState extends State<AddRides>
                     });
                   },
                   child: GlassmorphicContainer(
-                    height: 270,
+                    height: 275,
                     width: _width * 0.85,
                     borderRadius: 15,
                     blur: 2,
@@ -979,172 +901,203 @@ class _AddRidesState extends State<AddRides>
                             child: Column(
                               children: [
                                 Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(3),
-                                    child: Row(
-                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                            child: TextField(
-                                          controller: originController,
-                                          keyboardType: TextInputType.none,
-                                          onTap: () {
-                                            //Calling the map functions
-                                            print("Ontaped");
-                                            GoogleMapController? map_controller;
-                                            google_map_for_origin(
-                                                map_controller);
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: "${origin_address_name}",
-                                            prefixIcon: Container(
-                                              width: 37.0,
-                                              height: 37.0,
-                                              margin: const EdgeInsets.only(
-                                                  left: 5, right: 10),
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2.0,
-                                                ),
-                                                color: Colors.white,
-                                              ),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  //Calling the map functions
-                                                  print("Ontaped");
-                                                  GoogleMapController?
-                                                      map_controller;
-                                                  google_map_for_origin(
-                                                      map_controller);
-                                                },
-                                                child: const Icon(
-                                                  Icons.place,
-                                                  color: colorsFile.icons,
-                                                ),
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.blue,
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                          ),
-                                        )),
-                                        const SizedBox(width: 5),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: GestureDetector(
-                                              onTap: () {},
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.favorite_outline,
-                                                  // Icons.favorite,
-                                                  //     color: colorsFile.detailColor,
-                                                  // color: Colors.pink,
-                                                  size: 40,
-                                                ),
-                                              )),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  height: 50,
+                                  //height: 150,
+                                  width: _width * 0.8,
                                   child: Padding(
                                     padding: const EdgeInsets.all(3),
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child: TextField(
-                                            controller:
-                                                destinationController, // Ensures the address text is controlled programmatically
-                                            readOnly:
-                                                true, // Makes the field non-editable directly, only updated programmatically
-                                            onTap: () {
-                                              print("Ontapped for destination");
-                                              GoogleMapController?
-                                                  map_controller1;
-                                              google_map_for_origin1(
-                                                  map_controller1);
-                                            },
-                                            decoration: InputDecoration(
-                                              hintText: destination_address_name
-                                                      .isEmpty
-                                                  ? 'Select a destination'
-                                                  : destination_address_name,
-                                              prefixIcon: Container(
-                                                width: 37.0,
-                                                height: 37.0,
-                                                margin: const EdgeInsets.only(
-                                                    left: 5, right: 10),
-                                                alignment: Alignment.center,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Container(
+                                                height: 50,
                                                 decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 2.0,
+                                                  color: Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(3),
+                                                    child: TextField(
+                                                      readOnly: true,
+                                                      controller: routeType ==
+                                                              "toOffice"
+                                                          ? originController
+                                                          : destinationController,
+                                                      keyboardType:
+                                                          TextInputType.none,
+                                                      onTap: () {
+                                                        //Calling the map functions
+                                                        print("Ontaped");
+                                                        if (routeType ==
+                                                            "toOffice") {
+                                                          GoogleMapController?
+                                                              map_controller;
+                                                          google_map_for_origin(
+                                                              map_controller);
+                                                        }
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: routeType ==
+                                                                "toOffice"
+                                                            ? "${origin_address_name}"
+                                                            : "${destination_address_name}",
+                                                        prefixIcon: Container(
+                                                          width: 37.0,
+                                                          height: 37.0,
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 5,
+                                                                  right: 10),
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: 2.0,
+                                                            ),
+                                                            color: Colors.white,
+                                                          ),
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              //Calling the map functions
+                                                              if (routeType ==
+                                                                  "toOffice") {
+                                                                GoogleMapController?
+                                                                    map_controller;
+                                                                google_map_for_origin(
+                                                                    map_controller);
+                                                              }
+                                                            },
+                                                            child: const Icon(
+                                                              Icons.place,
+                                                              color: colorsFile
+                                                                  .icons,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      30.0),
+                                                          borderSide:
+                                                              const BorderSide(
+                                                            color: Colors.white,
+                                                            width: 2.0,
+                                                          ),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      30.0),
+                                                          borderSide:
+                                                              const BorderSide(
+                                                            color: Colors.blue,
+                                                            width: 2.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Container(
+                                                height: 50,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(3),
+                                                  child: TextField(
+                                                    controller: routeType ==
+                                                            "toOffice"
+                                                        ? destinationController
+                                                        : originController, // Ensures the address text is controlled programmatically
+                                                    readOnly:
+                                                        true, // Makes the field non-editable directly, only updated programmatically
+                                                    onTap: () {
+                                                      if (routeType !=
+                                                          "toOffice") {
+                                                        GoogleMapController?
+                                                            map_controller;
+                                                        google_map_for_origin(
+                                                            map_controller);
+                                                      }
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      hintText: routeType ==
+                                                              "toOffice"
+                                                          ? "${destination_address_name}"
+                                                          : "${origin_address_name}",
+                                                      prefixIcon: Container(
+                                                        width: 37.0,
+                                                        height: 37.0,
+                                                        margin: const EdgeInsets
+                                                            .only(
+                                                            left: 5, right: 10),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          border: Border.all(
+                                                            color: Colors.white,
+                                                            width: 2.0,
+                                                          ),
+                                                          color: Colors.white,
+                                                        ),
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            print(
+                                                                "Icon tapped for destination");
+                                                          },
+                                                          child: const Icon(
+                                                            Icons.place,
+                                                            color: colorsFile
+                                                                .icons,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      enabledBorder:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30.0),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          color: Colors.white,
+                                                          width: 2.0,
+                                                        ),
+                                                      ),
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30.0),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          color: Colors.blue,
+                                                          width: 2.0,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                  color: Colors.white,
-                                                ),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    print(
-                                                        "Icon tapped for destination");
-                                                    GoogleMapController?
-                                                        map_controller1;
-                                                    google_map_for_origin1(
-                                                        map_controller1);
-                                                  },
-                                                  child: const Icon(
-                                                    Icons.place,
-                                                    color: colorsFile.icons,
-                                                  ),
                                                 ),
                                               ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2.0,
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 2.0,
-                                                ),
-                                              ),
-                                            ),
+                                            ],
                                           ),
                                         ),
-                                        const SizedBox(
-                                            width:
-                                                8), // Adjust the space between the two icons
-
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
@@ -1161,17 +1114,14 @@ class _AddRidesState extends State<AddRides>
                                                 ),
                                               )),
                                         ),
-
-                                        // Adjust the space between the two icons
                                       ],
                                     ),
                                   ),
                                 ),
-
                                 //start
                                 const SizedBox(height: 10),
                                 Container(
-                                  height: 50,
+                                  height: 40,
                                   child: Padding(
                                     padding: const EdgeInsets.all(3),
                                     child: Row(
@@ -1196,9 +1146,7 @@ class _AddRidesState extends State<AddRides>
                                             },
                                           ),
                                         ),
-                                        const SizedBox(
-                                            width:
-                                                80), // Adjust the space between the two icons
+                                        // Adjust the space between the two icons
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 8.0),
@@ -1212,13 +1160,7 @@ class _AddRidesState extends State<AddRides>
                                                 print("Navigate to polylines");
                                                 setState(() {
                                                   check_map = false;
-                                                  shared_data();
-                                                  print(
-                                                      "displaying the shared preferences values");
-                                                  print(
-                                                      "SP_Poly_Lat1 = ${sp_poly_lat1}");
-                                                  print(
-                                                      "------Check value is now false - means that Driver_polyline method will be called-------");
+                                                  //shared_data();
                                                 });
                                                 final SharedPreferences prefs =
                                                     await SharedPreferences
@@ -1236,14 +1178,13 @@ class _AddRidesState extends State<AddRides>
                                                 await _fetchRoute();
                                                 print(
                                                     "ccccccccccccccc ${routeCoords}");
-                                                List<Map<String, double>>
-                                                    polyline =
-                                                    routeCoords.map((latLng) {
-                                                  return {
-                                                    'latitude': latLng.latitude,
-                                                    'longitude':
-                                                        latLng.longitude,
-                                                  };
+                                                List<List<dynamic>> polyline =
+                                                    [];
+                                                routeCoords.map((latLng) {
+                                                  polyline.add([
+                                                    latLng.latitude,
+                                                    latLng.longitude
+                                                  ]);
                                                 }).toList();
                                                 await _scheduleServices
                                                     .addSchedule(
@@ -1254,10 +1195,10 @@ class _AddRidesState extends State<AddRides>
                                                   scheduledDate:
                                                       dates, // Provide a value for the 'scheduledDate' parameter
                                                   availablePlaces: nbPlaces,
-                                                  startPointLat: sp_poly_lat1,
-                                                  startPointLang: sp_poly_lng1,
-                                                  endPointLat: sp_poly_lat2,
-                                                  endPointLang: sp_poly_lng2,
+                                                  startPointLat: position1_lat,
+                                                  startPointLang: position1_lng,
+                                                  endPointLat: position1_lat,
+                                                  endPointLang: position1_lng,
                                                   duration:
                                                       totalDurationInMinutes,
                                                   distance: total_km,
@@ -1426,13 +1367,13 @@ class _AddRidesState extends State<AddRides>
 
   void swapTextFields() {
     setState(() {
-      String tempText = originController.text;
+/*      String tempText = originController.text;
       originController.text = destinationController.text;
       destinationController.text = tempText;
 
       String tempAddressName = origin_address_name;
       origin_address_name = destination_address_name;
-      destination_address_name = tempAddressName;
+      destination_address_name = tempAddressName;*/
       if (routeType == "toOffice") {
         routeType = "fromOffice";
       } else {

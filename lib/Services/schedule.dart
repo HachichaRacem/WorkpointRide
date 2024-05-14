@@ -18,7 +18,7 @@ class scheduleServices {
     int? duration,
     double? distance,
     String? type,
-    List<Map<String, double>>? polyline,
+    List<List<dynamic>>? polyline,
   }) async {
     print(" startTime${startTime}");
     print(" scheduledDate${scheduledDate}");
