@@ -117,19 +117,26 @@
 //Updated coded by MA
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:ui' as ui;
-import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'driver_polyline_map.dart';
+import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:osmflutter/models/Directions.dart';
+import 'package:osmflutter/models/Steps.dart';
 
 class pass_route_map extends StatefulWidget {
-  double lat1,lng1,lat2,lng2;
-  pass_route_map({Key? key,required this.lat1,required this.lng1,required this.lat2, required this.lng2}) : super(key: key);
+  double lat1, lng1, lat2, lng2;
+  pass_route_map(
+      {Key? key,
+      required this.lat1,
+      required this.lng1,
+      required this.lat2,
+      required this.lng2})
+      : super(key: key);
   @override
   _pass_route_mapState createState() => _pass_route_mapState();
 }
@@ -137,9 +144,9 @@ class pass_route_map extends StatefulWidget {
 class _pass_route_mapState extends State<pass_route_map> {
   late GoogleMapController mapController;
   late LatLng currentLocation =
-  LatLng(0.0, 0.0); // Initialize with default location
+      LatLng(0.0, 0.0); // Initialize with default location
 
- Set<Marker> markers = {};
+  Set<Marker> markers = {};
 
   bool loading = true;
 
@@ -153,15 +160,12 @@ class _pass_route_mapState extends State<pass_route_map> {
     _fetchRoute();
   }
 
-
-
   //Routing-Polylines
 
   Set<Polyline> _polyline = {};
   Set<Marker> _markers = {};
 
   Future<void> _fetchRoute() async {
-
     print("Polylines method called");
     final apiKey =
         'AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI'; // Replace with your Google Maps API key
@@ -208,13 +212,9 @@ class _pass_route_mapState extends State<pass_route_map> {
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
-
       });
     }
   }
-
-
-
 
   List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> points = [];
@@ -246,9 +246,7 @@ class _pass_route_mapState extends State<pass_route_map> {
     return points;
   }
 
-
   Completer<GoogleMapController> _controller = Completer();
-
 
   void getCurrentLocation() async {
     LocationPermission permission;
@@ -296,7 +294,7 @@ class _pass_route_mapState extends State<pass_route_map> {
     ui.Image resizedImage = await _resizeImage(image, width, height);
 
     ByteData? resizedByteData =
-    await resizedImage.toByteData(format: ui.ImageByteFormat.png);
+        await resizedImage.toByteData(format: ui.ImageByteFormat.png);
     Uint8List? resizedBytes = resizedByteData?.buffer.asUint8List();
 
     return BitmapDescriptor.fromBytes(resizedBytes!);
@@ -321,34 +319,34 @@ class _pass_route_mapState extends State<pass_route_map> {
     // Draw the resized image onto the canvas
     canvas.drawImageRect(
       decodedImage,
-      Rect.fromLTRB(0, 0, decodedImage.width.toDouble(), decodedImage.height.toDouble()),
+      Rect.fromLTRB(
+          0, 0, decodedImage.width.toDouble(), decodedImage.height.toDouble()),
       Rect.fromLTRB(0, 0, width.toDouble(), height.toDouble()),
       Paint(),
     );
 
     // End recording and finalize the image
-    ui.Image resizedImage = await recorder.endRecording().toImage(width, height);
+    ui.Image resizedImage =
+        await recorder.endRecording().toImage(width, height);
     completer.complete(resizedImage);
 
     return completer.future;
   }
 
-
-
   void addFavoriteAndHomeMarkers() async {
     // Dummy favorite and home locations near to current location
-    LatLng favorite1 =
-    LatLng(currentLocation.latitude + 0.01, currentLocation.longitude + 0.01);
-    LatLng favorite2 =
-    LatLng(currentLocation.latitude - 0.01, currentLocation.longitude - 0.01);
-    LatLng home1 =
-    LatLng(currentLocation.latitude + 0.01, currentLocation.longitude - 0.01);
-    LatLng home2 =
-    LatLng(currentLocation.latitude + 0.0001, currentLocation.longitude - 0.02);
+    LatLng favorite1 = LatLng(
+        currentLocation.latitude + 0.01, currentLocation.longitude + 0.01);
+    LatLng favorite2 = LatLng(
+        currentLocation.latitude - 0.01, currentLocation.longitude - 0.01);
+    LatLng home1 = LatLng(
+        currentLocation.latitude + 0.01, currentLocation.longitude - 0.01);
+    LatLng home2 = LatLng(
+        currentLocation.latitude + 0.0001, currentLocation.longitude - 0.02);
 
     // Adding favorite markers
     BitmapDescriptor favoriteIcon =
-    await _createMarkerImageFromAsset('assets/images/heart.png', 130, 130);
+        await _createMarkerImageFromAsset('assets/images/heart.png', 130, 130);
     markers.add(
       Marker(
         markerId: MarkerId("favorite1"),
@@ -378,8 +376,8 @@ class _pass_route_mapState extends State<pass_route_map> {
     );
 
     // Adding home markers
-    BitmapDescriptor homeIcon =
-    await _createMarkerImageFromAsset('assets/images/home--removebg-preview.png', 130, 130);
+    BitmapDescriptor homeIcon = await _createMarkerImageFromAsset(
+        'assets/images/home--removebg-preview.png', 130, 130);
     markers.add(
       Marker(
         markerId: MarkerId("home1"),
@@ -422,70 +420,68 @@ class _pass_route_mapState extends State<pass_route_map> {
       body: loading
           ? Center(child: CircularProgressIndicator(color: Colors.white))
           : FutureBuilder<String>(
-        future: _loadNightStyle(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Stack(
-              children: [
-                GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                   widget.lat1,widget.lng1
-                    ),
-                    zoom: 14.5,
-                  ),
-                  onMapCreated: (controller) {
-                    _controller.complete(controller);
-                    mapController = controller;
-                    mapController.setMapStyle(snapshot.data!);
-                  },
-                  markers: _markers,
-                  polylines: _polyline,
-                  mapType: MapType.normal,
-                  buildingsEnabled: true,
-                  onTap: (_){},
-                ),
-                Positioned(
-                  top:
-                  16.0, // Adjust this value to position the zoom buttons as needed
-                  right:
-                  16.0, // Adjust this value to position the zoom buttons as needed
-                  child: Column(
+              future: _loadNightStyle(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Stack(
                     children: [
-                      FloatingActionButton(
-                        mini: true,
-                        backgroundColor: colorsFile.backgroundNvavigaton,
-                        onPressed: () {
-                          mapController.animateCamera(
-                            CameraUpdate.zoomIn(),
-                          );
+                      GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(widget.lat1, widget.lng1),
+                          zoom: 14.5,
+                        ),
+                        onMapCreated: (controller) {
+                          _controller.complete(controller);
+                          mapController = controller;
+                          mapController.setMapStyle(snapshot.data!);
                         },
-                        child: Icon(Icons.add),
+                        markers: _markers,
+                        polylines: _polyline,
+                        mapType: MapType.normal,
+                        buildingsEnabled: true,
+                        onTap: (_) {},
                       ),
-                      SizedBox(height: 16.0),
-                      FloatingActionButton(
-                        backgroundColor: colorsFile.backgroundNvavigaton,
-                        mini: true,
-                        onPressed: () {
-                          mapController.animateCamera(
-                            CameraUpdate.zoomOut(),
-                          );
-                        },
-                        child: Icon(Icons.remove),
+                      Positioned(
+                        top:
+                            16.0, // Adjust this value to position the zoom buttons as needed
+                        right:
+                            16.0, // Adjust this value to position the zoom buttons as needed
+                        child: Column(
+                          children: [
+                            FloatingActionButton(
+                              mini: true,
+                              backgroundColor: colorsFile.backgroundNvavigaton,
+                              onPressed: () {
+                                mapController.animateCamera(
+                                  CameraUpdate.zoomIn(),
+                                );
+                              },
+                              child: Icon(Icons.add),
+                            ),
+                            SizedBox(height: 16.0),
+                            FloatingActionButton(
+                              backgroundColor: colorsFile.backgroundNvavigaton,
+                              mini: true,
+                              onPressed: () {
+                                mapController.animateCamera(
+                                  CameraUpdate.zoomOut(),
+                                );
+                              },
+                              child: Icon(Icons.remove),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ),
-                ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading night style'));
-          } else {
-            return Center(
-                child: CircularProgressIndicator(color: Colors.white));
-          }
-        },
-      ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error loading night style'));
+                } else {
+                  return Center(
+                      child: CircularProgressIndicator(color: Colors.white));
+                }
+              },
+            ),
     );
   }
 }

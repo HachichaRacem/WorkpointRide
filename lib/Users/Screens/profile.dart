@@ -1,17 +1,12 @@
-import 'package:flutter/cupertino.dart';
-import 'package:osmflutter/Users/Screens/history.dart';
-import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-
-import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/Users/Screens/history.dart';
+import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
-import '../../GoogleMaps/driver_polyline_map.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -69,39 +64,12 @@ class _ProfileState extends State<Profile> {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment(0.8, 1),
-              colors: <Color>[
-                Color.fromRGBO(94, 149, 180, 1),
-                Color.fromRGBO(77, 140, 175, 1),
-              ],
-              tileMode: TileMode.mirror,
-            ),
-          ),
-        ),
-        toolbarHeight: 40.0,
-        title: const Column(
-          children: [
-            SizedBox(height: 16.0),
-          ],
-        ),
-      ),
+
       body: Stack(
         children: [
           // Background Photo
           // MapsGoogleExample(),
-          check == true
-              ? MapsGoogleExample()
-              : DriverOnMap(
-                  poly_lat1: sp_poly_lat1,
-                  poly_lng1: sp_poly_lng1,
-                  poly_lat2: sp_poly_lat2,
-                  poly_lng2: sp_poly_lng2,
-                  route_id: 'route'),
+          MapsGoogleExample(),
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.5,

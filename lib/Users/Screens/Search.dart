@@ -7,11 +7,11 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:osmflutter/Drivers/Screens/addSchedule/want_to_book.dart';
 import 'package:osmflutter/GoogleMaps/passenger_map.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
 import 'package:osmflutter/Users/BottomSheet/ride_card.dart';
-import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
@@ -371,7 +371,9 @@ class _SearchState extends State<Search> {
     final prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString("user");
     debugPrint("[DATA]: userID: $userID");
-    return (await Reservation().getReservations(userID!)).data;
+    dynamic data = await Reservation().getReservations(userID!);
+    print("dataaa ${data.data}");
+    return data.data;
   }
 
   late Future _getReservations = _loadReservation();

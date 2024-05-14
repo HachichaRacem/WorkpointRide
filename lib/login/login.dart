@@ -155,12 +155,18 @@ class Login extends StatelessWidget {
 
   Future<void> _login(context) async {
     await _auth.login(email.text, password.text).then((value) async {
+      print("vaaallllll ${value}");
+
       if (value.statusCode == 200) {
         Map<String, dynamic> payload = JwtDecoder.decode(
           value.data["accessToken"].toString(),
         );
+        print("pppppppppppppppppppppppayload ${payload}");
+        print("uuuuuuuuuuuuuuuuuuuuuseeeeerrr ${value.data["user"]["_id"]}");
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("user", payload["userId"].toString());
+
+        await prefs.setString("user", value.data["user"]["_id"].toString());
+
         prefs.setString(
           "token",
           value.data["accessToken"].toString(),

@@ -43,7 +43,7 @@ dependencies:
   google_fonts: ^4.0.4
   pointer_interceptor: ^0.10.1
   flutter_rating_bar: ^4.0.1
-  syncfusion_flutter_datepicker: 20.3.61
+  syncfusion_flutter_datepicker: 25.1.42
   lottie: ^2.7.0
   flutter_osm_plugin: 0.70.4
   google_maps_flutter: ^2.6.0

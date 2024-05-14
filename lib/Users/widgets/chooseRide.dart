@@ -1,14 +1,10 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:clay_containers/clay_containers.dart';
-import 'package:flutter/widgets.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/Services/reservation.dart';
-import 'package:osmflutter/Services/route.dart' as route;
 import 'package:osmflutter/Services/schedule.dart';
-
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -32,7 +28,8 @@ class _ChooseRideState extends State<ChooseRide> {
   bool bottomSheetVisible = true;
   List<Color> containerColors = List.filled(
       4, colorsFile.cardColor); // Use the background color as the default color
-  final Future<Response> _getAllSchedules = Schedule().getAllSchedules();
+  final Future<Response> _getAllSchedules =
+      scheduleServices().getAllSchedules();
   List schedules = [];
   int selectedRouteCardIndex = 0;
 
@@ -152,6 +149,7 @@ class _ChooseRideState extends State<ChooseRide> {
                           children: List.generate(
                             schedules.length,
                             (index) {
+                              print("snapshot${snapshot.data?.data}");
                               final Map? driverData =
                                   snapshot.data?.data[index]['user'];
                               return RouteCard(
