@@ -68,7 +68,7 @@ class RideCard extends StatelessWidget {
                         size: const Size.fromRadius(30), // Image radius
                         child: Image(
                           image: AssetImage(selectedRouteCardInfo!['image'] ??
-                              "assets/images/homme1.jpg"),
+                              "assets/images/homme1.png"),
                           fit: BoxFit.cover,
                         ),
                       ),

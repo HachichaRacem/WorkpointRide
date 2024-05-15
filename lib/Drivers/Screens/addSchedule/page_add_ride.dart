@@ -31,25 +31,7 @@ class _PageAddRideState extends State<PageAddRide> {
     double _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment(0.8, 1),
-              colors: <Color>[
-                Color.fromRGBO(94, 149, 180, 1),
-                Color.fromRGBO(77, 140, 175, 1),
-              ],
-              tileMode: TileMode.mirror,
-            ),
-          ),
-        ),
-        toolbarHeight: 40.0,
-        title: Container(
-          color: Colors.transparent, // Adjust as needed
-        ),
-      ),
+      
       body: Stack(
         children: [
           // Background Photo

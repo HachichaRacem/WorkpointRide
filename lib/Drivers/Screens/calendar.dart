@@ -467,7 +467,7 @@ class _CalendarState extends State<Calendar> {
                                               children: [
                                                 CircleAvatar(
                                                   backgroundImage: const AssetImage(
-                                                      'assets/images/homme1.jpg'),
+                                                      'assets/images/homme1.png'),
                                                   radius: 30,
                                                   backgroundColor:
                                                       selectedPersonIndex ==
