@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:osmflutter/Drivers/Screens/addSchedule/add_ride_page.dart';
 import 'package:osmflutter/Drivers/Screens/calendar.dart';
 import 'package:osmflutter/Users/Screens/notif.dart';
+import 'package:osmflutter/Users/Screens/pass_profile.dart';
 import 'package:osmflutter/Users/Screens/profile.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 
@@ -46,7 +47,7 @@ class _BottomNavState extends State<BottomNav>
         controller: controller,
         children: [
           //SearchDestinationPage(),
-          Profile(),
+          pass_profile(),
           Calendar(),
           AddRides(),
           Notif(),

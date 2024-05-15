@@ -47,11 +47,12 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _loadPassengers({String? date}) {
-    final String date =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    final DateTime date = now.add(Duration(days: now.day + selectedIndex));
+    final String dateString =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     SharedPreferences.getInstance().then(
       (prefs) => scheduleServices()
-          .getScheduleReservationsByDate(date, User().id!)
+          .getScheduleReservationsByDate(dateString, User().id!)
           .then(
         (resp) {
           print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
