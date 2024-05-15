@@ -368,7 +368,7 @@ class _SearchState extends State<Search> {
   Map selectedRouteCardInfo = {};
 
   Future _loadReservation() async {
-    final DateTime date = now.add(Duration(days: now.day + selectedIndex));
+    final DateTime date = now.add(Duration(days: selectedIndex));
     final String dateString =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     final prefs = await SharedPreferences.getInstance();
