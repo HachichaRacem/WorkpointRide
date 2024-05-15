@@ -42,16 +42,17 @@ class _CalendarState extends State<Calendar> {
   void initState() {
     super.initState();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
-    _loadPassengers(date: "${now.year}-${now.month}-${now.day}");
+    _loadPassengers(currentDate: "${now.year}-${now.month}-${now.day}");
     getshared();
   }
 
-  void _loadPassengers({String? date}) {
-    final String date =
-        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  void _loadPassengers({String? currentDate}) {
+    final DateTime date = now.add(Duration(days: selectedIndex));
+    final String dateString =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     SharedPreferences.getInstance().then(
       (prefs) => scheduleServices()
-          .getScheduleReservationsByDate(date, User().id!)
+          .getScheduleReservationsByDate(dateString, User().id!)
           .then(
         (resp) {
           print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
@@ -298,11 +299,15 @@ class _CalendarState extends State<Calendar> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  TimeOfDay.fromDateTime(
-                                                    DateTime.parse(
-                                                        schedules![index]
-                                                            ['scheduledDate']),
-                                                  ).format(context),
+                                                  schedules![index][
+                                                              'scheduledDate'] !=
+                                                          null
+                                                      ? TimeOfDay.fromDateTime(
+                                                          DateTime.parse(
+                                                              schedules![index][
+                                                                  'scheduledDate']),
+                                                        ).format(context)
+                                                      : "",
                                                   style: TextStyle(
                                                     color: selectedTimeIndex ==
                                                             index

@@ -368,10 +368,14 @@ class _SearchState extends State<Search> {
   Map selectedRouteCardInfo = {};
 
   Future _loadReservation() async {
+    final DateTime date = now.add(Duration(days: now.day + selectedIndex));
+    final String dateString =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     final prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString("user");
     debugPrint("[DATA]: userID: $userID");
-    dynamic data = await Reservation().getReservations(userID!);
+    dynamic data =
+        await Reservation().getReservationsByDate(userID!, dateString);
     print("dataaa ${data.data}");
     return data.data;
   }
@@ -527,18 +531,20 @@ class _SearchState extends State<Search> {
               physics: const ClampingScrollPhysics(),
               child: Row(
                 children: List.generate(
-                  lastDayOfMonth.day,
+                  lastDayOfMonth.day - now.day + 1,
                   (index) {
-                    final currentDate =
-                        lastDayOfMonth.add(Duration(days: index + 1));
+                    final currentDate = now.add(Duration(days: index));
                     final dayName = DateFormat('EEE').format(currentDate);
                     return Padding(
                       padding: EdgeInsets.only(
                           left: index == 0 ? 16.0 : 0.0, right: 16.0),
                       child: GestureDetector(
-                        onTap: () => setState(() {
-                          selectedIndex = index;
-                        }),
+                        onTap: () {
+                          _getReservations = _loadReservation();
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -547,7 +553,7 @@ class _SearchState extends State<Search> {
                               width: 42.0,
                               alignment: Alignment.center,
                               child: Text(
-                                "${index + 1}",
+                                "${now.day + index}",
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   color: selectedIndex == index

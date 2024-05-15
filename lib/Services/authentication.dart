@@ -13,11 +13,13 @@ class authentication {
 
   Future<Response<dynamic>> login(String email, String password) async {
     try {
+      print("email: $email, password: $password");
       var response = await dio.post(
         "api/users/login",
         data: {'email': email, 'password': password},
       );
 
+      print("response: $response");
       return response;
     } on DioException catch (e) {
       print("ERROR: $e");
