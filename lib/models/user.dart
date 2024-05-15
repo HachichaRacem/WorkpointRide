@@ -14,10 +14,10 @@ class User {
   User._internal();
   void updateFromJSON(Map json) {
     print("[USER]: update from JSON has been called with $json");
-    id = json['_id'];
+    id = json['id'];
     firstName = json["firstName"];
     lastName = json["lastName"];
-    email = json["email"];
+    email = json["Email"];
     phoneNumber = json["phoneNumber"] ?? "Not provided yet";
     role = json["role"];
     isBlocked = json["isBlocked"];
