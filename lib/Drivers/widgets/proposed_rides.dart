@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -10,11 +12,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class ProposedRides extends StatefulWidget {
-  List<dynamic> listRoutes;
+  final List<dynamic> listRoutes;
+  final Function() showMyRides;
+  final Function() ridesVisible;
+  int selectedIndex;
+  final Function(int) selectCard;
+  bool isCardSelected;
 
-  Function() showMyRides;
-  Function() ridesVisible;
   ProposedRides(this.listRoutes, this.showMyRides, this.ridesVisible,
+      this.selectCard, this.selectedIndex, this.isCardSelected,
       {Key? key})
       : super(key: key);
 
@@ -26,38 +32,39 @@ class _ProposedRidesState extends State<ProposedRides> {
   late double _height;
   late double _width;
   bool bottomSheetVisible = false;
-  List<Color> containerColors =
-      []; // Use the background color as the default color
-  int selectedIndex = 0; // Initialize the selected index
+  // Use the background color as the default color
+// Initialize the selected index
   int nbPlaces = 0;
-  bool isCardSelected = false;
   scheduleServices _scheduleServices = scheduleServices();
   List<DateTime> dates = [];
+
+/*
   void toggleSelection(int index) {
-    setState(() {
-      if (selectedIndex == index) {
-        // Toggle the selection state if the card is tapped again
-        selectedIndex = -1;
+    print("seeeeeeeeeeeeee" + widget.selectedIndex.toString());
+    print("iiiiiiiiii" + index.toString());
+
+    if (widget.selectedIndex == index) {
+      // Toggle the selection state if the card is tapped again
+      setState(() {
+        widget.selectedIndex = -1;
         isCardSelected = !isCardSelected;
-        // Reset card color to default when the second tab is selected
-        if (!isCardSelected) {
-          containerColors[index] = colorsFile.cardColor;
-        }
-      } else {
-        // If it's a new selection, update the selected index and set the selection state to true
-        selectedIndex = index;
+      });
+      // Reset card color to default when the second tab is selected
+    } else {
+      setState(() {
+        widget.selectedIndex = index;
         isCardSelected = true;
-        // Deselect other cards
-        for (int i = 0; i < containerColors.length; i++) {
-          if (i != index) {
-            containerColors[i] = colorsFile.cardColor;
-          }
-        }
-        containerColors[index] = colorsFile.icons;
-      }
-    });
+      });
+      // If it's a new selection, update the selected index and set the selection state to true
+      widget.selectedIndex = index;
+
+      widget.drawRoute();
+    }
+    print("wwwwwwwwwwwwwwwwww" + widget.selectedIndex.toString());
+
     widget.ridesVisible();
   }
+*/
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
@@ -307,8 +314,8 @@ class _ProposedRidesState extends State<ProposedRides> {
                                               dates, // Provide a value for the 'scheduledDate' parameter
                                           availablePlaces:
                                               nbPlaces, // Provide a value for the 'availablePlaces' parameter
-                                          routeId: widget
-                                              .listRoutes[selectedIndex]["_id"])
+                                          routeId: widget.listRoutes[
+                                              widget.selectedIndex]["_id"])
                                       .then((value) {
                                     // Check if the response is successful
                                     if (value.statusCode == 200) {
@@ -400,8 +407,7 @@ class _ProposedRidesState extends State<ProposedRides> {
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
-    containerColors =
-        List.filled(widget.listRoutes.length, colorsFile.cardColor);
+
     return Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -452,7 +458,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                             spread: 1,
                           ),
                           GestureDetector(
-                            onTap: isCardSelected
+                            onTap: widget.isCardSelected
                                 ? showSchedulingDialog
                                 : widget.showMyRides,
                             child: Center(
@@ -466,7 +472,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                 spread: 1,
                                 child: Center(
                                   child: Icon(
-                                    isCardSelected
+                                    widget.isCardSelected
                                         ? Icons.calendar_today
                                         : Icons.add,
                                     size: 30,
@@ -490,7 +496,8 @@ class _ProposedRidesState extends State<ProposedRides> {
                           widget.listRoutes.length,
                           (index) => GestureDetector(
                             onTap: () {
-                              toggleSelection(index);
+                              // widget.toggleSelection(index);
+                              widget.selectCard(index);
                             },
                             child: Padding(
                               padding: EdgeInsets.only(
@@ -505,11 +512,13 @@ class _ProposedRidesState extends State<ProposedRides> {
                                 border: 2,
                                 linearGradient: LinearGradient(
                                   colors: [
-                                    index == selectedIndex && isCardSelected
-                                        ? colorsFile.cardColor
+                                    index == widget.selectedIndex &&
+                                            widget.isCardSelected
+                                        ? colorsFile.titleCard
                                         : Color(0xFFD8E6EE),
-                                    index == selectedIndex && isCardSelected
-                                        ? colorsFile.cardColor
+                                    index == widget.selectedIndex &&
+                                            widget.isCardSelected
+                                        ? colorsFile.titleCard
                                         : Color(0xFFD8E6EE),
                                   ],
                                   begin: Alignment.topCenter,
@@ -539,8 +548,8 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                   height: 60,
                                                   padding: EdgeInsets.all(2),
                                                   decoration: BoxDecoration(
-                                                    color:
-                                                        colorsFile.buttonIcons,
+                                                    color: colorsFile
+                                                        .backgroundNvavigaton,
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Container(
@@ -560,7 +569,8 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                         ),
                                                         GestureDetector(
                                                           onTap: () {
-                                                            // Handle onTap for the icon
+                                                            widget.selectCard(
+                                                                index);
                                                           },
                                                           child: Center(
                                                             child:
@@ -581,7 +591,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                                   Icons.route,
                                                                   size: 30,
                                                                   color: colorsFile
-                                                                      .buttonIcons,
+                                                                      .backgroundNvavigaton,
                                                                 ),
                                                               ),
                                                             ),
@@ -599,38 +609,35 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                     : "",
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color:
-                                                      (containerColors[index] ==
-                                                              colorsFile
-                                                                  .cardColor)
-                                                          ? colorsFile.titleCard
-                                                          : Colors.white,
-                                                ),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                    color: (widget.selectedIndex ==
+                                                                index &&
+                                                            widget
+                                                                .isCardSelected)
+                                                        ? Colors.white
+                                                        : colorsFile.titleCard),
                                               ),
                                               Text(
                                                 "|",
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color:
-                                                      (containerColors[index] ==
-                                                              colorsFile
-                                                                  .cardColor)
-                                                          ? colorsFile.titleCard
-                                                          : Colors.white,
-                                                ),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                    color: (widget.selectedIndex ==
+                                                                index &&
+                                                            widget
+                                                                .isCardSelected)
+                                                        ? Colors.white
+                                                        : colorsFile.titleCard),
                                               ),
                                               Icon(
                                                 Icons.arrow_downward,
-                                                color:
-                                                    (containerColors[index] ==
-                                                            colorsFile
-                                                                .cardColor)
-                                                        ? colorsFile.icons
-                                                        : Colors.white,
+                                                color: (widget.selectedIndex ==
+                                                            index &&
+                                                        widget.isCardSelected)
+                                                    ? Colors.white
+                                                    : colorsFile.titleCard,
                                                 size: 15,
                                               ),
                                               SizedBox(width: 10),
@@ -640,15 +647,14 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                     : "",
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.montserrat(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color:
-                                                      (containerColors[index] ==
-                                                              colorsFile
-                                                                  .cardColor)
-                                                          ? colorsFile.titleCard
-                                                          : Colors.white,
-                                                ),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                    color: (widget.selectedIndex ==
+                                                                index &&
+                                                            widget
+                                                                .isCardSelected)
+                                                        ? Colors.white
+                                                        : colorsFile.titleCard),
                                               ),
                                             ],
                                           ),

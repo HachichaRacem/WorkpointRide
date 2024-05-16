@@ -34,7 +34,7 @@ class AddRides extends StatefulWidget {
 
 class _AddRidesState extends State<AddRides>
     with SingleTickerProviderStateMixin {
-  //Google Maps For Home
+  Completer<GoogleMapController> _controller = Completer();
 
   late GoogleMapController mapController;
   bool check_map = true;
@@ -48,13 +48,12 @@ class _AddRidesState extends State<AddRides>
   var origin_address_name = 'Home';
   TextEditingController originController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
-
+  int selectedIndex = 0;
   List<Marker> myMarker = [];
 
   List<Marker> markers = [];
   List<dynamic> listRoutes = [];
-
-  Completer<GoogleMapController> _controller = Completer();
+  bool isCardSelected = false;
 
   double total_km = 0.0;
   bool check = false;
@@ -62,7 +61,7 @@ class _AddRidesState extends State<AddRides>
   int totalDurationInMinutes = 0;
   double constantSpeed = 60.0; // Constant speed in km/h
 
-  int selectedIndex = 0;
+  int selectedIndexRoute = 0;
   DateTime now = DateTime.now();
   late DateTime lastDayOfMonth;
   bool isSearchPoPupVisible = false;
@@ -74,15 +73,15 @@ class _AddRidesState extends State<AddRides>
   late double _height;
   late double _width;
   bool condition = true; //true
-
+/*  double tunisiaLat = 9.374317816630263;
+  double tunisiaLng = 34.094398748658556;*/
   TimeOfDay _selectedTime = TimeOfDay.now();
   List<DateTime> dates = [];
   bool check_shared_data = true;
 
   dynamic position1_lat, position1_lng;
   dynamic currentPosition_lat, currentPosition_lng;
-
-  dynamic position2_lat = 36.84451734808181, position2_lng = 10.200780224955338;
+  dynamic position2_lat = 36.85135579846211, position2_lng = 10.179065957033673;
 
   bool check_visible = true;
   void origin_address_method(dynamic newlat, dynamic newlng) async {
@@ -100,7 +99,94 @@ class _AddRidesState extends State<AddRides>
     });
   }
 
+  void toggleSelection(int index) {
+    if (selectedIndexRoute == index) {
+      // Toggle the selection state if the card is tapped again
+      setState(() {
+        selectedIndexRoute = -1;
+        isCardSelected = !isCardSelected;
+      });
+      // Reset card color to default when the second tab is selected
+    } else {
+      setState(() {
+        selectedIndexRoute = index;
+        isCardSelected = true;
+      });
+      // If it's a new selection, update the selected index and set the selection state to true
+
+      drawRoute();
+    }
+    print("wwwwwwwwwwwwwwwwww" + selectedIndexRoute.toString());
+
+    showRide();
+  }
+
+  void drawRoute() async {
+    routeCoords = [];
+    listRoutes[selectedIndexRoute]["polyline"].forEach((polyline) {
+      //  print("sssssssssss${polyline[0]}");
+
+      routeCoords.add(LatLng(polyline[0], polyline[1]));
+    });
+    print("sssssssssss${routeCoords}");
+    position1_lat =
+        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
+    position1_lng =
+        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1];
+    position2_lat =
+        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0];
+    position2_lng =
+        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1];
+    _polyline.clear();
+    _markers.clear();
+    _polyline = {};
+    setState(() {
+      check_map = false;
+      _polyline.add(Polyline(
+        polylineId: PolylineId('route'),
+        visible: true,
+        points: routeCoords,
+        color: Colors.white,
+        width: 5,
+      ));
+
+      // Add markers
+      _markers.add(
+        Marker(
+          markerId: MarkerId('start'),
+          position: LatLng(
+              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
+              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'start'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      _markers.add(
+        Marker(
+          markerId: MarkerId('end'),
+          position: LatLng(
+              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0],
+              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'End'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      // check_map = false;
+    });
+    CameraPosition camera_position = CameraPosition(
+        target: LatLng(
+            listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
+            listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0]),
+        zoom: 7);
+
+    mapController = await _controller.future;
+
+    mapController
+        .animateCamera(CameraUpdate.newCameraPosition(camera_position));
+  }
+
   Future<void> _fetchRoute() async {
+    print("hellooo");
     final apiKey =
         'AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI'; // Replace with your Google Maps API key
     final start = '${position1_lat},${position1_lng}';
@@ -113,13 +199,19 @@ class _AddRidesState extends State<AddRides>
     final responseData = json.decode(response.body);
 
     if (responseData['status'] == 'OK') {
+      print("rrrrrrrrrrrrrrrrrresponseData${responseData}");
+      routeCoords = [];
       final List<Steps> steps =
           Directions.fromJson(responseData).routes.first.steps;
       steps.forEach((step) {
-        routeCoords.add(LatLng(step.startLocation.lat, step.startLocation.lng));
-        routeCoords.addAll(_decodePolyline(step.polyline));
-      });
+        print("sssssssssss${step.startLocation.lat}");
 
+        routeCoords.add(LatLng(step.startLocation.lat, step.startLocation.lng));
+        //   routeCoords.addAll(_decodePolyline(step.polyline));
+      });
+      print("ttttttttttttttttttttt${routeCoords}");
+      _polyline.clear();
+      _polyline = {};
       setState(() {
         _polyline.add(Polyline(
           polylineId: PolylineId('route'),
@@ -146,38 +238,9 @@ class _AddRidesState extends State<AddRides>
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
+        check_map = false;
       });
     }
-  }
-
-  List<LatLng> _decodePolyline(String encoded) {
-    List<LatLng> points = [];
-    int index = 0, len = encoded.length;
-    int lat = 0, lng = 0;
-
-    while (index < len) {
-      int b, shift = 0, result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lat += dlat;
-
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lng += dlng;
-
-      points.add(LatLng((lat / 1E5).toDouble(), (lng / 1E5).toDouble()));
-    }
-    return points;
   }
 
   Future<void> getRoutes() async {
@@ -259,9 +322,8 @@ class _AddRidesState extends State<AddRides>
                                               .setMapStyle(snapshot.data);
                                         });
                                       },
-                                      onTap: (position) {
+                                      onTap: (position) async {
                                         mapGoogle(position);
-                                        setState(() {});
                                       },
                                       myLocationEnabled: true,
                                       buildingsEnabled: true,
@@ -275,6 +337,8 @@ class _AddRidesState extends State<AddRides>
                                         iconColor: Colors.black,
                                         placeType: PlaceType.region,
                                         bgColor: Colors.white,
+                                        //  location: LatLng(tunisaLat, tunisiaLng),
+                                        // radius: 500000,
                                         textColor: Colors.black,
                                         placeholder: "Search Any Location",
                                         apiKey:
@@ -327,6 +391,7 @@ class _AddRidesState extends State<AddRides>
     myMarker.clear();
     position1_lat = position.latitude;
     position1_lng = position.longitude;
+    await _fetchRoute();
 
     Navigator.pop(context);
     origin_address_method(position1_lat, position1_lng);
@@ -343,114 +408,20 @@ class _AddRidesState extends State<AddRides>
     ));
 
     print("After Selecting Origin: Lat & Lng is ");
-
-    setState(() {});
-
     CameraPosition camera_position =
-        CameraPosition(target: LatLng(position1_lat, position1_lng), zoom: 12);
+        CameraPosition(target: LatLng(position1_lat, position1_lng), zoom: 7);
 
     GoogleMapController controller = await _controller.future;
-
-    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
+    setState(() {
+      controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
+    });
   }
 
   var destination_address_name = 'EY Tower';
 
-/*  void destination_address_method(double newlat, double newlng) async {
-    print("Our required lat and lng for Destination-polyline is: ");
-    poly2_lat = newlat;
-    poly2_lng = newlng;
-    print("Lat: ${poly2_lat} & Lng: ${poly2_lng} ");
-
-    //Storing poly_lat and poly_lng in shared preferences
-
-
-
-    setState(() {});
-    List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
-    setState(() {});
-    destination_address_name =
-        "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
-
-    print("Destination Name == ${destination_address_name}");
-
-    //Now getting shared preferences values
-
-    get_shared();
-  }*/
-
-  Completer<GoogleMapController> _controller1 = Completer();
-
-  // Markers
-
   List<Marker> myMarker1 = [];
 
   List<Marker> markers1 = [];
-
-/*
-  mapGoogle1(position) async {
-    myMarker1.clear();
-    current_lat2 = position.latitude;
-    current_lng2 = position.longitude;
-
-    print("After Selecting Destination: Lat & Lng is ");
-    print(current_lat2);
-    print(current_lng2);
-
-    Navigator.pop(context);
-    destination_address_method(current_lat2, current_lng2);
-    myMarker1.add(Marker(
-      markerId: const MarkerId("First"),
-      position: LatLng(current_lat2, current_lng2),
-      infoWindow: const InfoWindow(title: "EY Tower Location"),
-    ));
-
-    setState(() {});
-    //Setting camera position in setstate
-    CameraPosition camera_position1 =
-        CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
-
-    GoogleMapController controller = await _controller1.future;
-
-    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position1));
-
-    print("-----------Updated-----------");
-    print(current_lat2);
-    print(current_lng2);
-  }
-*/
-
-  get_shared() async {
-    print("Inside the method where I fetch the sp polylines values");
-
-/*    final prefs = await sharedpreferences.get_poly_lat1();
-    sp_poly_lat1 = prefs;
-    print("Poly_lat1 = ${sp_poly_lat1}");
-
-    final prefs1 = await sharedpreferences.get_poly_lng1();
-    sp_poly_lng1 = prefs1;
-    print("Poly_lng1 = ${sp_poly_lng1}");
-
-    final prefs2 = await sharedpreferences.get_poly_lat2();
-    sp_poly_lat2 = prefs2;
-    print("Poly_lat2 = ${sp_poly_lat2}");
-
-    final prefs3 = await sharedpreferences.get_poly_lng2();
-    sp_poly_lng2 = prefs3;
-    print("Poly_lng2 = ${sp_poly_lng2}");
-
-    setState(() {});
-
-    print("Calling the total km function");*/
-
-    calculateDistance(
-        position1_lat, position1_lng, position2_lat, position2_lng);
-
-    print("Calling the total km function");
-
-    calculateDuration(
-        position1_lat, position1_lng, position2_lat, position2_lng);
-  }
 
   void calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
@@ -618,8 +589,13 @@ class _AddRidesState extends State<AddRides>
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: Theme(
             data: ThemeData(
-              primaryColor: Colors.blue, // Change primary color
-              // Add more color customizations as needed
+              primaryColor: Colors.blue,
+              backgroundColor: Colors.white,
+              colorScheme: ColorScheme.fromSwatch(
+                  cardColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  brightness: Brightness.light,
+                  primarySwatch: Colors.blue), // Change primary color
             ),
             child: child!,
           ),
@@ -639,41 +615,6 @@ class _AddRidesState extends State<AddRides>
     //  shared_data();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
-
-/*
-  shared_data() async {
-    print("Getting the shared data");
-
-    final prefs = await sharedpreferences.get_poly_lat1();
-    sp_data_poly_lat1 = prefs;
-    print("Poly_lat1 = ${sp_data_poly_lat1}");
-
-    final prefs1 = await sharedpreferences.get_poly_lng1();
-    sp_data_poly_lng1 = prefs1;
-    print("Poly_lng1 = ${sp_data_poly_lng1}");
-
-    final prefs2 = await sharedpreferences.get_poly_lat2();
-    sp_data_poly_lat2 = prefs2;
-    print("Poly_lat2 = ${sp_data_poly_lat2}");
-
-    final prefs3 = await sharedpreferences.get_poly_lng2();
-    sp_data_poly_lng2 = prefs3;
-    print("Poly_lng2 = ${sp_data_poly_lng2}");
-
-    setState(() {
-      if (sp_data_poly_lat1 == null ||
-          sp_data_poly_lng1 == null ||
-          sp_data_poly_lat2 == null ||
-          sp_data_poly_lng2 == null) {
-        print("Shared data values are null");
-        check_shared_data = true;
-      } else {
-        print("Shared data values are not null");
-        check_shared_data = false;
-      }
-    });
-  }
-*/
 
   _showSearchRides() {
     setState(() {
@@ -789,7 +730,9 @@ class _AddRidesState extends State<AddRides>
                             listRoutes,
                             _showMyRides,
                             showRide,
-                          ),
+                            toggleSelection,
+                            selectedIndexRoute,
+                            isCardSelected),
                   ),
                 ),
                 body: Container(), // Your body widget here
@@ -1175,7 +1118,7 @@ class _AddRidesState extends State<AddRides>
                                                     _selectedTime.hour,
                                                     _selectedTime.minute);
                                                 print("uuuserrrr ${user}");
-                                                await _fetchRoute();
+
                                                 print(
                                                     "ccccccccccccccc ${routeCoords}");
                                                 List<List<dynamic>> polyline =
@@ -1267,28 +1210,6 @@ class _AddRidesState extends State<AddRides>
               ),
             ),
 
-            // Visibility(
-            //   visible: listSearchBottomSheet,
-            //   child: Positioned(
-            //       left: 0,
-            //       right: 0,
-            //       bottom: 0,
-            //       child: Container(
-            //         height: 400,
-            //         decoration: const BoxDecoration(
-            //           // color: colorsFile.cardColor,
-            //           borderRadius: BorderRadius.only(
-            //             topLeft: Radius.circular(50.0),
-            //             topRight: Radius.circular(50.0),
-            //           ),
-            //         ),
-            //         child: ProposedRides(
-            //           _showMyRides,
-            //           showRide,
-            //         ),
-            //       )),
-            // ),
-
             Visibility(
                 visible: box_check,
                 child: Padding(
@@ -1367,13 +1288,6 @@ class _AddRidesState extends State<AddRides>
 
   void swapTextFields() {
     setState(() {
-/*      String tempText = originController.text;
-      originController.text = destinationController.text;
-      destinationController.text = tempText;
-
-      String tempAddressName = origin_address_name;
-      origin_address_name = destination_address_name;
-      destination_address_name = tempAddressName;*/
       if (routeType == "toOffice") {
         routeType = "fromOffice";
       } else {
