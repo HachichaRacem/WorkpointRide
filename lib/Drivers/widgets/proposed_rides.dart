@@ -61,7 +61,7 @@ class _ProposedRidesState extends State<ProposedRides> {
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
-  void _selectDateRange(BuildContext context, List<DateTime> dates) {
+ void _selectDateRange(BuildContext context, List<DateTime> dates) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -78,12 +78,13 @@ class _ProposedRidesState extends State<ProposedRides> {
                     selectionShape: DateRangePickerSelectionShape.rectangle,
                     selectionRadius: 10,
                     view: DateRangePickerView.month,
+                    minDate: DateTime.now(), // Set the minimum date to today's date
                     backgroundColor: Colors.white,
                     selectionColor: colorsFile.backgroundNvavigaton,
-                    headerStyle: const DateRangePickerHeaderStyle(
+                    headerStyle: DateRangePickerHeaderStyle(
                         textStyle: TextStyle(color: colorsFile.titlebotton),
                         backgroundColor: Colors.white),
-                    monthViewSettings: const DateRangePickerMonthViewSettings(
+                    monthViewSettings: DateRangePickerMonthViewSettings(
                       weekendDays: [7, 6],
                       dayFormat: 'EEE',
                       viewHeaderStyle: DateRangePickerViewHeaderStyle(
@@ -109,21 +110,17 @@ class _ProposedRidesState extends State<ProposedRides> {
                           fontSize: 12,
                           color: colorsFile.done),
                       todayCellDecoration: BoxDecoration(
-                          //  color: Colors.red,
                           border: Border.all(
                               color: colorsFile.titlebotton, width: 1),
                           shape: BoxShape.circle),
                     ),
                     selectionMode: DateRangePickerSelectionMode.multiple,
-                    onSelectionChanged:
-                        (DateRangePickerSelectionChangedArgs args) {
-                      // Handle selection change
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                       print(args.value);
-
                       setState(() {
                         dates.addAll(args.value);
                       });
-                    }, // or .multiRange
+                    },
                   ),
                 ),
                 Row(
@@ -135,7 +132,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            colorsFile.buttonRole), // Change the color here
+                            colorsFile.buttonRole),
                       ),
                       child: const Text(
                         'Cancel',
@@ -149,7 +146,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            colorsFile.buttonRole), // Change the color here
+                            colorsFile.buttonRole),
                       ),
                       child: const Text(
                         'Submit',
@@ -164,7 +161,8 @@ class _ProposedRidesState extends State<ProposedRides> {
         );
       },
     );
-  }
+}
+
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -253,106 +251,88 @@ class _ProposedRidesState extends State<ProposedRides> {
                   ),
                   const SizedBox(height: 10),
                   Container(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: RatingBar.builder(
-                              initialRating: nbPlaces.toDouble(),
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              itemCount: 4,
-                              itemBuilder: (context, _) => Image.asset(
-                                'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                width:
-                                    5, // Adjust width and height as per your image size
-                                height: 5,
-                                color: colorsFile
-                                    .done, // You can also apply color to the image if needed
-                              ),
-                              onRatingUpdate: (rating) {
-                                nbPlaces = rating.toInt();
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                              width:
-                                  50), // Adjust the space between the two icons
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: GestureDetector(
-                                onTap: () async {
-                                  print("testttt");
+  height: 50,
+  child: Padding(
+    padding: const EdgeInsets.all(3),
+    child: Row(
+      children: [
+        Expanded(
+          child: RatingBar.builder(
+            initialRating: nbPlaces.toDouble(),
+            minRating: 1,
+            direction: Axis.horizontal,
+            itemCount: 4,
+            itemBuilder: (context, _) => Image.asset(
+              'assets/images/seat.png',
+              width: MediaQuery.of(context).size.width * 0.03, 
+              height: MediaQuery.of(context).size.width * 0.03,
+              color: colorsFile.done, // 
+            ),
+            onRatingUpdate: (rating) {
+              setState(() {
+                nbPlaces = rating.toInt();
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 50), // Adjust the space between the two icons
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: GestureDetector(
+            onTap: () async {
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              final String? user = prefs.getString('user');
+              final DateTime now = DateTime.now();
+              DateTime startDate = DateTime(now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
 
-                                  final SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  final String? user = prefs.getString('user');
-                                  final now = new DateTime.now();
-                                  DateTime startDate = new DateTime(
-                                      now.year,
-                                      now.month,
-                                      now.day,
-                                      _selectedTime.hour,
-                                      _selectedTime.minute);
-                                  print("uuuserrrr ${user}");
-                                  await _scheduleServices
-                                      .addSchedule(
-                                          user:
-                                              user!, // Provide a value for the 'user' parameter
-                                          startTime:
-                                              startDate, // Provide a value for the 'startTime' parameter
-                                          scheduledDate:
-                                              dates, // Provide a value for the 'scheduledDate' parameter
-                                          availablePlaces:
-                                              nbPlaces, // Provide a value for the 'availablePlaces' parameter
-                                          routeId: widget
-                                              .listRoutes[selectedIndex]["_id"])
-                                      .then((value) {
-                                    // Check if the response is successful
-                                    if (value.statusCode == 200) {
-                                      print("Schedule added successfully");
-                                      // You can access response data if needed: value.data
-                                    } else {
-                                      // Handle unsuccessful response (non-200 status code)
-                                      print(
-                                          "Failed to add schedule: ${value.data}");
-                                    }
-                                  }).catchError((error) {
-                                    // Handle any errors that occurred during the request
-                                    print("Error adding schedule: $error");
-                                  });
-                                },
-                                child: Container(
-                                    height: 45,
-                                    width: 45,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white60,
-                                    ),
-                                    child: Center(
-                                      child: ClayContainer(
-                                        color: Colors.white,
-                                        height: 35,
-                                        width: 35,
-                                        borderRadius: 40,
-                                        curveType: CurveType.concave,
-                                        depth: 30,
-                                        spread: 2,
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.send,
-                                            color: colorsFile.buttonIcons,
-                                          ),
-                                        ),
-                                      ),
-                                    ))),
-                          ), // Adjust the space between the two icons
-                        ],
-                      ),
+              await _scheduleServices.addSchedule(
+                user: user!, // Provide a value for the 'user' parameter
+                startTime: startDate, // Provide a value for the 'startTime' parameter
+                scheduledDate: dates, // Provide a value for the 'scheduledDate' parameter
+                availablePlaces: nbPlaces, // Provide a value for the 'availablePlaces' parameter
+                routeId: widget.listRoutes[selectedIndex]["_id"]
+              ).then((value) {
+                if (value.statusCode == 200) {
+                  print("Schedule added successfully");
+                } else {
+                  print("Failed to add schedule: ${value.data}");
+                }
+              }).catchError((error) {
+                print("Error adding schedule: $error");
+              });
+            },
+            child: Container(
+              height: 45,
+              width: 45,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white60,
+              ),
+              child: Center(
+                child: ClayContainer(
+                  color: Colors.white,
+                  height: 35,
+                  width: 35,
+                  borderRadius: 40,
+                  curveType: CurveType.concave,
+                  depth: 30,
+                  spread: 2,
+                  child: const Center(
+                    child: Icon(
+                      Icons.send,
+                      color: colorsFile.buttonIcons,
                     ),
                   ),
+                ),
+              ),
+            ),
+          ),
+        ), // Adjust the space between the two icons
+      ],
+    ),
+  ),
+),
+
                 ],
               ),
             ),
