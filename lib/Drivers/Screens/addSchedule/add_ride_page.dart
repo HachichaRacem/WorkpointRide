@@ -337,8 +337,10 @@ class _AddRidesState extends State<AddRides>
                                         iconColor: Colors.black,
                                         placeType: PlaceType.region,
                                         bgColor: Colors.white,
-                                        //  location: LatLng(tunisaLat, tunisiaLng),
-                                        // radius: 500000,
+                                        location: LatLng(currentPosition_lat,
+                                            currentPosition_lng),
+                                        /*language: 'ar',
+                                        radius: 500,*/
                                         textColor: Colors.black,
                                         placeholder: "Search Any Location",
                                         apiKey:
@@ -489,6 +491,7 @@ class _AddRidesState extends State<AddRides>
                       toggleDaySelection: true,
                       selectionShape: DateRangePickerSelectionShape.rectangle,
                       selectionRadius: 10,
+                      minDate: DateTime.now(),
                       view: DateRangePickerView.month,
                       backgroundColor: Colors.white,
                       selectionColor: colorsFile.backgroundNvavigaton,
@@ -1078,9 +1081,14 @@ class _AddRidesState extends State<AddRides>
                                             itemBuilder: (context, _) =>
                                                 Image.asset(
                                               'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                              width:
-                                                  5, // Adjust width and height as per your image size
-                                              height: 5,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.03, // Adjust the width dynamically
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.03,
                                               color: colorsFile
                                                   .done, // You can also apply color to the image if needed
                                             ),

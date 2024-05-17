@@ -3,7 +3,7 @@ import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:osmflutter/Services/history.dart';
+import 'package:intl/intl.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,7 +33,7 @@ class RideCard extends StatelessWidget {
     double _width = MediaQuery.of(context).size.width;
     return GlassmorphicContainer(
       height: 200,
-      width: _width * 0.6,
+      width: 130,
       borderRadius: 15,
       blur: 100,
       alignment: Alignment.center,
@@ -60,6 +60,7 @@ class RideCard extends StatelessWidget {
                   // ),
                   Container(
                     height: 70,
+                    width: 70,
                     padding: const EdgeInsets.all(5), // Border width
                     decoration: const BoxDecoration(
                         color: colorsFile.borderCircle, shape: BoxShape.circle),
@@ -113,7 +114,8 @@ class RideCard extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 print("heloooo");
-                                _launchPhone("55555555");
+                                _launchPhone(
+                                    selectedRouteCardInfo!['driverNum']);
                               },
                               child: Center(
                                 child: ClayContainer(
@@ -149,29 +151,20 @@ class RideCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
+
+                  Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Home",
+                            selectedRouteCardInfo!['type'],
                             style: GoogleFonts.montserrat(
-                                fontSize: 12, color: colorsFile.detailColor),
-                          ),
-                          Text(
-                            "--->",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 12, color: colorsFile.detailColor),
-                          ),
-                          Text(
-                            "EY Tower",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 12, color: colorsFile.detailColor),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: colorsFile.detailColor),
                           ),
                         ],
                       ),
@@ -179,8 +172,11 @@ class RideCard extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: Text(
-                            selectedRouteCardInfo!['scheduleStartTime'] ??
-                                '7:15',
+                            selectedRouteCardInfo!['scheduleStartTime'] != null
+                                ? DateFormat("HH:mm").format(DateTime.parse(
+                                    selectedRouteCardInfo![
+                                        'scheduleStartTime']))
+                                : '00:00',
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.end,
                             style: GoogleFonts.montserrat(

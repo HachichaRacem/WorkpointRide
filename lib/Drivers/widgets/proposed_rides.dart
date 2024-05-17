@@ -85,6 +85,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     selectionShape: DateRangePickerSelectionShape.rectangle,
                     selectionRadius: 10,
                     view: DateRangePickerView.month,
+                    minDate: DateTime.now(),
                     backgroundColor: Colors.white,
                     selectionColor: colorsFile.backgroundNvavigaton,
                     headerStyle: const DateRangePickerHeaderStyle(
@@ -273,9 +274,10 @@ class _ProposedRidesState extends State<ProposedRides> {
                               itemCount: 4,
                               itemBuilder: (context, _) => Image.asset(
                                 'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                width:
-                                    5, // Adjust width and height as per your image size
-                                height: 5,
+                                width: MediaQuery.of(context).size.width *
+                                    0.03, // Adjust the width dynamically
+                                height:
+                                    MediaQuery.of(context).size.width * 0.03,
                                 color: colorsFile
                                     .done, // You can also apply color to the image if needed
                               ),

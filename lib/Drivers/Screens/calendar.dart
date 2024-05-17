@@ -1,15 +1,15 @@
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:osmflutter/GoogleMaps/driver_polyline_map.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/models/user.dart';
-import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../GoogleMaps/calendar_map.dart';
 
 class Person {
   final String name;
@@ -37,13 +37,79 @@ class _CalendarState extends State<Calendar> {
   DateTime now = DateTime.now();
   late DateTime lastDayOfMonth;
   bool bottomSheetVisible = true;
+  Set<Polyline> _polyline = {};
+  Set<Marker> _markers = {};
+  dynamic position2_lat = 36.85135579846211, position2_lng = 10.179065957033673;
+  dynamic position1_lat, position1_lng;
+  bool check_map = true;
+  List<LatLng> routeCoords = [];
+  List<dynamic> listRoutes = [];
+
+  void drawRoute() async {
+    routeCoords = [];
+    listRoutes[selectedIndex]["polyline"].forEach((polyline) {
+      //  print("sssssssssss${polyline[0]}");
+
+      routeCoords.add(LatLng(polyline[0], polyline[1]));
+    });
+    print("sssssssssss${routeCoords}");
+    position1_lat = listRoutes[selectedIndex]["startPoint"]["coordinates"][0];
+    position1_lng = listRoutes[selectedIndex]["startPoint"]["coordinates"][1];
+    position2_lat = listRoutes[selectedIndex]["endPoint"]["coordinates"][0];
+    position2_lng = listRoutes[selectedIndex]["endPoint"]["coordinates"][1];
+    _polyline.clear();
+    _markers.clear();
+    _polyline = {};
+    setState(() {
+      check_map = false;
+      _polyline.add(Polyline(
+        polylineId: PolylineId('route'),
+        visible: true,
+        points: routeCoords,
+        color: Colors.white,
+        width: 5,
+      ));
+
+      // Add markers
+      _markers.add(
+        Marker(
+          markerId: MarkerId('start'),
+          position: LatLng(
+              listRoutes[selectedIndex]["startPoint"]["coordinates"][0],
+              listRoutes[selectedIndex]["startPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'start'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      _markers.add(
+        Marker(
+          markerId: MarkerId('end'),
+          position: LatLng(
+              listRoutes[selectedIndex]["endPoint"]["coordinates"][0],
+              listRoutes[selectedIndex]["endPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'End'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      check_map = false;
+    });
+    /*  CameraPosition camera_position = CameraPosition(
+        target: LatLng(
+            listRoutes[selectedIndex]["startPoint"]["coordinates"][0],
+            listRoutes[selectedIndex]["startPoint"]["coordinates"][0]),
+        zoom: 7);*/
+    //
+    // mapController = await _controller.future;
+    //
+    // mapController
+    //     .animateCamera(CameraUpdate.newCameraPosition(camera_position));
+  }
 
   @override
   void initState() {
     super.initState();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
     _loadPassengers(currentDate: "${now.year}-${now.month}-${now.day}");
-    getshared();
   }
 
   void _loadPassengers({String? currentDate}) {
@@ -54,11 +120,12 @@ class _CalendarState extends State<Calendar> {
       (prefs) => scheduleServices()
           .getScheduleReservationsByDate(dateString, User().id!)
           .then(
-        (resp) {
+        (resp) async {
           print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
           schedules = resp.data['schedule'];
           if (schedules!.isNotEmpty) {
             for (final (index, schedule) in schedules!.indexed) {
+              listRoutes.add(schedules?[index]["routes"]);
               List<Person> ppl = (schedule['reservations'] as List)
                   .map((element) => Person(
                       name:
@@ -68,39 +135,11 @@ class _CalendarState extends State<Calendar> {
               schedules![index]['people'] = ppl;
             }
           }
+          drawRoute();
           setState(() {});
         },
       ),
     );
-  }
-
-  bool check = true;
-  dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
-  getshared() async {
-    final prefs = await sharedpreferences.get_poly_lat1();
-    sp_poly_lat1 = prefs;
-    print("Poly_lat1 = ${sp_poly_lat1}");
-
-    final prefs1 = await sharedpreferences.get_poly_lng1();
-    sp_poly_lng1 = prefs1;
-    print("Poly_lng1 = ${sp_poly_lng1}");
-
-    final prefs2 = await sharedpreferences.get_poly_lat2();
-    sp_poly_lat2 = prefs2;
-    print("Poly_lat2 = ${sp_poly_lat2}");
-
-    final prefs3 = await sharedpreferences.get_poly_lng2();
-    sp_poly_lng2 = prefs3;
-    print("Poly_lng2 = ${sp_poly_lng2}");
-
-    if (sp_poly_lng1 != null ||
-        sp_poly_lat1 != null ||
-        sp_poly_lng2 != null ||
-        sp_poly_lat2 != null) {
-      setState(() {
-        check = false;
-      });
-    }
   }
 
   @override
@@ -186,18 +225,19 @@ class _CalendarState extends State<Calendar> {
       ),
       body: Stack(
         children: [
-          //MapsGoogleExample(),
-          //
-          // check == true
-          //     ?
-          calendarMap(),
-          //     : DriverOnMap(
-          //   poly_lat1: sp_poly_lat1,
-          //   poly_lng1: sp_poly_lng1,
-          //   poly_lat2: sp_poly_lat2,
-          //   poly_lng2: sp_poly_lng2,
-          //   route_id: 'route',
-          // ),
+          //  MapsGoogleExample(),
+
+          check_map == true
+              ? MapsGoogleExample()
+              : DriverOnMap(
+                  poly_lat1: position1_lat,
+                  poly_lng1: position1_lng,
+                  poly_lat2: position2_lat,
+                  poly_lng2: position2_lng,
+                  route_id: 'route',
+                  polyline: _polyline,
+                  markers: _markers,
+                ),
 
           //Updated Code
 
