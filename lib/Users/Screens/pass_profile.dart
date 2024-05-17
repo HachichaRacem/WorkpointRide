@@ -168,7 +168,7 @@ class _pass_profileState extends State<pass_profile> {
                         child: SizedBox.fromSize(
                           size: const Size.fromRadius(40), // Image radius
                           child: const Image(
-                            image: AssetImage("assets/images/homme1.jpg"),
+                            image: AssetImage("assets/images/homme1.png"),
                             fit: BoxFit.cover,
                           ),
                         ),

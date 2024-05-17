@@ -27,37 +27,37 @@ class _ProfileState extends State<Profile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("Inside the insit state \n getting the shared preferences values");
-    getshared();
+    // print("Inside the insit state \n getting the shared preferences values");
+    // getshared();
   }
 
-  dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
-  getshared() async {
-    final prefs = await sharedpreferences.get_poly_lat1();
-    sp_poly_lat1 = prefs;
-    print("Poly_lat1 = ${sp_poly_lat1}");
+  // dynamic sp_poly_lat1, sp_poly_lng1, sp_poly_lat2, sp_poly_lng2;
+  // getshared() async {
+  //   final prefs = await sharedpreferences.get_poly_lat1();
+  //   sp_poly_lat1 = prefs;
+  //   print("Poly_lat1 = ${sp_poly_lat1}");
 
-    final prefs1 = await sharedpreferences.get_poly_lng1();
-    sp_poly_lng1 = prefs1;
-    print("Poly_lng1 = ${sp_poly_lng1}");
+  //   final prefs1 = await sharedpreferences.get_poly_lng1();
+  //   sp_poly_lng1 = prefs1;
+  //   print("Poly_lng1 = ${sp_poly_lng1}");
 
-    final prefs2 = await sharedpreferences.get_poly_lat2();
-    sp_poly_lat2 = prefs2;
-    print("Poly_lat2 = ${sp_poly_lat2}");
+  //   final prefs2 = await sharedpreferences.get_poly_lat2();
+  //   sp_poly_lat2 = prefs2;
+  //   print("Poly_lat2 = ${sp_poly_lat2}");
 
-    final prefs3 = await sharedpreferences.get_poly_lng2();
-    sp_poly_lng2 = prefs3;
-    print("Poly_lng2 = ${sp_poly_lng2}");
+  //   final prefs3 = await sharedpreferences.get_poly_lng2();
+  //   sp_poly_lng2 = prefs3;
+  //   print("Poly_lng2 = ${sp_poly_lng2}");
 
-    if (sp_poly_lng1 != null ||
-        sp_poly_lat1 != null ||
-        sp_poly_lng2 != null ||
-        sp_poly_lat2 != null) {
-      setState(() {
-        check = false;
-      });
-    }
-  }
+  //   if (sp_poly_lng1 != null ||
+  //       sp_poly_lat1 != null ||
+  //       sp_poly_lng2 != null ||
+  //       sp_poly_lat2 != null) {
+  //     setState(() {
+  //       check = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class _ProfileState extends State<Profile> {
                         child: SizedBox.fromSize(
                           size: const Size.fromRadius(40), // Image radius
                           child: const Image(
-                            image: AssetImage("assets/images/homme1.jpg"),
+                            image: AssetImage("assets/images/homme1.png"),
                             fit: BoxFit.cover,
                           ),
                         ),

@@ -148,7 +148,7 @@ class _MyRidesState extends State<MyRides> {
                                       image: AssetImage(
                                           widget.selectedRouteCardInfo![
                                                   'image'] ??
-                                              "assets/images/homme1.jpg"),
+                                              "assets/images/homme1.png"),
                                       fit: BoxFit.cover,
                                     ),
                                   ),

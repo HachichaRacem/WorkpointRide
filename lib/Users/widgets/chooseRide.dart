@@ -297,7 +297,7 @@ class _RouteCardState extends State<RouteCard> {
                                 size: const Size.fromRadius(28),
                                 child: Image(
                                   image: AssetImage(
-                                    widget.image ?? "assets/images/homme1.jpg",
+                                    widget.image ?? "assets/images/homme1.png",
                                   ),
                                   fit: BoxFit.cover,
                                 ))),
