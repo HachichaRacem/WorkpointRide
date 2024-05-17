@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-import 'package:osmflutter/Users/Screens/history.dart';
+
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -132,12 +132,12 @@ class _ProfileState extends State<Profile> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => History(),
-                                        ),
-                                      );
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) => History(),
+                                      //   ),
+                                      // );
                                     },
                                     child: Container(
                                       height: 50,

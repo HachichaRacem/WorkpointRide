@@ -362,9 +362,9 @@ class _CalendarState extends State<Calendar> {
                                                                 .none,
                                                   ),
                                                 ),
-                                                if (selectedTimeIndex == index)
-                                                  const Icon(Icons.edit,
-                                                      color: Colors.white),
+                                                // if (selectedTimeIndex == index)
+                                                //   const Icon(Icons.edit,
+                                                //       color: Colors.white),
                                               ],
                                             ),
                                           ),
@@ -468,13 +468,13 @@ class _CalendarState extends State<Calendar> {
                                                   color: colorsFile.skyBlue,
                                                 ),
                                               ),
-                                              const SizedBox(width: 2),
-                                              Container(
-                                                child: const Icon(
-                                                  Icons.edit,
-                                                  color: colorsFile.skyBlue,
-                                                ),
-                                              ),
+                                              // const SizedBox(width: 2),
+                                              // Container(
+                                              //   child: const Icon(
+                                              //     Icons.edit,
+                                              //     color: colorsFile.skyBlue,
+                                              //   ),
+                                              // ),
                                             ],
                                           ),
                                         ),

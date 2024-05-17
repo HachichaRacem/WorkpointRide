@@ -71,37 +71,49 @@ class _NotifState extends State<Notif> with SingleTickerProviderStateMixin {
                 child: Column(
                   children: [
                     SizedBox(height: 30,),
-                    Container(
-                      width: _width * 0.9,
-                      height: kToolbarHeight - 0.0,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(  color: colorsFile.icons,)
-                      ),
-                      child: TabBar(
-                        controller: _tabController,
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          color: colorsFile.icons,
-                        ),
-                        labelColor: Colors.white,
-                        dividerColor: Colors.transparent,
-                        unselectedLabelColor: colorsFile.tabbar,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        tabs: _tabs,
-                      ),
-                    ),
+                    // Container(
+                    //   width: _width * 0.9,
+                    //   height: kToolbarHeight - 0.0,
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey.shade200,
+                    //     borderRadius: BorderRadius.circular(10),
+                    //     border: Border.all(  color: colorsFile.icons,)
+                    //   ),
+                    //   child: TabBar(
+                    //     controller: _tabController,
+                    //     indicator: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(8.0),
+                    //       color: colorsFile.icons,
+                    //     ),
+                    //     labelColor: Colors.white,
+                    //     dividerColor: Colors.transparent,
+                    //     unselectedLabelColor: colorsFile.tabbar,
+                    //     indicatorSize: TabBarIndicatorSize.tab,
+                    //     tabs: _tabs,
+                    //   ),
+                    // ),
                     Expanded(
                       child: TabBarView(
                         controller: _tabController,
                         children: [
                           // Import and use the UpcomingWidget
-                          AlertUpcoming(),
-                          // Import and use the CompletedWidget
-                          AlertCompleted(),
-                          // Import and use the CancelledWidget
-                          AlertCancelled(),
+                          // AlertUpcoming(),
+                          // // Import and use the CompletedWidget
+                          // AlertCompleted(),
+                          // // Import and use the CancelledWidget
+                          // AlertCancelled(),
+                          Padding(
+                    padding: EdgeInsets.only(top: _height * 0.2), // 10% from the bottom of the container
+                    child: Text(
+                      "Coming Soon",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: colorsFile.icons,
+                      )
+                    ),
+                          ),
                         ],
                       ),
                     ),
