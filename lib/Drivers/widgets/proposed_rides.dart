@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -181,8 +182,13 @@ class _ProposedRidesState extends State<ProposedRides> {
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: Theme(
             data: ThemeData(
-              primaryColor: Colors.blue, // Change primary color
-              // Add more color customizations as needed
+              primaryColor: Colors.blue,
+              backgroundColor: Colors.white,
+              colorScheme: ColorScheme.fromSwatch(
+                  cardColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  brightness: Brightness.light,
+                  primarySwatch: Colors.blue), // Change primary color
             ),
             child: child!,
           ),
@@ -195,73 +201,73 @@ class _ProposedRidesState extends State<ProposedRides> {
       });
   }
 
-  void showSchedulingDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          child: GlassmorphicContainer(
-            height: 160,
-            width: _width * 0.85,
-            borderRadius: 15,
-            blur: 2,
-            alignment: Alignment.center,
-            border: 2,
-            linearGradient: LinearGradient(
-              colors: [
-                const Color(0xFF003A5A).withOpacity(0.37),
-                const Color(0xFF003A5A).withOpacity(1),
-                const Color(0xFF003A5A).withOpacity(0.36),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderGradient: LinearGradient(
-              colors: [
-                const Color(0xFF003A5A).withOpacity(0.37),
-                const Color(0xFF003A5A).withOpacity(1),
-                const Color(0xFF003A5A).withOpacity(0.36),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(5, 10, 10, 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () => _selectDateRange(context, dates),
-                        icon: const Icon(Icons.calendar_month,
-                            color: Colors.white),
+void showSchedulingDialog() {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: GlassmorphicContainer(
+          height: 160,
+          width: _width * 0.85,
+          borderRadius: 15,
+          blur: 10,  // Increased for a softer blur effect
+          alignment: Alignment.center,
+          border: 2,
+          linearGradient: LinearGradient(
+        colors: [
+          const Color(0xFF003A5A).withOpacity(0.3),
+          const Color(0xFF003A5A).withOpacity(1),
+          const Color(0xFF003A5A).withOpacity(0.3),
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+      borderGradient: LinearGradient(
+        colors: [
+          const Color(0xFF003A5A).withOpacity(0.3),
+          const Color(0xFF003A5A).withOpacity(1),
+          const Color(0xFF003A5A).withOpacity(0.3),
+        ],
+      ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(5, 10, 10, 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => _selectDateRange(context, dates),
+                      icon: const Icon(Icons.calendar_month, color: Colors.white),
+                    ),
+                    TextButton(
+                      onPressed: () => _selectTime(context),
+                      child: Text(
+                        ' ${_selectedTime.hour}:${_selectedTime.minute}',
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      TextButton(
-                        onPressed: () => _selectTime(context),
-                        child: Text(
-                          ' ${_selectedTime.hour}:${_selectedTime.minute}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Icon(
+                        Icons.close,
+                        color: Color(0xFFFFFFFF), // White color
+                        size: 25.0,
                       ),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: const Icon(
-                          Icons.close,
-                          color: Color(0xFFFFFFFF), // White color
-                          size: 25.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                   Container(
   height: 50,
   child: Padding(
     padding: const EdgeInsets.all(3),
     child: Row(
+      mainAxisAlignment:MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: RatingBar.builder(
@@ -297,7 +303,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                 startTime: startDate, // Provide a value for the 'startTime' parameter
                 scheduledDate: dates, // Provide a value for the 'scheduledDate' parameter
                 availablePlaces: nbPlaces, // Provide a value for the 'availablePlaces' parameter
-                routeId: widget.listRoutes[selectedIndex]["_id"]
+                //routeId: widget.listRoutes[selectedIndex]["_id"]
               ).then((value) {
                 if (value.statusCode == 200) {
                   print("Schedule added successfully");
@@ -351,18 +357,19 @@ class _ProposedRidesState extends State<ProposedRides> {
 
   List<String> startPointAddresses = [];
   List<String> endPointAddresses = [];
+  List<String> routeTypes = [];
 
   @override
   void initState() {
     super.initState();
-    extractAddresses();
+    extractAddressesAndTypes();
   }
 
-  Future<void> extractAddresses() async {
+  Future<void> extractAddressesAndTypes() async {
     for (var route in widget.listRoutes) {
       var startPointCoordinates = route['startPoint']['coordinates'];
       var endPointCoordinates = route['endPoint']['coordinates'];
-
+      var type = route['type'];
       String startPointAddress =
           await getAddress(startPointCoordinates[1], startPointCoordinates[0]);
       String endPointAddress =
@@ -371,6 +378,7 @@ class _ProposedRidesState extends State<ProposedRides> {
       setState(() {
         startPointAddresses.add(startPointAddress);
         endPointAddresses.add(endPointAddress);
+        routeTypes.add(type);
       });
     }
   }
@@ -583,48 +591,63 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                 ),
                                               ),
                                               SizedBox(height: 8),
+                                              // Text(
+                                              //   startPointAddresses.length != 0
+                                              //       ? startPointAddresses[index]
+                                              //       : "",
+                                              //   textAlign: TextAlign.center,
+                                              //   style: GoogleFonts.montserrat(
+                                              //       fontWeight: FontWeight.w600,
+                                              //       fontSize: 12,
+                                              //       color: (widget.selectedIndex ==
+                                              //                   index &&
+                                              //               widget
+                                              //                   .isCardSelected)
+                                              //           ? Colors.white
+                                              //           : colorsFile.titleCard),
+                                              // ),
+                                              // Text(
+                                              //   "|",
+                                              //   textAlign: TextAlign.center,
+                                              //   style: GoogleFonts.montserrat(
+                                              //       fontWeight: FontWeight.w600,
+                                              //       fontSize: 12,
+                                              //       color: (widget.selectedIndex ==
+                                              //                   index &&
+                                              //               widget
+                                              //                   .isCardSelected)
+                                              //           ? Colors.white
+                                              //           : colorsFile.titleCard),
+                                              // ),
+                                              // Icon(
+                                              //   Icons.arrow_downward,
+                                              //   color: (widget.selectedIndex ==
+                                              //               index &&
+                                              //           widget.isCardSelected)
+                                              //       ? Colors.white
+                                              //       : colorsFile.titleCard,
+                                              //   size: 15,
+                                              // ),
+                                              // SizedBox(width: 10),
+                                              // Text(
+                                              //   endPointAddresses.length != 0
+                                              //       ? endPointAddresses[index]
+                                              //       : "",
+                                              //   textAlign: TextAlign.center,
+                                              //   style: GoogleFonts.montserrat(
+                                              //       fontWeight: FontWeight.w600,
+                                              //       fontSize: 12,
+                                              //       color: (widget.selectedIndex ==
+                                              //                   index &&
+                                              //               widget
+                                              //                   .isCardSelected)
+                                              //           ? Colors.white
+                                              //           : colorsFile.titleCard),
+                                              // ),
+                                              SizedBox(height: 20,),
                                               Text(
-                                                startPointAddresses.length != 0
-                                                    ? startPointAddresses[index]
-                                                    : "",
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                    color: (widget.selectedIndex ==
-                                                                index &&
-                                                            widget
-                                                                .isCardSelected)
-                                                        ? Colors.white
-                                                        : colorsFile.titleCard),
-                                              ),
-                                              Text(
-                                                "|",
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                    color: (widget.selectedIndex ==
-                                                                index &&
-                                                            widget
-                                                                .isCardSelected)
-                                                        ? Colors.white
-                                                        : colorsFile.titleCard),
-                                              ),
-                                              Icon(
-                                                Icons.arrow_downward,
-                                                color: (widget.selectedIndex ==
-                                                            index &&
-                                                        widget.isCardSelected)
-                                                    ? Colors.white
-                                                    : colorsFile.titleCard,
-                                                size: 15,
-                                              ),
-                                              SizedBox(width: 10),
-                                              Text(
-                                                endPointAddresses.length != 0
-                                                    ? endPointAddresses[index]
-                                                    : "",
+                                                routeTypes.length != 0
+                                                    ? routeTypes[index] : "",
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.w600,

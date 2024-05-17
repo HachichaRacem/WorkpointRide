@@ -21,8 +21,18 @@ class _MyRidesState extends State<MyRides> {
   late double _height;
   late double _width;
   bool bottomSheetVisible = true;
-
+  int selectedIndex = -1;
+void toggleSelection(int index) {
+    setState(() {
+      if (selectedIndex == index) {
+        selectedIndex = -1; // Deselect if the same index is tapped again
+      } else {
+        selectedIndex = index; // Select new card
+      }
+    });
+}
   Color baseColor = const Color(0xFFf2f2f2);
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +64,7 @@ class _MyRidesState extends State<MyRides> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
                     child: Text(
-                      'Your rides pass',
+                      'Your rides pass2',
                       style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -66,8 +76,7 @@ class _MyRidesState extends State<MyRides> {
                     padding: const EdgeInsets.all(16.0),
                     child: GestureDetector(
                         onTap: () {
-                          // Call your void method or add logic for the entire structure
-                          //this.onPressed(context);
+                        
                         },
                         child: Container(
                           height: 50,
