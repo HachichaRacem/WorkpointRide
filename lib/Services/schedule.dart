@@ -23,6 +23,23 @@ class scheduleServices {
     }
   }
 
+  Future<Response> deleteScheduleByID(String id) async {
+    try {
+      final SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      String? token = _prefs.getString('token');
+      if (token != null) {
+        dio.options.headers["Authorization"] = "$token";
+      }
+      return await dio.delete("api/schedules/deleteScheduleByID/$id");
+    } on DioException catch (e) {
+      print(e.response?.data);
+      print(e.response?.headers);
+      print(e.response?.requestOptions);
+      return e.response!;
+    }
+  }
+
   Future<Response> getScheduleReservationsByDate(
       String date, String userID) async {
     try {

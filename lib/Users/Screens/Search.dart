@@ -7,6 +7,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:osmflutter/models/user.dart';
 import 'package:osmflutter/Drivers/Screens/addSchedule/want_to_book.dart';
 import 'package:osmflutter/GoogleMaps/driver_polyline_map.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
@@ -166,7 +167,7 @@ class _SearchState extends State<Search> {
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     final prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString("user");
-    debugPrint("[DATA]: userID: $userID");
+    debugPrint("[DATA]: userID: ${User().id}");
     dynamic data =
         await Reservation().getReservationsByDate(userID!, dateString);
     print("dataaa ${data.data}");
@@ -204,9 +205,14 @@ class _SearchState extends State<Search> {
 
   _showMyRides() {
     print("tttttttttttttt");
+    _getReservations = _loadReservation();
     setState(() {
-      myRidesbottomSheetVisible = true;
+      isSearchPoPupVisible = false;
       listSearchBottomSheet = false;
+      bottomSheetVisible = true;
+      myRidesbottomSheetVisible = false;
+      ridesIsVisible = false;
+      condition = true;
     });
   }
 
@@ -426,10 +432,9 @@ class _SearchState extends State<Search> {
                           left: index == 0 ? 16.0 : 0.0, right: 16.0),
                       child: GestureDetector(
                         onTap: () {
+                          selectedIndex = index;
                           _getReservations = _loadReservation();
-                          setState(() {
-                            selectedIndex = index;
-                          });
+                          setState(() {});
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -511,6 +516,7 @@ class _SearchState extends State<Search> {
                         if (snapshot.hasData) {
                           if (snapshot.data.isNotEmpty) {
                             print("[DATA]: ${snapshot.data}");
+                            bool showAddButton = snapshot.data.length < 2;
                             return Column(
                               children: [
                                 Row(
@@ -529,43 +535,47 @@ class _SearchState extends State<Search> {
                                     Spacer(),
                                     Padding(
                                       padding: const EdgeInsets.all(16.0),
-                                      child: GestureDetector(
-                                          onTap: _showSearchRides,
-                                          child: Container(
-                                            height: 50,
-                                            width: 50,
-                                            child: Stack(
-                                              children: [
-                                                ClayContainer(
-                                                  color: Colors.white,
-                                                  height: 50,
-                                                  width: 50,
-                                                  borderRadius: 50,
-                                                  curveType: CurveType.concave,
-                                                  depth: 30,
-                                                  spread: 1,
-                                                ),
-                                                Center(
-                                                  child: ClayContainer(
-                                                    color: Colors.white,
-                                                    height: 40,
-                                                    width: 40,
-                                                    borderRadius: 40,
-                                                    curveType: CurveType.convex,
-                                                    depth: 30,
-                                                    spread: 1,
-                                                    child: Center(
-                                                      child: Icon(
-                                                        Icons.add,
-                                                        color: colorsFile
-                                                            .buttonIcons,
-                                                      ),
+                                      child: showAddButton
+                                          ? GestureDetector(
+                                              onTap: _showSearchRides,
+                                              child: Container(
+                                                height: 50,
+                                                width: 50,
+                                                child: Stack(
+                                                  children: [
+                                                    ClayContainer(
+                                                      color: Colors.white,
+                                                      height: 50,
+                                                      width: 50,
+                                                      borderRadius: 50,
+                                                      curveType:
+                                                          CurveType.concave,
+                                                      depth: 30,
+                                                      spread: 1,
                                                     ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )),
+                                                    Center(
+                                                      child: ClayContainer(
+                                                        color: Colors.white,
+                                                        height: 40,
+                                                        width: 40,
+                                                        borderRadius: 40,
+                                                        curveType:
+                                                            CurveType.convex,
+                                                        depth: 30,
+                                                        spread: 1,
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons.add,
+                                                            color: colorsFile
+                                                                .buttonIcons,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ))
+                                          : const SizedBox(),
                                     ),
                                   ],
                                 ),
@@ -574,9 +584,18 @@ class _SearchState extends State<Search> {
                                     child: Row(
                                       children: List.generate(
                                           snapshot.data.length, (index) {
+                                        /*debugPrint(
+                                            "isSearchPoPupVisible : $isSearchPoPupVisible");
+                                        debugPrint(
+                                            "listSearchBottomSheet : $listSearchBottomSheet");
+                                        debugPrint(
+                                            "bottomSheetVisible : $bottomSheetVisible");
+                                        debugPrint(
+                                            "myRidesbottomSheetVisible : $myRidesbottomSheetVisible");
+                                        debugPrint(
+                                            "ridesIsVisible : $ridesIsVisible");
+                                        debugPrint("condition : $condition");*/
                                         late dynamic data;
-                                        print("tttttttttttt" +
-                                            snapshot.data.toString());
                                         if (snapshot.data != null) {
                                           data = {
                                             'id': snapshot.data[index]['_id'],
@@ -590,7 +609,6 @@ class _SearchState extends State<Search> {
                                                 ['schedule']['routes']['type'],
                                           };
                                         }
-
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 12.0),

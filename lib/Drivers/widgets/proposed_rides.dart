@@ -68,7 +68,7 @@ class _ProposedRidesState extends State<ProposedRides> {
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
- void _selectDateRange(BuildContext context, List<DateTime> dates) {
+  void _selectDateRange(BuildContext context, List<DateTime> dates) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -122,7 +122,8 @@ class _ProposedRidesState extends State<ProposedRides> {
                           shape: BoxShape.circle),
                     ),
                     selectionMode: DateRangePickerSelectionMode.multiple,
-                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                    onSelectionChanged:
+                        (DateRangePickerSelectionChangedArgs args) {
                       print(args.value);
                       setState(() {
                         dates.addAll(args.value);
@@ -168,8 +169,7 @@ class _ProposedRidesState extends State<ProposedRides> {
         );
       },
     );
-}
-
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -258,88 +258,103 @@ class _ProposedRidesState extends State<ProposedRides> {
                   ),
                   const SizedBox(height: 10),
                   Container(
-  height: 50,
-  child: Padding(
-    padding: const EdgeInsets.all(3),
-    child: Row(
-      children: [
-        Expanded(
-          child: RatingBar.builder(
-            initialRating: nbPlaces.toDouble(),
-            minRating: 1,
-            direction: Axis.horizontal,
-            itemCount: 4,
-            itemBuilder: (context, _) => Image.asset(
-              'assets/images/seat.png',
-              width: MediaQuery.of(context).size.width * 0.03, 
-              height: MediaQuery.of(context).size.width * 0.03,
-              color: colorsFile.done, // 
-            ),
-            onRatingUpdate: (rating) {
-              setState(() {
-                nbPlaces = rating.toInt();
-              });
-            },
-          ),
-        ),
-        const SizedBox(width: 50), // Adjust the space between the two icons
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: GestureDetector(
-            onTap: () async {
-              final SharedPreferences prefs = await SharedPreferences.getInstance();
-              final String? user = prefs.getString('user');
-              final DateTime now = DateTime.now();
-              DateTime startDate = DateTime(now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
+                    height: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: RatingBar.builder(
+                              initialRating: nbPlaces.toDouble(),
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              itemCount: 4,
+                              itemBuilder: (context, _) => Image.asset(
+                                'assets/images/seat.png',
+                                width: MediaQuery.of(context).size.width * 0.03,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.03,
+                                color: colorsFile.done, //
+                              ),
+                              onRatingUpdate: (rating) {
+                                setState(() {
+                                  nbPlaces = rating.toInt();
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                              width:
+                                  50), // Adjust the space between the two icons
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: GestureDetector(
+                              onTap: () async {
+                                final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                final String? user = prefs.getString('user');
+                                final DateTime now = DateTime.now();
+                                DateTime startDate = DateTime(
+                                    now.year,
+                                    now.month,
+                                    now.day,
+                                    _selectedTime.hour,
+                                    _selectedTime.minute);
 
-              await _scheduleServices.addSchedule(
-                user: user!, // Provide a value for the 'user' parameter
-                startTime: startDate, // Provide a value for the 'startTime' parameter
-                scheduledDate: dates, // Provide a value for the 'scheduledDate' parameter
-                availablePlaces: nbPlaces, // Provide a value for the 'availablePlaces' parameter
-                routeId: widget.listRoutes[selectedIndex]["_id"]
-              ).then((value) {
-                if (value.statusCode == 200) {
-                  print("Schedule added successfully");
-                } else {
-                  print("Failed to add schedule: ${value.data}");
-                }
-              }).catchError((error) {
-                print("Error adding schedule: $error");
-              });
-            },
-            child: Container(
-              height: 45,
-              width: 45,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white60,
-              ),
-              child: Center(
-                child: ClayContainer(
-                  color: Colors.white,
-                  height: 35,
-                  width: 35,
-                  borderRadius: 40,
-                  curveType: CurveType.concave,
-                  depth: 30,
-                  spread: 2,
-                  child: const Center(
-                    child: Icon(
-                      Icons.send,
-                      color: colorsFile.buttonIcons,
+                                await _scheduleServices
+                                    .addSchedule(
+                                        user:
+                                            user!, // Provide a value for the 'user' parameter
+                                        startTime:
+                                            startDate, // Provide a value for the 'startTime' parameter
+                                        scheduledDate:
+                                            dates, // Provide a value for the 'scheduledDate' parameter
+                                        availablePlaces:
+                                            nbPlaces, // Provide a value for the 'availablePlaces' parameter
+                                        routeId: widget.listRoutes[
+                                            widget.selectedIndex]["_id"])
+                                    .then((value) {
+                                  if (value.statusCode == 200) {
+                                    print("Schedule added successfully");
+                                  } else {
+                                    print(
+                                        "Failed to add schedule: ${value.data}");
+                                  }
+                                }).catchError((error) {
+                                  print("Error adding schedule: $error");
+                                });
+                              },
+                              child: Container(
+                                height: 45,
+                                width: 45,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white60,
+                                ),
+                                child: Center(
+                                  child: ClayContainer(
+                                    color: Colors.white,
+                                    height: 35,
+                                    width: 35,
+                                    borderRadius: 40,
+                                    curveType: CurveType.concave,
+                                    depth: 30,
+                                    spread: 2,
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.send,
+                                        color: colorsFile.buttonIcons,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ), // Adjust the space between the two icons
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
-          ),
-        ), // Adjust the space between the two icons
-      ],
-    ),
-  ),
-),
-
                 ],
               ),
             ),
@@ -484,7 +499,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                 right: 16.0,
                               ),
                               child: GlassmorphicContainer(
-                                height: 170,
+                                height: 180,
                                 width: _width * 0.3,
                                 borderRadius: 15,
                                 blur: 100,
@@ -626,6 +641,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                     ? endPointAddresses[index]
                                                     : "",
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 12,

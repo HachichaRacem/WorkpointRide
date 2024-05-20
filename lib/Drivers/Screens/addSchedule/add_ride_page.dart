@@ -659,7 +659,6 @@ class _AddRidesState extends State<AddRides>
     _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      
       body: GestureDetector(
         onTap: () {
           setState(() {

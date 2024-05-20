@@ -33,6 +33,10 @@ class _ChooseRideState extends State<ChooseRide> {
   List schedules = [];
   int selectedRouteCardIndex = 0;
 
+  void updateSelectedCardIndex(int index) {
+    setState(() => selectedRouteCardIndex = index);
+  }
+
   Future _createReservation() async {
     if (schedules.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
@@ -153,6 +157,10 @@ class _ChooseRideState extends State<ChooseRide> {
                               final Map? driverData =
                                   snapshot.data?.data[index]['user'];
                               return RouteCard(
+                                selectedCardRouteIndex: selectedRouteCardIndex,
+                                index: index,
+                                updateSelectedCardRouteIndex:
+                                    updateSelectedCardIndex,
                                 updateSelectedRouteCardInfo:
                                     widget.updateSelectedRouteCardInfo,
                                 driverName: driverData?['firstName'],
@@ -206,8 +214,11 @@ class RouteCard extends StatefulWidget {
   final String? driverNum;
   final String? scheduleStartTime;
   final String? image;
+  final int selectedCardRouteIndex;
+  final int index;
   final double? selectedSeats;
   final Function()? ridesVisible;
+  final Function(int)? updateSelectedCardRouteIndex;
   final Function(Map)? updateSelectedRouteCardInfo;
 
   const RouteCard(
@@ -218,24 +229,25 @@ class RouteCard extends StatefulWidget {
       this.image,
       this.ridesVisible,
       this.selectedSeats,
-      this.updateSelectedRouteCardInfo});
+      this.updateSelectedRouteCardInfo,
+      required this.index,
+      required this.selectedCardRouteIndex,
+      this.updateSelectedCardRouteIndex});
 
   @override
   State<RouteCard> createState() => _RouteCardState();
 }
 
 class _RouteCardState extends State<RouteCard> {
-  bool isClicked = false;
   final Color _selectedColor = colorsFile.icons;
   final Color _unselectedColor = colorsFile.cardColor;
 
   @override
   Widget build(BuildContext context) {
+    final isClicked = widget.index == widget.selectedCardRouteIndex;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isClicked = !isClicked;
-        });
+        widget.updateSelectedCardRouteIndex!(widget.index);
         if (widget.ridesVisible != null) {
           widget.ridesVisible!();
         }
