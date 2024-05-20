@@ -647,7 +647,10 @@ void showSchedulingDialog() {
                                               SizedBox(height: 20,),
                                               Text(
                                                 routeTypes.length != 0
-                                                    ? routeTypes[index] : "",
+                                                    ? routeTypes[index]
+          .replaceAll("fromOffice", "from office")
+          .replaceAll("toOffice", "to office")
+      : "",
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.w600,
