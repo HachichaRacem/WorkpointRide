@@ -302,7 +302,7 @@ class _ChooseRideState extends State<ChooseRide> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       schedules = snapshot.data?.data;
-                      debugPrint("[TEST]: ${schedules[0]}");
+                      //debugPrint("[TEST]: ${schedules[0]}");
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(

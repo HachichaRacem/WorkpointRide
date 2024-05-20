@@ -315,12 +315,12 @@ class _AddRidesState extends State<AddRides>
                                     child: SearchMapPlaceWidget(
                                         hasClearButton: true,
                                         iconColor: Colors.black,
-                                        placeType: PlaceType.region,
+                                        placeType: PlaceType.establishment,
                                         bgColor: Colors.white,
-                                        location: LatLng(currentPosition_lat,
-                                            currentPosition_lng),
-                                        /*language: 'ar',
-                                        radius: 500,*/
+                                        // location: LatLng(currentPosition_lat,
+                                        //     currentPosition_lng),
+                                        //language: 'ar',
+                                        //  radius: 5000000000,
                                         textColor: Colors.black,
                                         placeholder: "Search Any Location",
                                         apiKey:
@@ -448,6 +448,7 @@ class _AddRidesState extends State<AddRides>
   }
 
   void _selectDateRange(BuildContext context) {
+    dates = [];
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -509,7 +510,7 @@ class _AddRidesState extends State<AddRides>
                         // Handle selection change
 
                         setState(() {
-                          dates.addAll(args.value);
+                          dates = args.value;
                         });
                       },
                     ),

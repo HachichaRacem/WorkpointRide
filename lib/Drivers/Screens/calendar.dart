@@ -7,7 +7,7 @@ import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/models/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -140,33 +140,33 @@ class _CalendarState extends State<Calendar> {
     _loadPassengers();
   }
 
-  void _loadPassengers() {
+  Future<dynamic> _loadPassengers() async {
     final DateTime date = now.add(Duration(days: selectedIndex));
     final String dateString =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    scheduleServices()
+    await scheduleServices()
         .getScheduleReservationsByDate(dateString, User().id!)
-        .then(
-      (resp) async {
-        print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
+        .then((resp) async {
+      print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
+      setState(() {
         schedules = resp.data['schedule'];
-        if (schedules!.isNotEmpty) {
-          for (final (index, schedule) in schedules!.indexed) {
-            listRoutes.add(schedules?[index]["routes"]);
-            List<Person> ppl = (schedule['reservations'] as List)
-                .map((element) => Person(
-                    name:
-                        "${element['user']['firstName']} ${element['user']['lastName']}",
-                    phoneNumber: element['user']['phoneNumber'] ?? "-"))
-                .toList();
-            schedules![index]['people'] = ppl;
-          }
-          drawRoute();
-          //   _loadPickUpPoints();
-          setState(() {});
-        },
-      
-    );
+      });
+      if (schedules!.isNotEmpty) {
+        for (final (index, schedule) in schedules!.indexed) {
+          listRoutes.add(schedules?[index]["routes"]);
+          List<Person> ppl = (schedule['reservations'] as List)
+              .map((element) => Person(
+                  name:
+                      "${element['user']['firstName']} ${element['user']['lastName']}",
+                  phoneNumber: element['user']['phoneNumber'] ?? "-"))
+              .toList();
+          schedules![index]['people'] = ppl;
+        }
+        drawRoute();
+        //   _loadPickUpPoints();
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -491,14 +491,8 @@ class _CalendarState extends State<Calendar> {
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
-                                                  scheduleServices()
-                                                      .deleteScheduleByID(
-                                                          schedules![
-                                                                  selectedTimeIndex]
-                                                              ['_id'])
-                                                      .then((value) {
-                                                    _loadPassengers();
-                                                  });
+                                                  _onAlertButtonsPressed(
+                                                      context);
                                                 },
                                                 child: const Icon(
                                                   Icons.delete,
@@ -686,6 +680,66 @@ class _CalendarState extends State<Calendar> {
         ],
       ),
     );
+  }
+
+  _onAlertButtonsPressed(context) {
+    var alertStyle = AlertStyle(
+        backgroundColor: Color(0xFF003A5A).withOpacity(0.8),
+        animationType: AnimationType.fromTop,
+        isCloseButton: false,
+        isOverlayTapDismiss: true,
+        descStyle: TextStyle(fontWeight: FontWeight.bold),
+        animationDuration: Duration(milliseconds: 400),
+        alertBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+          side: BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        titleStyle: TextStyle(
+          color: Colors.red,
+        ),
+        // constraints: BoxConstraints.expand(width: 300),
+        //First to chars "55" represents transparency of color
+        overlayColor: Colors.black.withOpacity(0.36),
+        alertElevation: 0,
+        alertAlignment: Alignment.topCenter);
+
+    Alert(
+      context: context,
+      type: AlertType.warning,
+      style: alertStyle,
+      title: "",
+      desc: "Are you sure you want to cancel this ride ?",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "No",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () => Navigator.pop(context),
+          color: Colors.grey,
+        ),
+        DialogButton(
+          child: Text(
+            "Yes",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () async {
+            await deleteScheduleByID();
+            Navigator.pop(context);
+          },
+          color: colorsFile.buttonIcons,
+        )
+      ],
+    ).show();
+  }
+
+  Future<dynamic> deleteScheduleByID() async {
+    print("hellooooo");
+    return await scheduleServices()
+        .deleteScheduleByID(schedules![selectedTimeIndex]['_id'])
+        .then((value) async => await _loadPassengers());
   }
 
   // Function to launch the phone app

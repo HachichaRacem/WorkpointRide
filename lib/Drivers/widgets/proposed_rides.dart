@@ -68,7 +68,10 @@ class _ProposedRidesState extends State<ProposedRides> {
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
-  void _selectDateRange(BuildContext context, List<DateTime> dates) {
+  void _selectDateRange(
+    BuildContext context,
+  ) {
+    dates = [];
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -126,7 +129,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                         (DateRangePickerSelectionChangedArgs args) {
                       print(args.value);
                       setState(() {
-                        dates.addAll(args.value);
+                        dates = args.value;
                       });
                     },
                   ),
@@ -149,7 +152,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Add your submit logic here
+                        print(dates.toString()); // Add your submit logic here
                         Navigator.of(context).pop(); // Dismiss the dialog
                       },
                       style: ButtonStyle(
@@ -235,7 +238,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () => _selectDateRange(context, dates),
+                        onPressed: () => _selectDateRange(context),
                         icon: const Icon(Icons.calendar_month,
                             color: Colors.white),
                       ),
