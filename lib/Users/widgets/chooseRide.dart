@@ -183,6 +183,10 @@ class _ChooseRideState extends State<ChooseRide> {
         .animateCamera(CameraUpdate.newCameraPosition(camera_position));*/
   }
 
+  void updateSelectedCardIndex(int index) {
+    setState(() => selectedRouteCardIndex = index);
+  }
+
   Future _createReservation() async {
     //   try {
     if (schedules.isNotEmpty) {

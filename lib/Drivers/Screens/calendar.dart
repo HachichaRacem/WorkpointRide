@@ -137,37 +137,35 @@ class _CalendarState extends State<Calendar> {
     _loadCustomMarker();
 
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
-    _loadPassengers(currentDate: "${now.year}-${now.month}-${now.day}");
+    _loadPassengers();
   }
 
-  void _loadPassengers({String? currentDate}) {
+  void _loadPassengers() {
     final DateTime date = now.add(Duration(days: selectedIndex));
     final String dateString =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    SharedPreferences.getInstance().then(
-      (prefs) => scheduleServices()
-          .getScheduleReservationsByDate(dateString, User().id!)
-          .then(
-        (resp) async {
-          print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
-          schedules = resp.data['schedule'];
-          if (schedules!.isNotEmpty) {
-            for (final (index, schedule) in schedules!.indexed) {
-              listRoutes.add(schedules?[index]["routes"]);
-              List<Person> ppl = (schedule['reservations'] as List)
-                  .map((element) => Person(
-                      name:
-                          "${element['user']['firstName']} ${element['user']['lastName']}",
-                      phoneNumber: element['user']['phoneNumber'] ?? "-"))
-                  .toList();
-              schedules![index]['people'] = ppl;
-            }
+    scheduleServices()
+        .getScheduleReservationsByDate(dateString, User().id!)
+        .then(
+      (resp) async {
+        print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
+        schedules = resp.data['schedule'];
+        if (schedules!.isNotEmpty) {
+          for (final (index, schedule) in schedules!.indexed) {
+            listRoutes.add(schedules?[index]["routes"]);
+            List<Person> ppl = (schedule['reservations'] as List)
+                .map((element) => Person(
+                    name:
+                        "${element['user']['firstName']} ${element['user']['lastName']}",
+                    phoneNumber: element['user']['phoneNumber'] ?? "-"))
+                .toList();
+            schedules![index]['people'] = ppl;
           }
           drawRoute();
           //   _loadPickUpPoints();
           setState(() {});
         },
-      ),
+      
     );
   }
 
@@ -368,13 +366,13 @@ class _CalendarState extends State<Calendar> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  schedules![index][
-                                                              'scheduledDate'] !=
+                                                  schedules![index]
+                                                              ['startTime'] !=
                                                           null
                                                       ? TimeOfDay.fromDateTime(
                                                           DateTime.parse(
                                                               schedules![index][
-                                                                  'scheduledDate']),
+                                                                  'startTime']),
                                                         ).format(context)
                                                       : "",
                                                   style: TextStyle(
@@ -491,7 +489,17 @@ class _CalendarState extends State<Calendar> {
                                               5.0, 5, 5, 5),
                                           child: Row(
                                             children: [
-                                              Container(
+                                              GestureDetector(
+                                                onTap: () {
+                                                  scheduleServices()
+                                                      .deleteScheduleByID(
+                                                          schedules![
+                                                                  selectedTimeIndex]
+                                                              ['_id'])
+                                                      .then((value) {
+                                                    _loadPassengers();
+                                                  });
+                                                },
                                                 child: const Icon(
                                                   Icons.delete,
                                                   color: colorsFile.skyBlue,

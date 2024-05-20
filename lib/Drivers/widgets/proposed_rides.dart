@@ -499,7 +499,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                 right: 16.0,
                               ),
                               child: GlassmorphicContainer(
-                                height: 170,
+                                height: 180,
                                 width: _width * 0.3,
                                 borderRadius: 15,
                                 blur: 100,
@@ -641,6 +641,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                                                     ? endPointAddresses[index]
                                                     : "",
                                                 textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: GoogleFonts.montserrat(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 12,

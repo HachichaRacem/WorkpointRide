@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 import 'Screens/pass_profile.dart';
+
 class BottomNav extends StatefulWidget {
   const BottomNav({Key? key}) : super(key: key);
 
@@ -59,8 +60,6 @@ class _BottomNavState extends State<BottomNav>
           ),
           TabItem(
             icon: Icon(Icons.search, color: colorsFile.icons),
-            isIconBlend: false,
-            activeIcon: Icon(Icons.add, color: Colors.white, size: 35),
           ),
           TabItem(
             icon: Icon(Icons.notifications, color: colorsFile.icons),
