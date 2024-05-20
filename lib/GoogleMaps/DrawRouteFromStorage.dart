@@ -6,15 +6,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DriverOnMap extends StatefulWidget {
+class DrawRoute extends StatefulWidget {
   final double poly_lat1, poly_lng1, poly_lat2, poly_lng2;
   Set<Polyline> polyline;
   final Set<Marker> markers;
-
+  Marker? marker;
   var route_id;
-  bool isSearch;
 
-  DriverOnMap(
+  DrawRoute(
       {Key? key,
       required this.poly_lat1,
       required this.poly_lng1,
@@ -23,14 +22,14 @@ class DriverOnMap extends StatefulWidget {
       required this.route_id,
       required this.polyline,
       required this.markers,
-      required this.isSearch})
+      required this.marker})
       : super(key: key);
 
   @override
-  _DriverOnMapState createState() => _DriverOnMapState();
+  _DrawRouteState createState() => _DrawRouteState();
 }
 
-class _DriverOnMapState extends State<DriverOnMap> {
+class _DrawRouteState extends State<DrawRoute> {
   Completer<GoogleMapController> _controller = Completer();
 
   late LatLngBounds _bounds;
@@ -46,12 +45,10 @@ class _DriverOnMapState extends State<DriverOnMap> {
   }
 
   Future<void> _fetchRoute() async {
-    if (widget.isSearch == true) {
-      Set<Polyline> retrievedPolylines = await getPolylines();
-      //setState(() {
-      widget.polyline = retrievedPolylines;
-      // });
-    }
+    Set<Polyline> retrievedPolylines = await getPolylines();
+    //setState(() {
+    widget.polyline = retrievedPolylines;
+    // });
   }
 
   Future<Set<Polyline>> getPolylines() async {
@@ -89,7 +86,10 @@ class _DriverOnMapState extends State<DriverOnMap> {
               children: [
                 GoogleMap(
                   initialCameraPosition: CameraPosition(
-                    target: LatLng((widget.poly_lat1), (widget.poly_lng1)),
+                    target: LatLng(
+                      (widget.poly_lat1),
+                      (widget.poly_lng1),
+                    ),
                     zoom: 10.5,
                   ),
                   onMapCreated: (controller) {
@@ -101,7 +101,7 @@ class _DriverOnMapState extends State<DriverOnMap> {
                   markers: widget.markers,
                   mapType: MapType.normal,
                   buildingsEnabled: true,
-                  onTap: (_) {},
+                  onTap: _onMapTapped,
                 ),
                 Positioned(
                   top:
@@ -145,5 +145,47 @@ class _DriverOnMapState extends State<DriverOnMap> {
         },
       ),
     );
+  }
+
+  Future<void> _onMapTapped(LatLng latLng) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (widget.marker == null) {
+        widget.marker = Marker(
+          markerId: MarkerId("1"),
+          position: latLng,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueMagenta),
+          draggable: true,
+          onDragEnd: (dragEndPosition) {
+            setState(() {
+              widget.marker =
+                  widget.marker?.copyWith(positionParam: dragEndPosition);
+            });
+          },
+        );
+        widget.markers.add(widget.marker!);
+      } else {
+        widget.markers.remove(widget.marker!);
+
+        widget.marker = Marker(
+          markerId: MarkerId("1"),
+          position: latLng,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueMagenta),
+          draggable: true,
+          onDragEnd: (dragEndPosition) {
+            setState(() {
+              widget.marker =
+                  widget.marker?.copyWith(positionParam: dragEndPosition);
+            });
+          },
+        );
+        widget.markers.add(widget.marker!);
+        widget.marker = widget.marker?.copyWith(positionParam: latLng);
+      }
+    });
+    prefs.setDouble("markerLat", widget.marker!.position.latitude);
+    prefs.setDouble("markerLng", widget.marker!.position.longitude);
   }
 }

@@ -92,11 +92,7 @@ class _AddRidesState extends State<AddRides>
     origin_address_name =
         "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
-    print("Origin Name == ${origin_address_name}");
-
-    setState(() {
-      print("Setstate is done for origin address name");
-    });
+    setState(() {});
   }
 
   void toggleSelection(int index) {
@@ -116,7 +112,6 @@ class _AddRidesState extends State<AddRides>
 
       drawRoute();
     }
-    print("wwwwwwwwwwwwwwwwww" + selectedIndexRoute.toString());
 
     showRide();
   }
@@ -128,7 +123,6 @@ class _AddRidesState extends State<AddRides>
 
       routeCoords.add(LatLng(polyline[0], polyline[1]));
     });
-    print("sssssssssss${routeCoords}");
     position1_lat =
         listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
     position1_lng =
@@ -186,7 +180,6 @@ class _AddRidesState extends State<AddRides>
   }
 
   Future<void> _fetchRoute() async {
-    print("hellooo");
     final apiKey =
         'AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI'; // Replace with your Google Maps API key
     final start = '${position1_lat},${position1_lng}';
@@ -195,21 +188,16 @@ class _AddRidesState extends State<AddRides>
         'https://maps.googleapis.com/maps/api/directions/json?origin=$start&destination=$end&key=$apiKey';
 
     final response = await http.get(Uri.parse(apiUrl));
-    print('response ${response}');
     final responseData = json.decode(response.body);
 
     if (responseData['status'] == 'OK') {
-      print("rrrrrrrrrrrrrrrrrresponseData${responseData}");
       routeCoords = [];
       final List<Steps> steps =
           Directions.fromJson(responseData).routes.first.steps;
       steps.forEach((step) {
-        print("sssssssssss${step.startLocation.lat}");
-
         routeCoords.add(LatLng(step.startLocation.lat, step.startLocation.lng));
         //   routeCoords.addAll(_decodePolyline(step.polyline));
       });
-      print("ttttttttttttttttttttt${routeCoords}");
       _polyline.clear();
       _polyline = {};
       setState(() {
@@ -244,14 +232,11 @@ class _AddRidesState extends State<AddRides>
   }
 
   Future<void> getRoutes() async {
-    print("hello");
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? user = prefs.getString('user');
 
       await _routeService.getRouteByUser(user!).then((value) async {
-        print("vvvvvvaaalllllllllll${value.data}");
-
         if (value.statusCode == 200) {
           setState(() {
             listRoutes = value.data;
@@ -262,17 +247,12 @@ class _AddRidesState extends State<AddRides>
           ));
         }
       });
-    } catch (e) {
-      print("eeeee${e}");
-    }
+    } catch (e) {}
   }
 
   google_map_for_origin(GoogleMapController? map_controller) async {
     currentPosition_lat = await sharedpreferences.getlat();
     currentPosition_lng = await sharedpreferences.getlng();
-
-    print(
-        "cccccccccc Shared data currentttt${currentPosition_lat} : ${currentPosition_lng}");
 
     setState(() {
       check = true;
@@ -346,16 +326,11 @@ class _AddRidesState extends State<AddRides>
                                         apiKey:
                                             "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
                                         onSelected: (Place place) async {
-                                          print(
-                                              "------------Selected origin location from search:----------");
                                           Geolocation? geo_location =
                                               await place.geolocation;
-                                          print(
-                                              "--------- Coordinates are: ${geo_location?.coordinates}");
 
                                           //Finalize the lat & lng and then call the GoogleMap Method for origin name!
 
-                                          print("running-----");
                                           map_controller!.animateCamera(
                                               CameraUpdate.newLatLng(
                                                   geo_location?.coordinates));
@@ -409,7 +384,6 @@ class _AddRidesState extends State<AddRides>
       infoWindow: const InfoWindow(title: "Home Location"),
     ));
 
-    print("After Selecting Origin: Lat & Lng is ");
     CameraPosition camera_position =
         CameraPosition(target: LatLng(position1_lat, position1_lng), zoom: 7);
 
@@ -533,7 +507,6 @@ class _AddRidesState extends State<AddRides>
                       onSelectionChanged:
                           (DateRangePickerSelectionChangedArgs args) {
                         // Handle selection change
-                        print(args.value);
 
                         setState(() {
                           dates.addAll(args.value);
@@ -621,7 +594,6 @@ class _AddRidesState extends State<AddRides>
 
   _showSearchRides() {
     setState(() {
-      print("object");
       isSearchPoPupVisible = true;
       bottomSheetVisible = false;
       condition = false;
@@ -659,7 +631,6 @@ class _AddRidesState extends State<AddRides>
     _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      
       body: GestureDetector(
         onTap: () {
           setState(() {
@@ -669,7 +640,6 @@ class _AddRidesState extends State<AddRides>
             check_visible = true;
             condition = true;
             box_check = false;
-            print("inside the rides method inkwell");
           });
         },
         child: Stack(
@@ -688,6 +658,7 @@ class _AddRidesState extends State<AddRides>
                         route_id: 'route',
                         polyline: _polyline,
                         markers: _markers,
+                        isSearch: false,
                       ),
               ),
             ),
@@ -701,10 +672,7 @@ class _AddRidesState extends State<AddRides>
                 minHeight: 250,
                 panel: SingleChildScrollView(
                   child: InkWell(
-                    onTap: () {
-                      print("inside the inkwell of sheet");
-                      print(bottomSheetVisible);
-                    },
+                    onTap: () {},
                     child: (listRoutes.length == 0)
                         ? WantToBook(
                             "Your proposed rides",
@@ -728,9 +696,7 @@ class _AddRidesState extends State<AddRides>
                 color: colorsFile.cardColor,
                 onPanelSlide: (double pos) {
                   setState(() {
-                    print("dddddddd");
                     bottomSheetVisible = pos > 0.5;
-                    print("sadasddsadds $bottomSheetVisible");
                   });
                 },
                 isDraggable: condition,
@@ -745,7 +711,6 @@ class _AddRidesState extends State<AddRides>
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      print("Button Press");
                       condition = true;
                       isSearchPoPupVisible = false;
                       bottomSheetVisible = true;
@@ -806,7 +771,6 @@ class _AddRidesState extends State<AddRides>
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      print("close");
                                       isSearchPoPupVisible = false;
                                       bottomSheetVisible = true;
                                       condition = true;
@@ -859,7 +823,6 @@ class _AddRidesState extends State<AddRides>
                                                           TextInputType.none,
                                                       onTap: () {
                                                         //Calling the map functions
-                                                        print("Ontaped");
                                                         if (routeType ==
                                                             "toOffice") {
                                                           GoogleMapController?
@@ -986,10 +949,7 @@ class _AddRidesState extends State<AddRides>
                                                           color: Colors.white,
                                                         ),
                                                         child: InkWell(
-                                                          onTap: () {
-                                                            print(
-                                                                "Icon tapped for destination");
-                                                          },
+                                                          onTap: () {},
                                                           child: const Icon(
                                                             Icons.place,
                                                             color: colorsFile
@@ -1090,7 +1050,6 @@ class _AddRidesState extends State<AddRides>
                                                   isSearchPoPupVisible = false;
                                                   box_check = true;
                                                 });
-                                                print("Navigate to polylines");
                                                 setState(() {
                                                   check_map = false;
                                                   //shared_data();
@@ -1107,10 +1066,7 @@ class _AddRidesState extends State<AddRides>
                                                     now.day,
                                                     _selectedTime.hour,
                                                     _selectedTime.minute);
-                                                print("uuuserrrr ${user}");
 
-                                                print(
-                                                    "ccccccccccccccc ${routeCoords}");
                                                 List<List<dynamic>> polyline =
                                                     [];
                                                 routeCoords.map((latLng) {
@@ -1142,18 +1098,12 @@ class _AddRidesState extends State<AddRides>
                                                     .then((value) {
                                                   // Check if the response is successful
                                                   if (value.statusCode == 200) {
-                                                    print(
-                                                        "Schedule added successfully");
                                                     // You can access response data if needed: value.data
                                                   } else {
                                                     // Handle unsuccessful response (non-200 status code)
-                                                    print(
-                                                        "Failed to add schedule: ${value.data}");
                                                   }
                                                 }).catchError((error) {
                                                   // Handle any errors that occurred during the request
-                                                  print(
-                                                      "Error adding schedule: $error");
                                                 });
                                               },
                                               child: Container(

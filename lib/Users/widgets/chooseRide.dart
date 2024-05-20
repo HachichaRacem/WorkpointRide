@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:clay_containers/clay_containers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/Services/schedule.dart';
+import 'package:osmflutter/Users/widgets/routeCrad.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -13,8 +16,24 @@ class ChooseRide extends StatefulWidget {
   final Function() showMyRides;
   final Function() ridesVisible;
   final Function(Map) updateSelectedRouteCardInfo;
-  const ChooseRide(
-      this.showMyRides, this.ridesVisible, this.updateSelectedRouteCardInfo,
+  final Function() selectMap;
+  Set<Polyline>? _polyline;
+  Set<Marker>? _markers;
+  final Function() isSearch;
+  Marker? pickMarker;
+  dynamic selectedDate;
+  String routeType;
+  ChooseRide(
+      this.showMyRides,
+      this.ridesVisible,
+      this.updateSelectedRouteCardInfo,
+      this.selectMap,
+      this._polyline,
+      this._markers,
+      this.isSearch,
+      this.pickMarker,
+      this.selectedDate,
+      this.routeType,
       {Key? key})
       : super(key: key);
 
@@ -26,29 +45,166 @@ class _ChooseRideState extends State<ChooseRide> {
   late double _height;
   late double _width;
   bool bottomSheetVisible = true;
+  bool isCardSelected = false;
+  int selectedIndexRoute = -1;
+  List<LatLng> routeCoords = [];
+
+  List<dynamic> listRoutes = [];
+  dynamic position1_lat, position1_lng;
+  dynamic currentPosition_lat, currentPosition_lng;
+  dynamic position2_lat = 36.85135579846211, position2_lng = 10.179065957033673;
   List<Color> containerColors = List.filled(
       4, colorsFile.cardColor); // Use the background color as the default color
-  final Future<Response> _getAllSchedules =
-      scheduleServices().getAllSchedules();
+  Future<Response> _getAllSchedules() async {
+    dynamic data = await scheduleServices().getAllSchedules();
+    for (int index = 0; index < data.data.length; index++) {
+      print("dataaaaaaaaa ${data.data}");
+      listRoutes.add(data.data?[index]["routes"]);
+    }
+    return data;
+  }
+
   List schedules = [];
   int selectedRouteCardIndex = 0;
+  void toggleSelection(int index) {
+    if (selectedIndexRoute == index) {
+      // Toggle the selection state if the card is tapped again
+      setState(() {
+        selectedIndexRoute = -1;
+        isCardSelected = !isCardSelected;
+      });
+      // Reset card color to default when the second tab is selected
+    } else {
+      setState(() {
+        if (widget.ridesVisible != null) {
+          widget.ridesVisible!();
+        }
+        selectedIndexRoute = index;
+        isCardSelected = true;
+      });
+      // If it's a new selection, update the selected index and set the selection state to true
+
+      drawRoute();
+    }
+  }
+
+  Map<String, dynamic> polylineToMap(Polyline polyline) {
+    return {
+      'polylineId': polyline.polylineId.value,
+      'points': polyline.points
+          .map((point) =>
+              {'latitude': point.latitude, 'longitude': point.longitude})
+          .toList(),
+      'width': polyline.width,
+      'color': polyline.color.value,
+    };
+  }
+
+  Polyline mapToPolyline(Map<String, dynamic> map) {
+    return Polyline(
+      polylineId: PolylineId(map['polylineId']),
+      points: (map['points'] as List)
+          .map((point) => LatLng(point['latitude'], point['longitude']))
+          .toList(),
+      width: map['width'],
+      color: Color(map['color']),
+    );
+  }
+
+  Future<void> savePolylines(Set<Polyline> polylines) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> polylineList = polylines
+        .map((polyline) => jsonEncode(polylineToMap(polyline)))
+        .toList();
+    await prefs.setStringList('polylines', polylineList);
+  }
+
+  void drawRoute() async {
+    routeCoords = [];
+
+    listRoutes[selectedIndexRoute]["polyline"].forEach((polyline) {
+      routeCoords.add(LatLng(polyline[0], polyline[1]));
+    });
+    position1_lat =
+        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
+    position1_lng =
+        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1];
+    position2_lat =
+        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0];
+    position2_lng =
+        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1];
+    widget._polyline!.clear();
+    widget._markers!.clear();
+    widget._polyline = {};
+    setState(() {
+      widget._polyline!.add(Polyline(
+        polylineId: PolylineId('polyline1'),
+        visible: true,
+        points: routeCoords,
+        color: Colors.white,
+        width: 5,
+      ));
+
+      // Add markers
+      widget._markers!.add(
+        Marker(
+          markerId: MarkerId('start'),
+          position: LatLng(
+              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
+              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'start'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      widget._markers!.add(
+        Marker(
+          markerId: MarkerId('end'),
+          position: LatLng(
+              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0],
+              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1]),
+          infoWindow: InfoWindow(title: 'End'),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+      widget.isSearch();
+      widget.selectMap();
+    });
+    await savePolylines(widget._polyline!);
+
+/*    CameraPosition camera_position = CameraPosition(
+        target: LatLng(
+            listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
+            listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0]),
+        zoom: 7);
+
+    mapController = await _controller.future;
+
+    mapController
+        .animateCamera(CameraUpdate.newCameraPosition(camera_position));*/
+  }
 
   Future _createReservation() async {
+    //   try {
     if (schedules.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
       final userID = prefs.getString("user");
+      final latitude = prefs.getDouble("markerLat");
+      final longitude = prefs.getDouble("markerLng");
       final reqBody = {
         "user": userID,
-        "schedule": schedules[selectedRouteCardIndex]["_id"],
-        "status": "pending",
-        "pickupTime": DateTime.now().toString(),
+        "schedule": schedules[selectedIndexRoute]["_id"],
+        "pickupTime": schedules[selectedIndexRoute]["startTime"],
+        "pickupLocation": {
+          "type": "Point",
+          "coordinates": [latitude, longitude],
+        }
       };
-      try {
-        await Reservation().createReservation(reqBody);
-        widget.showMyRides();
-      } catch (e) {
-        debugPrint("ERROR: $e");
-      }
+      print("reqBody${reqBody}");
+
+      var value = await Reservation().createReservation(reqBody);
+      print("createReservationr Reeessss${value}");
+
+      // widget.showMyRides();
     }
   }
 
@@ -138,7 +294,7 @@ class _ChooseRideState extends State<ChooseRide> {
                   ],
                 ),
                 FutureBuilder(
-                  future: _getAllSchedules,
+                  future: _getAllSchedules(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       schedules = snapshot.data?.data;
@@ -152,17 +308,12 @@ class _ChooseRideState extends State<ChooseRide> {
                               print("snapshot${snapshot.data?.data}");
                               final Map? driverData =
                                   snapshot.data?.data[index]['user'];
-                              return RouteCard(
-                                updateSelectedRouteCardInfo:
-                                    widget.updateSelectedRouteCardInfo,
-                                driverName: driverData?['firstName'],
-                                driverNum: driverData?['phoneNumber'],
-                                scheduleStartTime:
-                                    (schedules[index]['startTime'] as String)
-                                        .substring(11, 17),
-                                selectedSeats:
-                                    (schedules[index]['availablePlaces'] as int)
-                                        .toDouble(),
+                              return GestureDetector(
+                                onTap: () {
+                                  toggleSelection(index);
+                                },
+                                child: RouteCard(schedules, driverData,
+                                    isCardSelected, selectedIndexRoute, index),
                               );
                             },
                           ),
@@ -201,187 +352,3 @@ class _ChooseRideState extends State<ChooseRide> {
 }
 
 // Available routes once the passenger picks the route, time and date
-class RouteCard extends StatefulWidget {
-  final String? driverName;
-  final String? driverNum;
-  final String? scheduleStartTime;
-  final String? image;
-  final double? selectedSeats;
-  final Function()? ridesVisible;
-  final Function(Map)? updateSelectedRouteCardInfo;
-
-  const RouteCard(
-      {super.key,
-      this.driverName,
-      this.driverNum,
-      this.scheduleStartTime,
-      this.image,
-      this.ridesVisible,
-      this.selectedSeats,
-      this.updateSelectedRouteCardInfo});
-
-  @override
-  State<RouteCard> createState() => _RouteCardState();
-}
-
-class _RouteCardState extends State<RouteCard> {
-  bool isClicked = false;
-  final Color _selectedColor = colorsFile.icons;
-  final Color _unselectedColor = colorsFile.cardColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isClicked = !isClicked;
-        });
-        if (widget.ridesVisible != null) {
-          widget.ridesVisible!();
-        }
-        if (widget.updateSelectedRouteCardInfo != null) {
-          widget.updateSelectedRouteCardInfo!({
-            "driverName": widget.driverName,
-            "driverNum": widget.driverNum,
-            "scheduleStartTime": widget.scheduleStartTime,
-            "image": widget.image,
-            "selectedSeats": widget.selectedSeats
-          });
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(
-          right: 16.0,
-        ),
-        child: GlassmorphicContainer(
-          height: 185,
-          width: MediaQuery.of(context).size.width * 0.3,
-          borderRadius: 15,
-          blur: 100,
-          alignment: Alignment.center,
-          border: 2,
-          linearGradient: LinearGradient(
-            colors: [
-              (isClicked == true) ? _selectedColor : _unselectedColor,
-              (isClicked == true) ? _selectedColor : _unselectedColor,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-          borderGradient: LinearGradient(
-            colors: [
-              Colors.white24.withOpacity(0.2),
-              Colors.white70.withOpacity(0.2),
-            ],
-          ),
-          child: Container(
-              child: Row(children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5),
-                    Center(
-                      child: Container(
-                        height: 60,
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: colorsFile.borderCircle,
-                          shape: BoxShape.circle,
-                        ),
-                        child: ClipOval(
-                            child: SizedBox.fromSize(
-                                size: const Size.fromRadius(28),
-                                child: Image(
-                                  image: AssetImage(
-                                    widget.image ?? "assets/images/homme1.png",
-                                  ),
-                                  fit: BoxFit.cover,
-                                ))),
-                      ),
-                    ),
-                    const SizedBox(height: 13),
-                    Text(
-                      widget.driverName ?? "Foulen Ben Falten",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                        color: (isClicked == false)
-                            ? colorsFile.titleCard
-                            : Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.phone,
-                          color: (isClicked == false)
-                              ? colorsFile.icons
-                              : Colors.white,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          widget.driverNum ?? "55 555 555",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10,
-                            color: (isClicked == false)
-                                ? colorsFile.titleCard
-                                : Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        SizedBox(
-                          width: 55,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(
-                                (widget.selectedSeats ?? 3).toInt(),
-                                (index) => const Icon(
-                                  Icons.airline_seat_recline_normal_sharp,
-                                  color: colorsFile.buttonIcons,
-                                  size: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            widget.scheduleStartTime ?? '7:15',
-                            textAlign: TextAlign.end,
-                            style: GoogleFonts.montserrat(
-                              fontSize: 10,
-                              color: (isClicked == false)
-                                  ? colorsFile.detailColor
-                                  : Colors.white,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ])),
-        ),
-      ),
-    );
-  }
-}

@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:osmflutter/Drivers/Screens/addSchedule/want_to_book.dart';
+import 'package:osmflutter/GoogleMaps/DrawRouteFromStorage.dart';
 import 'package:osmflutter/GoogleMaps/driver_polyline_map.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Services/reservation.dart';
@@ -49,6 +50,7 @@ class _SearchState extends State<Search> {
   Set<Marker> _markers = {};
   bool isCardSelected = false;
   bool check_map = true;
+  bool isSearch = false;
   List<dynamic> listRoutes = [];
   int selectedIndexRoute = 0;
   List<LatLng> routeCoords = [];
@@ -64,14 +66,27 @@ class _SearchState extends State<Search> {
     });
   }
 
-  void drawRoute() async {
-    print("sssssssssss${listRoutes}");
+  dynamic currentDate;
 
+  void selectMap() {
+    setState(() {
+      check_map = false;
+    });
+  }
+
+  Marker? pickMarker;
+
+  void isSearchMap() {
+    setState(() {
+      isSearch = true;
+    });
+  }
+
+  void drawRoute() async {
     routeCoords = [];
     listRoutes[selectedIndexRoute]["polyline"].forEach((polyline) {
       routeCoords.add(LatLng(polyline[0], polyline[1]));
     });
-    print("sssssssssss${routeCoords}");
     position1_lat =
         listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
     position1_lng =
@@ -85,6 +100,8 @@ class _SearchState extends State<Search> {
     _polyline = {};
     setState(() {
       check_map = false;
+      isSearch = false;
+
       _polyline.add(Polyline(
         polylineId: PolylineId('route'),
         visible: true,
@@ -116,7 +133,7 @@ class _SearchState extends State<Search> {
       );
       // check_map = false;
     });
-    CameraPosition camera_position = CameraPosition(
+    /* CameraPosition camera_position = CameraPosition(
         target: LatLng(
             listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
             listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0]),
@@ -125,7 +142,7 @@ class _SearchState extends State<Search> {
     mapController = await _controller.future;
 
     mapController
-        .animateCamera(CameraUpdate.newCameraPosition(camera_position));
+        .animateCamera(CameraUpdate.newCameraPosition(camera_position));*/
   }
 
   List<Marker> myMarker = [];
@@ -169,11 +186,9 @@ class _SearchState extends State<Search> {
     debugPrint("[DATA]: userID: $userID");
     dynamic data =
         await Reservation().getReservationsByDate(userID!, dateString);
-    print("dataaa ${data.data}");
     for (int index = 0; index < data.data.length; index++) {
       listRoutes.add(data.data?[index]["schedule"]["routes"]);
     }
-    print("llllllllllllll ${listRoutes}");
 
     return data.data;
   }
@@ -203,7 +218,6 @@ class _SearchState extends State<Search> {
   }
 
   _showMyRides() {
-    print("tttttttttttttt");
     setState(() {
       myRidesbottomSheetVisible = true;
       listSearchBottomSheet = false;
@@ -211,7 +225,6 @@ class _SearchState extends State<Search> {
   }
 
   showRide() {
-    print("tttttttttttttt");
     setState(() {
       ridesIsVisible = !ridesIsVisible;
     });
@@ -226,9 +239,6 @@ class _SearchState extends State<Search> {
   google_map_for_origin(GoogleMapController? map_controller) async {
     currentPosition_lat = await sharedpreferences.getlat();
     currentPosition_lng = await sharedpreferences.getlng();
-
-    print(
-        "cccccccccc Shared data currentttt${currentPosition_lat} : ${currentPosition_lng}");
 
     setState(() {
       check = true;
@@ -302,16 +312,11 @@ class _SearchState extends State<Search> {
                                         apiKey:
                                             "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
                                         onSelected: (Place place) async {
-                                          print(
-                                              "------------Selected origin location from search:----------");
                                           Geolocation? geo_location =
                                               await place.geolocation;
-                                          print(
-                                              "--------- Coordinates are: ${geo_location?.coordinates}");
 
                                           //Finalize the lat & lng and then call the GoogleMap Method for origin name!
 
-                                          print("running-----");
                                           map_controller!.animateCamera(
                                               CameraUpdate.newLatLng(
                                                   geo_location?.coordinates));
@@ -364,7 +369,6 @@ class _SearchState extends State<Search> {
       infoWindow: const InfoWindow(title: "Home Location"),
     ));
 
-    print("After Selecting Origin: Lat & Lng is ");
     CameraPosition camera_position =
         CameraPosition(target: LatLng(position1_lat, position1_lng), zoom: 7);
 
@@ -382,11 +386,7 @@ class _SearchState extends State<Search> {
     origin_address_name =
         "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
-    print("Origin Name == ${origin_address_name}");
-
-    setState(() {
-      print("Setstate is done for origin address name");
-    });
+    setState(() {});
   }
 
   @override
@@ -419,7 +419,7 @@ class _SearchState extends State<Search> {
                 children: List.generate(
                   lastDayOfMonth.day - now.day + 1,
                   (index) {
-                    final currentDate = now.add(Duration(days: index));
+                    currentDate = now.add(Duration(days: selectedIndex));
                     final dayName = DateFormat('EEE').format(currentDate);
                     return Padding(
                       padding: EdgeInsets.only(
@@ -489,28 +489,35 @@ class _SearchState extends State<Search> {
             //pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2)
             check_map == true
                 ? MapsGoogleExample()
-                : DriverOnMap(
-                    poly_lat1: position1_lat,
-                    poly_lng1: position1_lng,
-                    poly_lat2: position2_lat,
-                    poly_lng2: position2_lng,
-                    route_id: 'route',
-                    polyline: _polyline,
-                    markers: _markers,
-                  ),
+                : isSearch == false
+                    ? DriverOnMap(
+                        poly_lat1: position1_lat,
+                        poly_lng1: position1_lng,
+                        poly_lat2: position2_lat,
+                        poly_lng2: position2_lng,
+                        route_id: 'route',
+                        polyline: _polyline,
+                        markers: _markers,
+                        isSearch: isSearch)
+                    : DrawRoute(
+                        poly_lat1: position1_lat,
+                        poly_lng1: position1_lng,
+                        poly_lat2: position2_lat,
+                        poly_lng2: position2_lng,
+                        route_id: 'route',
+                        polyline: _polyline,
+                        markers: _markers,
+                        marker: pickMarker),
             SlidingUpPanel(
               maxHeight: _height * 0.99,
               minHeight: _height * 0.2,
               panel: SingleChildScrollView(
                 child: InkWell(
-                  onTap: () {
-                    print("sddasdasddasd");
-                  },
+                  onTap: () {},
                   child: FutureBuilder(
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data.isNotEmpty) {
-                            print("[DATA]: ${snapshot.data}");
                             return Column(
                               children: [
                                 Row(
@@ -575,8 +582,6 @@ class _SearchState extends State<Search> {
                                       children: List.generate(
                                           snapshot.data.length, (index) {
                                         late dynamic data;
-                                        print("tttttttttttt" +
-                                            snapshot.data.toString());
                                         if (snapshot.data != null) {
                                           data = {
                                             'id': snapshot.data[index]['_id'],
@@ -634,9 +639,7 @@ class _SearchState extends State<Search> {
               color: colorsFile.cardColor,
               onPanelSlide: (double pos) {
                 setState(() {
-                  print("dddddddd");
                   bottomSheetVisible = pos > 0.5;
-                  print("sadasddsadds $bottomSheetVisible");
                 });
               },
               isDraggable: condition,
@@ -737,7 +740,6 @@ class _SearchState extends State<Search> {
                                                           TextInputType.none,
                                                       onTap: () {
                                                         //Calling the map functions
-                                                        print("Ontaped");
                                                         if (routeType ==
                                                             "toOffice") {
                                                           GoogleMapController?
@@ -864,10 +866,7 @@ class _SearchState extends State<Search> {
                                                           color: Colors.white,
                                                         ),
                                                         child: InkWell(
-                                                          onTap: () {
-                                                            print(
-                                                                "Icon tapped for destination");
-                                                          },
+                                                          onTap: () {},
                                                           child: const Icon(
                                                             Icons.place,
                                                             color: colorsFile
@@ -1008,7 +1007,16 @@ class _SearchState extends State<Search> {
                       ),
                     ),
                     child: ChooseRide(
-                        _showMyRides, showRide, updateSelectedRouteCardInfo),
+                        _showMyRides,
+                        showRide,
+                        updateSelectedRouteCardInfo,
+                        selectMap,
+                        _polyline,
+                        _markers,
+                        isSearchMap,
+                        pickMarker,
+                        currentDate,
+                        routeType),
                   )),
             ),
             Visibility(

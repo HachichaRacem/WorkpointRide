@@ -44,6 +44,14 @@ class _CalendarState extends State<Calendar> {
   bool check_map = true;
   List<LatLng> routeCoords = [];
   List<dynamic> listRoutes = [];
+  late BitmapDescriptor _customIcon;
+
+  void _loadCustomMarker() async {
+    _customIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(size: Size(20, 20)),
+      'assets/images/pinRes.png',
+    );
+  }
 
   void drawRoute() async {
     routeCoords = [];
@@ -60,6 +68,22 @@ class _CalendarState extends State<Calendar> {
     _polyline.clear();
     _markers.clear();
     _polyline = {};
+    print("lllllllllllll${selectedTimeIndex}");
+    print("lllllllllllll${schedules![selectedTimeIndex]}");
+
+    final reservations = schedules![selectedTimeIndex]["reservations"];
+    print("lllllllllllll${reservations}");
+
+    reservations.forEach((reservation) {
+      final coordinates = reservation["pickupLocation"]["coordinates"];
+      final latLng = LatLng(coordinates[0], coordinates[1]);
+      final marker = Marker(
+        markerId: MarkerId(latLng.toString()),
+        position: latLng,
+        icon: _customIcon,
+      );
+      _markers.add(marker);
+    });
     setState(() {
       check_map = false;
       _polyline.add(Polyline(
@@ -81,6 +105,7 @@ class _CalendarState extends State<Calendar> {
           icon: BitmapDescriptor.defaultMarker,
         ),
       );
+
       _markers.add(
         Marker(
           markerId: MarkerId('end'),
@@ -93,6 +118,7 @@ class _CalendarState extends State<Calendar> {
       );
       check_map = false;
     });
+
     /*  CameraPosition camera_position = CameraPosition(
         target: LatLng(
             listRoutes[selectedIndex]["startPoint"]["coordinates"][0],
@@ -108,6 +134,8 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    _loadCustomMarker();
+
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
     _loadPassengers(currentDate: "${now.year}-${now.month}-${now.day}");
   }
@@ -136,6 +164,7 @@ class _CalendarState extends State<Calendar> {
             }
           }
           drawRoute();
+          //   _loadPickUpPoints();
           setState(() {});
         },
       ),
@@ -237,7 +266,7 @@ class _CalendarState extends State<Calendar> {
                   route_id: 'route',
                   polyline: _polyline,
                   markers: _markers,
-                ),
+                  isSearch: false),
 
           //Updated Code
 

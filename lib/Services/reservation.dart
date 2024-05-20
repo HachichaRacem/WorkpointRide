@@ -3,8 +3,9 @@ import 'package:osmflutter/constant/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Reservation {
-  final Dio dio = Dio(BaseOptions(baseUrl: link.url));
-  Future<Response> createReservation(Map data) async {
+  Dio dio = Dio(BaseOptions(baseUrl: link.url));
+  late Response response;
+  Future<Response?> createReservation(Map data) async {
     try {
       final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
@@ -12,13 +13,30 @@ class Reservation {
       if (token != null) {
         dio.options.headers["Authorization"] = "$token";
       }
-      final response = await dio.post("api/reservations", data: data);
+      print("dateeeeeeeeeeeeeeeeeeeeeee   ${data["date"]}");
+
+      var reservationData = {
+        "schedule": data["schedule"],
+        "user": data["user"],
+        "pickupTime": data["pickupTime"],
+        "pickupLocation": data["pickupLocation"],
+      };
+
+      var response = await dio.post("api/reservations/add",
+          data: reservationData
+          //    options: Options(headers: {"Refresh-Token": "refresh-token"})
+          );
+      print("dataaa resssss   ${response}");
+
       return response;
+      // final response = await dio.post("api/reservations/add", data: data);
+      // print("etesttttttt00000000${response}");
+      //
+      // return response;
     } on DioException catch (e) {
-      print(e.response?.data);
-      print(e.response?.headers);
-      print(e.response?.requestOptions);
-      return e.response!;
+      print("dataaa resssss   ${e}");
+
+      return e.response;
     }
   }
 
