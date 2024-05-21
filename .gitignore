@@ -10,6 +10,7 @@
 .svn/
 migrate_working_dir/
 .gitignore
+.fvm
 
 # IntelliJ related
 *.iml

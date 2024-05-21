@@ -184,7 +184,6 @@ class _SearchState extends State<Search> {
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     final prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString("user");
-    debugPrint("[DATA]: userID: ${User().id}");
     dynamic data =
         await Reservation().getReservationsByDate(userID!, dateString);
     for (int index = 0; index < data.data.length; index++) {
@@ -428,7 +427,7 @@ class _SearchState extends State<Search> {
                 children: List.generate(
                   lastDayOfMonth.day - now.day + 1,
                   (index) {
-                    currentDate = now.add(Duration(days: selectedIndex));
+                    currentDate = now.add(Duration(days: index));
                     final dayName = DateFormat('EEE').format(currentDate);
                     return Padding(
                       padding: EdgeInsets.only(

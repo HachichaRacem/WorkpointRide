@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class RideCard extends StatelessWidget {
   final Map<String, dynamic>? selectedRouteCardInfo;
@@ -22,6 +23,58 @@ class RideCard extends StatelessWidget {
     }
   }
 
+  _onDeleteRideButtonPress(BuildContext context) {
+    var alertStyle = AlertStyle(
+        backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
+        animationType: AnimationType.fromTop,
+        isCloseButton: false,
+        isOverlayTapDismiss: true,
+        descStyle: const TextStyle(fontWeight: FontWeight.bold),
+        animationDuration: const Duration(milliseconds: 400),
+        alertBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+          side: const BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        titleStyle: const TextStyle(
+          color: Colors.red,
+        ),
+        // constraints: BoxConstraints.expand(width: 300),
+        //First to chars "55" represents transparency of color
+        overlayColor: Colors.black.withOpacity(0.36),
+        alertElevation: 0,
+        alertAlignment: Alignment.topCenter);
+
+    Alert(
+      context: context,
+      type: AlertType.warning,
+      style: alertStyle,
+      title: "",
+      desc: "Are you sure you want to cancel this reservation ?",
+      buttons: [
+        DialogButton(
+          onPressed: () => Navigator.pop(context),
+          color: Colors.grey,
+          child: const Text(
+            "No",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+        DialogButton(
+          onPressed: () async {
+            await _deleteRide().then(() => Navigator.pop(context));
+          },
+          color: colorsFile.buttonIcons,
+          child: const Text(
+            "Yes",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        )
+      ],
+    ).show();
+  }
+
   _deleteRide() async {
     await Reservation().deleteReservationByID(selectedRouteCardInfo!['id']);
     updateRides!();
@@ -30,7 +83,6 @@ class RideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
     return GlassmorphicContainer(
       height: 200,
       width: 130,
@@ -87,11 +139,12 @@ class RideCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       IconButton(
-                          onPressed: _deleteRide,
-                          icon: const Icon(
-                            Icons.delete,
-                            color: colorsFile.skyBlue,
-                          )),
+                        onPressed: () => _onDeleteRideButtonPress(context),
+                        icon: const Icon(
+                          Icons.delete,
+                          color: colorsFile.skyBlue,
+                        ),
+                      ),
                     ],
                   ),
 
@@ -113,7 +166,6 @@ class RideCard extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
-                                print("heloooo");
                                 _launchPhone(
                                     selectedRouteCardInfo!['driverNum']);
                               },
