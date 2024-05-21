@@ -21,16 +21,11 @@ class _MyRidesState extends State<MyRides> {
   late double _height;
   late double _width;
   bool bottomSheetVisible = true;
-  int selectedIndex = -1;
-void toggleSelection(int index) {
-    setState(() {
-      if (selectedIndex == index) {
-        selectedIndex = -1; // Deselect if the same index is tapped again
-      } else {
-        selectedIndex = index; // Select new card
-      }
-    });
-}
+  bool isClicked = false;
+  final Color _selectedColor = colorsFile.icons;
+  final Color _unselectedColor = colorsFile.cardColor;
+
+
   Color baseColor = const Color(0xFFf2f2f2);
 
 
@@ -122,14 +117,26 @@ void toggleSelection(int index) {
                   blur: 100,
                   alignment: Alignment.center,
                   border: 2,
-                  linearGradient: const LinearGradient(
-                      colors: [Color(0xFFD8E6EE), Color(0xFFD8E6EE)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter),
-                  borderGradient: LinearGradient(colors: [
-                    Colors.white24.withOpacity(0.2),
-                    Colors.white70.withOpacity(0.2)
-                  ]),
+                  linearGradient: LinearGradient(
+            colors: [
+              (isClicked == true) ? _selectedColor : _unselectedColor,
+              (isClicked == true) ? _selectedColor : _unselectedColor,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderGradient: LinearGradient(
+            colors: [
+              Colors.white24.withOpacity(0.2),
+              Colors.white70.withOpacity(0.2),
+            ],
+          ),
+          child: GestureDetector(
+      onTap: () {
+        setState(() {
+          isClicked = !isClicked; // Toggle the state of isClicked
+        });
+      },
                   child: Row(
                     children: [
                       Expanded(
@@ -170,16 +177,22 @@ void toggleSelection(int index) {
                                             'driverName'] ??
                                         "Foulen Ben Falten",
                                     style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                        color: colorsFile.titleCard),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: (isClicked == false)
+                            ? colorsFile.titleCard
+                            : Colors.white,
+                      ),
                                   ),
                                   const Spacer(),
                                   IconButton(
                                       onPressed: () => {},
-                                      icon: const Icon(
+                                      icon:  Icon(
                                         Icons.delete,
-                                        color: colorsFile.skyBlue,
+                                        color: (isClicked == false)
+                              ? colorsFile.icons
+                              : Colors.white,
+                          size: 12,
                                       )),
                                 ],
                               ),
@@ -214,11 +227,13 @@ void toggleSelection(int index) {
                                               curveType: CurveType.convex,
                                               depth: 30,
                                               spread: 1,
-                                              child: const Center(
+                                              child:  Center(
                                                 child: Icon(
                                                   Icons.phone,
-                                                  size: 20,
-                                                  color: colorsFile.buttonIcons,
+                                                  color: (isClicked == false)
+                              ? colorsFile.icons
+                              : Colors.white,
+                          size: 20,
                                                 ),
                                               ),
                                             ),
@@ -235,9 +250,12 @@ void toggleSelection(int index) {
                                             'driverNum'] ??
                                         "55 555 555",
                                     style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: colorsFile.titleCard),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: (isClicked == false)
+                                ? colorsFile.titleCard
+                                : Colors.white,
+                          ),
                                   ),
                                 ],
                               ),
@@ -254,20 +272,32 @@ void toggleSelection(int index) {
                                       Text(
                                         "Home",
                                         style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: (isClicked == false)
+                                ? colorsFile.titleCard
+                                : Colors.white,
+                          ),
                                       ),
                                       Text(
                                         "--->",
                                         style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: (isClicked == false)
+                                ? colorsFile.titleCard
+                                : Colors.white,
+                          ),
                                       ),
                                       Text(
                                         "EY Tower",
                                         style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: (isClicked == false)
+                                ? colorsFile.titleCard
+                                : Colors.white,
+                          ),
                                       ),
                                     ],
                                   ),
@@ -282,8 +312,12 @@ void toggleSelection(int index) {
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.end,
                                         style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: colorsFile.detailColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: (isClicked == false)
+                                ? colorsFile.titleCard
+                                : Colors.white,
+                          ),
                                       ),
                                     ),
                                   ),
@@ -295,6 +329,7 @@ void toggleSelection(int index) {
                       ),
                     ],
                   )),
+              ),
             ]),
           )
         ],
