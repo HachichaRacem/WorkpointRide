@@ -77,7 +77,7 @@ class Reservation {
 
   Future<Response> deleteReservationByID(String id) async {
     try {
-      return await dio.delete("api/reservations/$id");
+      return await dio.delete("api/reservations/deleteReservationByID/$id");
     } on DioException catch (e) {
       print(e.response?.data);
       print(e.response?.headers);
