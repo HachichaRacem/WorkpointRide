@@ -60,7 +60,6 @@ class _CalendarState extends State<Calendar> {
 
       routeCoords.add(LatLng(polyline[0], polyline[1]));
     });
-    print("sssssssssss${routeCoords}");
     position1_lat = listRoutes[selectedIndex]["startPoint"]["coordinates"][0];
     position1_lng = listRoutes[selectedIndex]["startPoint"]["coordinates"][1];
     position2_lat = listRoutes[selectedIndex]["endPoint"]["coordinates"][0];
@@ -68,11 +67,8 @@ class _CalendarState extends State<Calendar> {
     _polyline.clear();
     _markers.clear();
     _polyline = {};
-    print("lllllllllllll${selectedTimeIndex}");
-    print("lllllllllllll${schedules![selectedTimeIndex]}");
 
     final reservations = schedules![selectedTimeIndex]["reservations"];
-    print("lllllllllllll${reservations}");
 
     reservations.forEach((reservation) {
       final coordinates = reservation["pickupLocation"]["coordinates"];
@@ -147,7 +143,6 @@ class _CalendarState extends State<Calendar> {
     await scheduleServices()
         .getScheduleReservationsByDate(dateString, User().id!)
         .then((resp) async {
-      print("[DATAaaaaaaaaaaaaaaaaaaaaaaaaaa]: ${resp.data}");
       setState(() {
         schedules = resp.data['schedule'];
       });
@@ -593,8 +588,6 @@ class _CalendarState extends State<Calendar> {
                                                                 ),
                                                                 GestureDetector(
                                                                   onTap: () {
-                                                                    print(
-                                                                        "heloooo");
                                                                     _launchPhone(schedules![selectedTimeIndex]['people']
                                                                             [
                                                                             index]
@@ -736,7 +729,6 @@ class _CalendarState extends State<Calendar> {
   }
 
   Future<dynamic> deleteScheduleByID() async {
-    print("hellooooo");
     return await scheduleServices()
         .deleteScheduleByID(schedules![selectedTimeIndex]['_id'])
         .then((value) async => await _loadPassengers());

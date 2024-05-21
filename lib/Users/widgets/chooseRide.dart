@@ -9,6 +9,7 @@ import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/Users/widgets/routeCrad.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -58,7 +59,6 @@ class _ChooseRideState extends State<ChooseRide> {
   Future<Response> _getAllSchedules() async {
     dynamic data = await scheduleServices().getAllSchedules();
     for (int index = 0; index < data.data.length; index++) {
-      print("dataaaaaaaaa ${data.data}");
       listRoutes.add(data.data?[index]["routes"]);
     }
     return data;
@@ -76,9 +76,7 @@ class _ChooseRideState extends State<ChooseRide> {
       // Reset card color to default when the second tab is selected
     } else {
       setState(() {
-        if (widget.ridesVisible != null) {
-          widget.ridesVisible!();
-        }
+        widget.ridesVisible();
         selectedIndexRoute = index;
         isCardSelected = true;
       });
@@ -138,7 +136,7 @@ class _ChooseRideState extends State<ChooseRide> {
     widget._polyline = {};
     setState(() {
       widget._polyline!.add(Polyline(
-        polylineId: PolylineId('polyline1'),
+        polylineId: const PolylineId('polyline1'),
         visible: true,
         points: routeCoords,
         color: Colors.white,
@@ -148,21 +146,21 @@ class _ChooseRideState extends State<ChooseRide> {
       // Add markers
       widget._markers!.add(
         Marker(
-          markerId: MarkerId('start'),
+          markerId: const MarkerId('start'),
           position: LatLng(
               listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
               listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1]),
-          infoWindow: InfoWindow(title: 'start'),
+          infoWindow: const InfoWindow(title: 'start'),
           icon: BitmapDescriptor.defaultMarker,
         ),
       );
       widget._markers!.add(
         Marker(
-          markerId: MarkerId('end'),
+          markerId: const MarkerId('end'),
           position: LatLng(
               listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0],
               listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1]),
-          infoWindow: InfoWindow(title: 'End'),
+          infoWindow: const InfoWindow(title: 'End'),
           icon: BitmapDescriptor.defaultMarker,
         ),
       );
@@ -187,7 +185,7 @@ class _ChooseRideState extends State<ChooseRide> {
     setState(() => selectedRouteCardIndex = index);
   }
 
-  Future _createReservation() async {
+  Future _createReservation(BuildContext context) async {
     //   try {
     if (schedules.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
@@ -203,12 +201,88 @@ class _ChooseRideState extends State<ChooseRide> {
           "coordinates": [latitude, longitude],
         }
       };
-      print("reqBody${reqBody}");
 
-      var value = await Reservation().createReservation(reqBody);
-      print("createReservationr Reeessss${value}");
+      final alertStyle = AlertStyle(
+          backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
+          animationType: AnimationType.fromTop,
+          isCloseButton: false,
+          isOverlayTapDismiss: true,
+          descStyle: const TextStyle(fontWeight: FontWeight.bold),
+          animationDuration: const Duration(milliseconds: 400),
+          alertBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0.0),
+            side: const BorderSide(
+              color: Colors.grey,
+            ),
+          ),
+          titleStyle: const TextStyle(
+            color: Colors.red,
+          ),
+          // constraints: BoxConstraints.expand(width: 300),
+          //First to chars "55" represents transparency of color
+          overlayColor: Colors.black.withOpacity(0.36),
+          alertElevation: 0,
+          alertAlignment: Alignment.topCenter);
 
-      // widget.showMyRides();
+      await Reservation().createReservation(reqBody).then(
+        (resp) {
+          if (resp!.statusCode == 200) {
+            Alert(
+              context: context,
+              type: AlertType.info,
+              style: alertStyle,
+              title: "",
+              desc: "Reservation created successfully",
+              buttons: [
+                DialogButton(
+                  onPressed: () => Navigator.pop(context),
+                  color: Colors.grey,
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ],
+            ).show();
+            widget.showMyRides();
+          } else {
+            Alert(
+              context: context,
+              type: AlertType.error,
+              style: alertStyle,
+              title: "",
+              desc: "Failed to create reservation",
+              buttons: [
+                DialogButton(
+                  onPressed: () => Navigator.pop(context),
+                  color: Colors.grey,
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ],
+            ).show();
+          }
+        },
+        onError: (error) => Alert(
+          context: context,
+          type: AlertType.error,
+          style: alertStyle,
+          title: "",
+          desc: "Failed to create reservation",
+          buttons: [
+            DialogButton(
+              onPressed: () => Navigator.pop(context),
+              color: Colors.grey,
+              child: const Text(
+                "Close",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ],
+        ).show(),
+      );
     }
   }
 
@@ -253,7 +327,7 @@ class _ChooseRideState extends State<ChooseRide> {
                         ),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -271,7 +345,7 @@ class _ChooseRideState extends State<ChooseRide> {
                               spread: 1,
                             ),
                             GestureDetector(
-                              onTap: _createReservation,
+                              onTap: () => _createReservation(context),
                               child: Center(
                                 child: ClayContainer(
                                   color: Colors.white,
@@ -281,7 +355,7 @@ class _ChooseRideState extends State<ChooseRide> {
                                   curveType: CurveType.convex,
                                   depth: 30,
                                   spread: 1,
-                                  child: Center(
+                                  child: const Center(
                                     child: Icon(
                                       Icons.send,
                                       color: colorsFile.buttonIcons,
@@ -309,7 +383,6 @@ class _ChooseRideState extends State<ChooseRide> {
                           children: List.generate(
                             schedules.length,
                             (index) {
-                              print("snapshot${snapshot.data?.data}");
                               final Map? driverData =
                                   snapshot.data?.data[index]['user'];
                               return GestureDetector(
@@ -346,7 +419,6 @@ class _ChooseRideState extends State<ChooseRide> {
       color: colorsFile.cardColor,
       onPanelSlide: (double pos) {
         setState(() {
-          print("dbvskcxjb");
           bottomSheetVisible = pos > 0.5;
         });
       },

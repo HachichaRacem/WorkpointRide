@@ -8,6 +8,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -37,6 +38,27 @@ class _ProposedRidesState extends State<ProposedRides> {
   int nbPlaces = 0;
   scheduleServices _scheduleServices = scheduleServices();
   List<DateTime> dates = [];
+  final alertStyle = AlertStyle(
+      backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
+      animationType: AnimationType.fromTop,
+      isCloseButton: false,
+      isOverlayTapDismiss: true,
+      descStyle: const TextStyle(fontWeight: FontWeight.bold),
+      animationDuration: const Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0.0),
+        side: const BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: const TextStyle(
+        color: Colors.red,
+      ),
+      // constraints: BoxConstraints.expand(width: 300),
+      //First to chars "55" represents transparency of color
+      overlayColor: Colors.black.withOpacity(0.36),
+      alertElevation: 0,
+      alertAlignment: Alignment.topCenter);
 
 /*
   void toggleSelection(int index) {
@@ -325,15 +347,72 @@ class _ProposedRidesState extends State<ProposedRides> {
                                           )
                                               .then((value) {
                                             if (value.statusCode == 200) {
-                                              print(
-                                                  "Schedule added successfully");
+                                              Alert(
+                                                context: context,
+                                                type: AlertType.info,
+                                                style: alertStyle,
+                                                title: "",
+                                                desc:
+                                                    "Schedule created successfully",
+                                                buttons: [
+                                                  DialogButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    color: Colors.grey,
+                                                    child: const Text(
+                                                      "Close",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 18),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ).show();
                                             } else {
-                                              print(
-                                                  "Failed to add schedule: ${value.data}");
+                                              Alert(
+                                                context: context,
+                                                type: AlertType.error,
+                                                style: alertStyle,
+                                                title: "",
+                                                desc:
+                                                    "Failed to create new schedule",
+                                                buttons: [
+                                                  DialogButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    color: Colors.grey,
+                                                    child: const Text(
+                                                      "Close",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 18),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ).show();
                                             }
                                           }).catchError((error) {
-                                            print(
-                                                "Error adding schedule: $error");
+                                            Alert(
+                                              context: context,
+                                              type: AlertType.error,
+                                              style: alertStyle,
+                                              title: "",
+                                              desc:
+                                                  "Failed to create new schedule",
+                                              buttons: [
+                                                DialogButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  color: Colors.grey,
+                                                  child: const Text(
+                                                    "Close",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 18),
+                                                  ),
+                                                ),
+                                              ],
+                                            ).show();
                                           });
                                         },
                                         child: Container(

@@ -20,6 +20,7 @@ import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/models/Directions.dart';
 import 'package:osmflutter/models/Steps.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -83,6 +84,28 @@ class _AddRidesState extends State<AddRides>
   dynamic currentPosition_lat, currentPosition_lng;
   dynamic position2_lat = 36.85135579846211, position2_lng = 10.179065957033673;
 
+  final alertStyle = AlertStyle(
+      backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
+      animationType: AnimationType.fromTop,
+      isCloseButton: false,
+      isOverlayTapDismiss: true,
+      descStyle: const TextStyle(fontWeight: FontWeight.bold),
+      animationDuration: const Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(0.0),
+        side: const BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: const TextStyle(
+        color: Colors.red,
+      ),
+      // constraints: BoxConstraints.expand(width: 300),
+      //First to chars "55" represents transparency of color
+      overlayColor: Colors.black.withOpacity(0.36),
+      alertElevation: 0,
+      alertAlignment: Alignment.topCenter);
+
   bool check_visible = true;
   void origin_address_method(dynamic newlat, dynamic newlng) async {
     position1_lat = newlat;
@@ -137,7 +160,7 @@ class _AddRidesState extends State<AddRides>
     setState(() {
       check_map = false;
       _polyline.add(Polyline(
-        polylineId: PolylineId('route'),
+        polylineId: const PolylineId('route'),
         visible: true,
         points: routeCoords,
         color: Colors.white,
@@ -147,21 +170,21 @@ class _AddRidesState extends State<AddRides>
       // Add markers
       _markers.add(
         Marker(
-          markerId: MarkerId('start'),
+          markerId: const MarkerId('start'),
           position: LatLng(
               listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
               listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1]),
-          infoWindow: InfoWindow(title: 'start'),
+          infoWindow: const InfoWindow(title: 'start'),
           icon: BitmapDescriptor.defaultMarker,
         ),
       );
       _markers.add(
         Marker(
-          markerId: MarkerId('end'),
+          markerId: const MarkerId('end'),
           position: LatLng(
               listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0],
               listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1]),
-          infoWindow: InfoWindow(title: 'End'),
+          infoWindow: const InfoWindow(title: 'End'),
           icon: BitmapDescriptor.defaultMarker,
         ),
       );
@@ -202,7 +225,7 @@ class _AddRidesState extends State<AddRides>
       _polyline = {};
       setState(() {
         _polyline.add(Polyline(
-          polylineId: PolylineId('route'),
+          polylineId: const PolylineId('route'),
           visible: true,
           points: routeCoords,
           color: Colors.white,
@@ -212,17 +235,17 @@ class _AddRidesState extends State<AddRides>
         // Add markers
         _markers.add(
           Marker(
-            markerId: MarkerId('start'),
+            markerId: const MarkerId('start'),
             position: LatLng(position1_lat, position1_lng),
-            infoWindow: InfoWindow(title: 'start'),
+            infoWindow: const InfoWindow(title: 'start'),
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
         _markers.add(
           Marker(
-            markerId: MarkerId('end'),
+            markerId: const MarkerId('end'),
             position: LatLng(position2_lat, position2_lng),
-            infoWindow: InfoWindow(title: 'End'),
+            infoWindow: const InfoWindow(title: 'End'),
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
@@ -482,18 +505,19 @@ class _AddRidesState extends State<AddRides>
                         showTrailingAndLeadingDates: true,
                       ),
                       monthCellStyle: DateRangePickerMonthCellStyle(
-                        textStyle: TextStyle(color: colorsFile.titlebotton),
-                        trailingDatesTextStyle: TextStyle(
+                        textStyle:
+                            const TextStyle(color: colorsFile.titlebotton),
+                        trailingDatesTextStyle: const TextStyle(
                             fontStyle: FontStyle.normal,
                             fontWeight: FontWeight.w300,
                             fontSize: 11,
                             color: Colors.black38),
-                        leadingDatesTextStyle: TextStyle(
+                        leadingDatesTextStyle: const TextStyle(
                             fontStyle: FontStyle.normal,
                             fontWeight: FontWeight.w300,
                             fontSize: 11,
                             color: Colors.black38),
-                        todayTextStyle: TextStyle(
+                        todayTextStyle: const TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -1099,9 +1123,53 @@ class _AddRidesState extends State<AddRides>
                                                     .then((value) {
                                                   // Check if the response is successful
                                                   if (value.statusCode == 200) {
-                                                    // You can access response data if needed: value.data
+                                                    Alert(
+                                                      context: context,
+                                                      type: AlertType.info,
+                                                      style: alertStyle,
+                                                      title: "",
+                                                      desc:
+                                                          "Schedule created successfully",
+                                                      buttons: [
+                                                        DialogButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          color: Colors.grey,
+                                                          child: const Text(
+                                                            "Close",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 18),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ).show();
                                                   } else {
-                                                    // Handle unsuccessful response (non-200 status code)
+                                                    Alert(
+                                                      context: context,
+                                                      type: AlertType.error,
+                                                      style: alertStyle,
+                                                      title: "",
+                                                      desc:
+                                                          "Failed to create new schedule",
+                                                      buttons: [
+                                                        DialogButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          color: Colors.grey,
+                                                          child: const Text(
+                                                            "Close",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 18),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ).show();
                                                   }
                                                 }).catchError((error) {
                                                   // Handle any errors that occurred during the request
@@ -1184,7 +1252,7 @@ class _AddRidesState extends State<AddRides>
                         child: Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(top: 6, bottom: 2),
+                              padding: const EdgeInsets.only(top: 6, bottom: 2),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -1193,7 +1261,7 @@ class _AddRidesState extends State<AddRides>
                                         box_check = false;
                                         setState(() {});
                                       },
-                                      child: Icon(Icons.close, size: 18))
+                                      child: const Icon(Icons.close, size: 18))
                                 ],
                               ),
                             ),
@@ -1202,7 +1270,7 @@ class _AddRidesState extends State<AddRides>
                               children: [
                                 Text(
                                   "Total Duration = ${totalDurationInMinutes} Minutes ",
-                                  style: TextStyle(fontSize: 10),
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 Text("Total Kilometer = ${total_km} km",
                                     style: const TextStyle(fontSize: 10))
@@ -1246,18 +1314,18 @@ class _AddRidesState extends State<AddRides>
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        prefixIcon: Icon(Icons.place, color: colorsFile.icons),
+        prefixIcon: const Icon(Icons.place, color: colorsFile.icons),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide(color: Colors.white, width: 2.0),
+          borderSide: const BorderSide(color: Colors.white, width: 2.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide(color: Colors.white, width: 2.0),
+          borderSide: const BorderSide(color: Colors.white, width: 2.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
         ),
       ),
     );
