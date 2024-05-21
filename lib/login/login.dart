@@ -70,7 +70,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         child: Center(
                           child: Image(
                             fit: BoxFit.cover,
-                            image: AssetImage("assets/images/WP_Logo.png"),
+                            image: AssetImage(
+                                "assets/images/WorkPointRideLogo.png"),
                           ),
                         ),
                       ),

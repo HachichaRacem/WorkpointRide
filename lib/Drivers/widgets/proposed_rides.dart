@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/Services/schedule.dart';
@@ -371,39 +370,39 @@ class _ProposedRidesState extends State<ProposedRides> {
 
   List<String> startPointAddresses = [];
   List<String> endPointAddresses = [];
-  List<String> routeTypes = [];
+  //List<String> routeTypes = [];
 
   @override
   void initState() {
     super.initState();
-    extractAddressesAndTypes();
+    //  extractAddressesAndTypes();
   }
 
-  Future<void> extractAddressesAndTypes() async {
-    for (var route in widget.listRoutes) {
-      var startPointCoordinates = route['startPoint']['coordinates'];
-      var endPointCoordinates = route['endPoint']['coordinates'];
-      var type = route['type'];
-      String startPointAddress =
-          await getAddress(startPointCoordinates[1], startPointCoordinates[0]);
-      String endPointAddress =
-          await getAddress(endPointCoordinates[1], endPointCoordinates[0]);
-
-      setState(() {
-        startPointAddresses.add(startPointAddress);
-        endPointAddresses.add(endPointAddress);
-        routeTypes.add(type);
-      });
-    }
-  }
-
-  Future<String> getAddress(double latitude, double longitude) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(latitude, longitude);
-    Placemark placemark = placemarks[0];
-    print("ppppppppppp ${placemark}");
-    return placemark.name ?? 'Unknown Address';
-  }
+  // Future<void> extractAddressesAndTypes() async {
+  //   for (var route in widget.listRoutes) {
+  //     var startPointCoordinates = route['startPoint']['coordinates'];
+  //     var endPointCoordinates = route['endPoint']['coordinates'];
+  //     var type = route['type'];
+  //     String startPointAddress =
+  //         await getAddress(startPointCoordinates[1], startPointCoordinates[0]);
+  //     String endPointAddress =
+  //         await getAddress(endPointCoordinates[1], endPointCoordinates[0]);
+  //
+  //     setState(() {
+  //       startPointAddresses.add(startPointAddress);
+  //       endPointAddresses.add(endPointAddress);
+  //       //   routeTypes.add(type);
+  //     });
+  //   }
+  // }
+  //
+  // Future<String> getAddress(double latitude, double longitude) async {
+  //   List<Placemark> placemarks =
+  //       await placemarkFromCoordinates(latitude, longitude);
+  //   Placemark placemark = placemarks[0];
+  //   print("ppppppppppp ${placemark}");
+  //   return placemark.name ?? 'Unknown Address';
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -431,18 +430,48 @@ class _ProposedRidesState extends State<ProposedRides> {
               const SizedBox(height: 5),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 8.0, 0, 8),
-                    child: Text(
-                      "Your rides",
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: colorsFile.titleCard,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 8.0, 8, 8),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Align(
+                                child: Text(
+                                  "Your previous routes",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: colorsFile.titleCard,
+                                  ),
+                                ),
+                              ),
+                              Spacer()
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                textAlign: TextAlign.start,
+                                "Re-schedule a route or add a new one",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: colorsFile.titleCard,
+                                ),
+                              ),
+                              Spacer()
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  // const Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
@@ -490,212 +519,211 @@ class _ProposedRidesState extends State<ProposedRides> {
                   ),
                 ],
               ),
-              startPointAddresses.length != 0
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(
-                          widget.listRoutes.length,
-                          (index) => GestureDetector(
-                            onTap: () {
-                              // widget.toggleSelection(index);
-                              widget.selectCard(index);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 16.0,
-                              ),
-                              child: GlassmorphicContainer(
-                                height: 180,
-                                width: _width * 0.3,
-                                borderRadius: 15,
-                                blur: 100,
-                                alignment: Alignment.center,
-                                border: 2,
-                                linearGradient: LinearGradient(
-                                  colors: [
-                                    index == widget.selectedIndex &&
-                                            widget.isCardSelected
-                                        ? colorsFile.titleCard
-                                        : Color(0xFFD8E6EE),
-                                    index == widget.selectedIndex &&
-                                            widget.isCardSelected
-                                        ? colorsFile.titleCard
-                                        : Color(0xFFD8E6EE),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                                borderGradient: LinearGradient(
-                                  colors: [
-                                    Colors.white24.withOpacity(0.2),
-                                    Colors.white70.withOpacity(0.2),
-                                  ],
-                                ),
-                                child: Container(
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(height: 5),
-                                              Center(
-                                                child: Container(
-                                                  height: 60,
-                                                  padding: EdgeInsets.all(2),
-                                                  decoration: BoxDecoration(
-                                                    color: colorsFile
-                                                        .backgroundNvavigaton,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Container(
+              SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    widget.listRoutes.length,
+                    (index) => GestureDetector(
+                      onTap: () {
+                        // widget.toggleSelection(index);
+                        widget.selectCard(index);
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: 16.0,
+                        ),
+                        child: GlassmorphicContainer(
+                          height: 120,
+                          width: _width * 0.3,
+                          borderRadius: 15,
+                          blur: 100,
+                          alignment: Alignment.center,
+                          border: 2,
+                          linearGradient: LinearGradient(
+                            colors: [
+                              index == widget.selectedIndex &&
+                                      widget.isCardSelected
+                                  ? colorsFile.titleCard
+                                  : Color(0xFFD8E6EE),
+                              index == widget.selectedIndex &&
+                                      widget.isCardSelected
+                                  ? colorsFile.titleCard
+                                  : Color(0xFFD8E6EE),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderGradient: LinearGradient(
+                            colors: [
+                              Colors.white24.withOpacity(0.2),
+                              Colors.white70.withOpacity(0.2),
+                            ],
+                          ),
+                          child: Container(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: Container(
+                                            height: 60,
+                                            padding: EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: colorsFile
+                                                  .backgroundNvavigaton,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: Stack(
+                                                children: [
+                                                  ClayContainer(
+                                                    color: Colors.white,
                                                     height: 50,
                                                     width: 50,
-                                                    child: Stack(
-                                                      children: [
-                                                        ClayContainer(
-                                                          color: Colors.white,
-                                                          height: 50,
-                                                          width: 50,
-                                                          borderRadius: 50,
-                                                          curveType:
-                                                              CurveType.concave,
-                                                          depth: 30,
-                                                          spread: 1,
-                                                        ),
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            widget.selectCard(
-                                                                index);
-                                                          },
-                                                          child: Center(
-                                                            child:
-                                                                ClayContainer(
-                                                              color:
-                                                                  Colors.white,
-                                                              height: 30,
-                                                              width: 30,
-                                                              borderRadius: 40,
-                                                              curveType:
-                                                                  CurveType
-                                                                      .convex,
-                                                              depth: 30,
-                                                              spread: 1,
-                                                              child:
-                                                                  const Center(
-                                                                child: Icon(
-                                                                  Icons.route,
-                                                                  size: 30,
-                                                                  color: colorsFile
-                                                                      .backgroundNvavigaton,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
+                                                    borderRadius: 50,
+                                                    curveType:
+                                                        CurveType.concave,
+                                                    depth: 30,
+                                                    spread: 1,
                                                   ),
-                                                ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      widget.selectCard(index);
+                                                    },
+                                                    child: Center(
+                                                      child: ClayContainer(
+                                                        color: Colors.white,
+                                                        height: 30,
+                                                        width: 30,
+                                                        borderRadius: 40,
+                                                        curveType:
+                                                            CurveType.convex,
+                                                        depth: 30,
+                                                        spread: 1,
+                                                        child: const Center(
+                                                          child: Icon(
+                                                            Icons.route,
+                                                            size: 25,
+                                                            color: colorsFile
+                                                                .backgroundNvavigaton,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
                                               ),
-                                              SizedBox(height: 8),
-                                              // Text(
-                                              //   startPointAddresses.length != 0
-                                              //       ? startPointAddresses[index]
-                                              //       : "",
-                                              //   textAlign: TextAlign.center,
-                                              //   style: GoogleFonts.montserrat(
-                                              //       fontWeight: FontWeight.w600,
-                                              //       fontSize: 12,
-                                              //       color: (widget.selectedIndex ==
-                                              //                   index &&
-                                              //               widget
-                                              //                   .isCardSelected)
-                                              //           ? Colors.white
-                                              //           : colorsFile.titleCard),
-                                              // ),
-                                              // Text(
-                                              //   "|",
-                                              //   textAlign: TextAlign.center,
-                                              //   style: GoogleFonts.montserrat(
-                                              //       fontWeight: FontWeight.w600,
-                                              //       fontSize: 12,
-                                              //       color: (widget.selectedIndex ==
-                                              //                   index &&
-                                              //               widget
-                                              //                   .isCardSelected)
-                                              //           ? Colors.white
-                                              //           : colorsFile.titleCard),
-                                              // ),
-                                              // Icon(
-                                              //   Icons.arrow_downward,
-                                              //   color: (widget.selectedIndex ==
-                                              //               index &&
-                                              //           widget.isCardSelected)
-                                              //       ? Colors.white
-                                              //       : colorsFile.titleCard,
-                                              //   size: 15,
-                                              // ),
-                                              // SizedBox(width: 10),
-                                              // Text(
-                                              //   endPointAddresses.length != 0
-                                              //       ? endPointAddresses[index]
-                                              //       : "",
-                                              //   textAlign: TextAlign.center,
-                                              //   style: GoogleFonts.montserrat(
-                                              //       fontWeight: FontWeight.w600,
-                                              //       fontSize: 12,
-                                              //       color: (widget.selectedIndex ==
-                                              //                   index &&
-                                              //               widget
-                                              //                   .isCardSelected)
-                                              //           ? Colors.white
-                                              //           : colorsFile.titleCard),
-                                              // ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              Text(
-                                                routeTypes.length != 0
-                                                    ? routeTypes[index]
-                                                        .replaceAll(
-                                                            "fromOffice",
-                                                            "from office")
-                                                        .replaceAll("toOffice",
-                                                            "to office")
-                                                    : "",
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12,
-                                                    color: (widget.selectedIndex ==
-                                                                index &&
-                                                            widget
-                                                                .isCardSelected)
-                                                        ? Colors.white
-                                                        : colorsFile.titleCard),
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        //SizedBox(height: 8),
+                                        // Text(
+                                        //   startPointAddresses.length != 0
+                                        //       ? startPointAddresses[index]
+                                        //       : "",
+                                        //   textAlign: TextAlign.center,
+                                        //   style: GoogleFonts.montserrat(
+                                        //       fontWeight: FontWeight.w600,
+                                        //       fontSize: 12,
+                                        //       color: (widget.selectedIndex ==
+                                        //                   index &&
+                                        //               widget
+                                        //                   .isCardSelected)
+                                        //           ? Colors.white
+                                        //           : colorsFile.titleCard),
+                                        // ),
+                                        // Text(
+                                        //   "|",
+                                        //   textAlign: TextAlign.center,
+                                        //   style: GoogleFonts.montserrat(
+                                        //       fontWeight: FontWeight.w600,
+                                        //       fontSize: 12,
+                                        //       color: (widget.selectedIndex ==
+                                        //                   index &&
+                                        //               widget
+                                        //                   .isCardSelected)
+                                        //           ? Colors.white
+                                        //           : colorsFile.titleCard),
+                                        // ),
+                                        // Icon(
+                                        //   Icons.arrow_downward,
+                                        //   color: (widget.selectedIndex ==
+                                        //               index &&
+                                        //           widget.isCardSelected)
+                                        //       ? Colors.white
+                                        //       : colorsFile.titleCard,
+                                        //   size: 15,
+                                        // ),
+                                        // SizedBox(width: 10),
+                                        // Text(
+                                        //   endPointAddresses.length != 0
+                                        //       ? endPointAddresses[index]
+                                        //       : "",
+                                        //   textAlign: TextAlign.center,
+                                        //   style: GoogleFonts.montserrat(
+                                        //       fontWeight: FontWeight.w600,
+                                        //       fontSize: 12,
+                                        //       color: (widget.selectedIndex ==
+                                        //                   index &&
+                                        //               widget
+                                        //                   .isCardSelected)
+                                        //           ? Colors.white
+                                        //           : colorsFile.titleCard),
+                                        // ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text(
+                                          widget.listRoutes[index]['type'] ==
+                                                  "fromOffice"
+                                              ? "From office"
+                                              : "To office",
+                                          // widget.listRoutes.length != 0
+                                          //     ? routeTypes[index]
+                                          //         .replaceAll(
+                                          //             "fromOffice",
+                                          //             "from office")
+                                          //         .replaceAll("toOffice",
+                                          //             "to office")
+                                          //     : "",
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                              color: (widget.selectedIndex ==
+                                                          index &&
+                                                      widget.isCardSelected)
+                                                  ? Colors.white
+                                                  : colorsFile.titleCard),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    )
-                  : Container(),
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),

@@ -402,6 +402,8 @@ class _SearchState extends State<Search> {
     _width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: null,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -637,8 +639,8 @@ class _SearchState extends State<Search> {
                             );
                           } else {
                             return WantToBook(
-                              "Your proposed rides",
-                              "Want to book a ride? Press + button!",
+                              "Your reservations ",
+                              "Press '+' to search for a ride",
                               _showSearchRides,
                             );
                           }

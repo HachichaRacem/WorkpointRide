@@ -37,20 +37,21 @@ class WantToBook extends StatelessWidget {
         Positioned(
           child: Column(children: [
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 18.0),
-                    child: Text(
-                      title.toString(),
-                      style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          color: colorsFile.titleCard),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 18.0),
+                      child: Text(
+                        title.toString(),
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: colorsFile.titleCard),
+                      ),
                     ),
                   ),
-                  Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
@@ -95,15 +96,20 @@ class WantToBook extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                desc.toString(),
-                style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: colorsFile.titleCard),
-              ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 8, 0),
+                  child: Text(
+                    desc.toString(),
+                    style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        color: colorsFile.titleCard),
+                  ),
+                ),
+                Spacer()
+              ],
             ),
           ]),
         ),

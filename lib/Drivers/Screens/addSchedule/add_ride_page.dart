@@ -48,7 +48,7 @@ class _AddRidesState extends State<AddRides>
   var origin_address_name = 'Home';
   TextEditingController originController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
-  int selectedIndex = 0;
+  int selectedIndex = -1;
   List<Marker> myMarker = [];
 
   List<Marker> markers = [];
@@ -231,23 +231,28 @@ class _AddRidesState extends State<AddRides>
     }
   }
 
-  Future<void> getRoutes() async {
+  Future<List<dynamic>> getRoutes() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? user = prefs.getString('user');
 
-      await _routeService.getRouteByUser(user!).then((value) async {
-        if (value.statusCode == 200) {
-          setState(() {
-            listRoutes = value.data;
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("${value.data["error"]}"),
-          ));
-        }
-      });
-    } catch (e) {}
+      var value = await _routeService.getRouteByUser(user!);
+      if (value.statusCode == 200) {
+        setState(() {
+          listRoutes = value.data;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("${value.data["error"]}"),
+        ));
+        return listRoutes;
+      }
+      return listRoutes;
+    } catch (e) {
+      print("eeee${e}");
+
+      throw (e);
+    }
   }
 
   google_map_for_origin(GoogleMapController? map_controller) async {
@@ -585,10 +590,11 @@ class _AddRidesState extends State<AddRides>
       });
   }
 
+  late Future<List<dynamic>> getUserRoutes;
   @override
   void initState() {
     super.initState();
-    getRoutes();
+    getUserRoutes = getRoutes();
     //  shared_data();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
@@ -674,19 +680,45 @@ class _AddRidesState extends State<AddRides>
                 panel: SingleChildScrollView(
                   child: InkWell(
                     onTap: () {},
-                    child: (listRoutes.length == 0)
-                        ? WantToBook(
-                            "Your proposed rides",
-                            "Want to add a ride? Press + button!",
-                            _showSearchRides,
-                          )
-                        : ProposedRides(
-                            listRoutes,
-                            _showMyRides,
-                            showRide,
-                            toggleSelection,
-                            selectedIndexRoute,
-                            isCardSelected),
+                    child: FutureBuilder<List<dynamic>>(
+                        future: getUserRoutes,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Positioned(child: CircularProgressIndicator()),
+                              ],
+                            );
+
+                            // return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            print("ddddddddddddddddddddddd${listRoutes}");
+                            listRoutes = snapshot.data!;
+                            print(
+                                "sssnnnnnnnnaaappppppppppppppppppppp${listRoutes}");
+                            return (listRoutes.length == 0)
+                                ? WantToBook(
+                                    "Click on '+' to create a new route and schedule a ride.",
+                                    "",
+                                    _showSearchRides,
+                                  )
+                                : ProposedRides(
+                                    listRoutes,
+                                    _showMyRides,
+                                    showRide,
+                                    toggleSelection,
+                                    selectedIndexRoute,
+                                    isCardSelected);
+                          }
+
+                          return Center(child: CircularProgressIndicator());
+                        }),
                   ),
                 ),
                 body: Container(), // Your body widget here
@@ -1087,8 +1119,8 @@ class _AddRidesState extends State<AddRides>
                                                   availablePlaces: nbPlaces,
                                                   startPointLat: position1_lat,
                                                   startPointLang: position1_lng,
-                                                  endPointLat: position1_lat,
-                                                  endPointLang: position1_lng,
+                                                  endPointLat: position2_lat,
+                                                  endPointLang: position2_lng,
                                                   duration:
                                                       totalDurationInMinutes,
                                                   distance: total_km,

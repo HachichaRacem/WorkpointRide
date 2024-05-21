@@ -186,6 +186,8 @@ class _CalendarState extends State<Calendar> {
             ),
           ),
         ),
+        automaticallyImplyLeading: false,
+        leading: null,
         toolbarHeight: 100.0,
         title: Column(
           children: [
@@ -305,7 +307,7 @@ class _CalendarState extends State<Calendar> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "No passengers yet",
+                                  "No scheduled rides",
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
