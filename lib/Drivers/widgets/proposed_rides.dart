@@ -334,16 +334,19 @@ class _ProposedRidesState extends State<ProposedRides> {
 
                                           await _scheduleServices
                                               .addSchedule(
-                                            user:
-                                                user!, // Provide a value for the 'user' parameter
-                                            startTime:
-                                                startDate, // Provide a value for the 'startTime' parameter
-                                            scheduledDate:
-                                                dates, // Provide a value for the 'scheduledDate' parameter
-                                            availablePlaces:
-                                                nbPlaces, // Provide a value for the 'availablePlaces' parameter
-                                            //routeId: widget.listRoutes[selectedIndex]["_id"]
-                                          )
+                                                  user:
+                                                      user!, // Provide a value for the 'user' parameter
+                                                  startTime:
+                                                      startDate, // Provide a value for the 'startTime' parameter
+                                                  scheduledDate:
+                                                      dates, // Provide a value for the 'scheduledDate' parameter
+                                                  availablePlaces:
+                                                      nbPlaces, // Provide a value for the 'availablePlaces' parameter
+                                                  routeId: widget.listRoutes[
+                                                          widget.selectedIndex]
+                                                      ["_id"]
+                                                  //routeId: widget.listRoutes[selectedIndex]["_id"]
+                                                  )
                                               .then((value) {
                                             if (value.statusCode == 200) {
                                               Alert(

@@ -7,7 +7,6 @@ import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawRoute extends StatefulWidget {
-  final double poly_lat1, poly_lng1, poly_lat2, poly_lng2;
   Set<Polyline> polyline;
   final Set<Marker> markers;
   Marker? marker;
@@ -15,10 +14,6 @@ class DrawRoute extends StatefulWidget {
 
   DrawRoute(
       {Key? key,
-      required this.poly_lat1,
-      required this.poly_lng1,
-      required this.poly_lat2,
-      required this.poly_lng2,
       required this.route_id,
       required this.polyline,
       required this.markers,
@@ -74,6 +69,7 @@ class _DrawRouteState extends State<DrawRoute> {
   }
 
   late GoogleMapController mapController;
+  dynamic EY_lat = 36.85135579846211, EY_lng = 10.179065957033673;
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +83,8 @@ class _DrawRouteState extends State<DrawRoute> {
                 GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: LatLng(
-                      (widget.poly_lat1),
-                      (widget.poly_lng1),
+                      (EY_lat),
+                      (EY_lng),
                     ),
                     zoom: 10.5,
                   ),

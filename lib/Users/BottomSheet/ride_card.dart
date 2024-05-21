@@ -212,7 +212,9 @@ class RideCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            selectedRouteCardInfo!['type'],
+                            selectedRouteCardInfo!['type'] == "toOffice"
+                                ? "To office"
+                                : "From office",
                             style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
