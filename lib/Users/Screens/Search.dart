@@ -508,10 +508,6 @@ class _SearchState extends State<Search> {
                         markers: _markers,
                         isSearch: isSearch)
                     : DrawRoute(
-                        poly_lat1: position1_lat,
-                        poly_lng1: position1_lng,
-                        poly_lat2: position2_lat,
-                        poly_lng2: position2_lng,
                         route_id: 'route',
                         polyline: _polyline,
                         markers: _markers,
@@ -536,7 +532,7 @@ class _SearchState extends State<Search> {
                                       padding: const EdgeInsets.fromLTRB(
                                           50, 8.0, 0, 8),
                                       child: Text(
-                                        'Your rides pass',
+                                        'Your reservations',
                                         style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18,
