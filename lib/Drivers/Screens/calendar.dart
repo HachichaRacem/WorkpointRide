@@ -305,7 +305,7 @@ class _CalendarState extends State<Calendar> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "No passengers yet",
+                                  "No rides scheduled",
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),

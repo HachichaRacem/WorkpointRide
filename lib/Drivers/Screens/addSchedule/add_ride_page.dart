@@ -1009,12 +1009,14 @@ class _AddRidesState extends State<AddRides>
                                 ),
                                 //start
                                 const SizedBox(height: 10),
+                                
                                 Container(
                                   height: 40,
                                   child: Padding(
                                     padding: const EdgeInsets.all(3),
                                     child: Row(
                                       children: [
+                                        SizedBox(width: 10,),//bach n7ot seats  ma3 demi cercle mta3 text fields  
                                         Expanded(
                                           child: RatingBar.builder(
                                             initialRating: nbPlaces.toDouble(),
@@ -1040,7 +1042,7 @@ class _AddRidesState extends State<AddRides>
                                             },
                                           ),
                                         ),
-                                        // Adjust the space between the two icons
+                                        SizedBox(width: 16),
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 8.0),

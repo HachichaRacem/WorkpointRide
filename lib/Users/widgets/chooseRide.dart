@@ -186,6 +186,16 @@ class _ChooseRideState extends State<ChooseRide> {
   void updateSelectedCardIndex(int index) {
     setState(() => selectedRouteCardIndex = index);
   }
+  String formatTime(String time) {
+  if (time.endsWith(":")) {
+    // Remove the last character if it is a colon
+    return time.substring(0, time.length - 1);
+  }
+  return time;
+}
+
+// Usage
+
 
   Future _createReservation() async {
     //   try {
@@ -194,6 +204,9 @@ class _ChooseRideState extends State<ChooseRide> {
       final userID = prefs.getString("user");
       final latitude = prefs.getDouble("markerLat");
       final longitude = prefs.getDouble("markerLng");
+String startTime = schedules[selectedIndexRoute]["startTime"];
+      String formattedTime = formatTime(startTime);
+
       final reqBody = {
         "user": userID,
         "schedule": schedules[selectedIndexRoute]["_id"],
@@ -245,7 +258,7 @@ class _ChooseRideState extends State<ChooseRide> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
                       child: Text(
-                        "Choose a ride",
+                        "Choose a ride12",
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,

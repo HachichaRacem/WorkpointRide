@@ -30,7 +30,7 @@ class _pass_profileState extends State<pass_profile> {
   void initState() {
     // TODO: implement initState
     print("inside the initstate");
-    get_shared();
+    // get_shared();
     super.initState();
   }
 
@@ -189,12 +189,12 @@ class _pass_profileState extends State<pass_profile> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) => History(),
-                                      //   ),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => History(),
+                                        ),
+                                      );
                                     },
                                     child: Container(
                                       height: 50,
