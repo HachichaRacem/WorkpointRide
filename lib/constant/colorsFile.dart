@@ -28,4 +28,8 @@ class colorsFile {
   static const Color loginButton = Color(0xFF407C9C);
 
   static const Color kDarkBlue = Color(0xFF0D47A1);
+  static const Color historyIcon = Color(0xFF4489AE);
+  static const Color notiftitle= Color(0xFF458CB1);
+  static const Color notiftext= Color(0xFF003A5A);
+  static const Color notifdate= Color(0xFF636161);
 }

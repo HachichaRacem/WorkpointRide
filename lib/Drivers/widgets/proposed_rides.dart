@@ -59,33 +59,7 @@ class _ProposedRidesState extends State<ProposedRides> {
       alertElevation: 0,
       alertAlignment: Alignment.topCenter);
 
-/*
-  void toggleSelection(int index) {
-    print("seeeeeeeeeeeeee" + widget.selectedIndex.toString());
-    print("iiiiiiiiii" + index.toString());
 
-    if (widget.selectedIndex == index) {
-      // Toggle the selection state if the card is tapped again
-      setState(() {
-        widget.selectedIndex = -1;
-        isCardSelected = !isCardSelected;
-      });
-      // Reset card color to default when the second tab is selected
-    } else {
-      setState(() {
-        widget.selectedIndex = index;
-        isCardSelected = true;
-      });
-      // If it's a new selection, update the selected index and set the selection state to true
-      widget.selectedIndex = index;
-
-      widget.drawRoute();
-    }
-    print("wwwwwwwwwwwwwwwwww" + widget.selectedIndex.toString());
-
-    widget.ridesVisible();
-  }
-*/
 
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
@@ -293,7 +267,9 @@ class _ProposedRidesState extends State<ProposedRides> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                SizedBox(width: 7,),
                                 Expanded(
+                                  
                                   child: RatingBar.builder(
                                     initialRating: nbPlaces.toDouble(),
                                     minRating: 1,
@@ -460,31 +436,7 @@ class _ProposedRidesState extends State<ProposedRides> {
     //  extractAddressesAndTypes();
   }
 
-  // Future<void> extractAddressesAndTypes() async {
-  //   for (var route in widget.listRoutes) {
-  //     var startPointCoordinates = route['startPoint']['coordinates'];
-  //     var endPointCoordinates = route['endPoint']['coordinates'];
-  //     var type = route['type'];
-  //     String startPointAddress =
-  //         await getAddress(startPointCoordinates[1], startPointCoordinates[0]);
-  //     String endPointAddress =
-  //         await getAddress(endPointCoordinates[1], endPointCoordinates[0]);
-  //
-  //     setState(() {
-  //       startPointAddresses.add(startPointAddress);
-  //       endPointAddresses.add(endPointAddress);
-  //       //   routeTypes.add(type);
-  //     });
-  //   }
-  // }
-  //
-  // Future<String> getAddress(double latitude, double longitude) async {
-  //   List<Placemark> placemarks =
-  //       await placemarkFromCoordinates(latitude, longitude);
-  //   Placemark placemark = placemarks[0];
-  //   print("ppppppppppp ${placemark}");
-  //   return placemark.name ?? 'Unknown Address';
-  // }
+  
 
   @override
   Widget build(BuildContext context) {

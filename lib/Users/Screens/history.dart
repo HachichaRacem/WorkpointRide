@@ -169,61 +169,148 @@ class _HistoryState extends State<History> {
     _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: colorsFile.cardColor,
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,  // Changed to vertical for a list of cards
+      backgroundColor: colorsFile.background,
+      body: Column(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 30.0,
+              ),
+              height: _height * 0.09,
+              width: _width,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              width: _width,
+              decoration: BoxDecoration(
+                color: colorsFile.cardColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40.0),
+                  topRight: Radius.circular(40.0),
+                ),
+              ),
+              child: Container(
+                child: Column(
+                  children: List.generate(
+                    4,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(right: 16.0, top: 16.0),
+                      child: GlassmorphicContainer(
+                        height: _height * 0.15,
+                        width: _width * 0.8,
+                        borderRadius: 15,
+                        blur: 100,
+                        alignment: Alignment.center,
+                        border: 2,
+                        linearGradient: LinearGradient(
+                          colors: [Color(0xFFD8E6EE), Color(0xFFD8E6EE)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderGradient: LinearGradient(
+                          colors: [
+                            Colors.white24.withOpacity(0.2),
+                            Colors.white70.withOpacity(0.2),
+                          ],
+                        ),
+                        child: Container(
+  child: Row(
+    children: [
+      SizedBox(width: 8),
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
           child: Column(
-            children: List.generate(
-              4,
-              (index) => Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),  // Changed padding to bottom for vertical list
-                child: GlassmorphicContainer(
-                  height: _height * 0.15,  // Adjusted for better proportions
-                  width: _width * 0.8,
-                  borderRadius: 15,
-                  blur: 100,
-                  alignment: Alignment.center,
-                  border: 2,
-                  linearGradient: LinearGradient(
-                    colors: [Color(0xFFD8E6EE), Color(0xFFD8E6EE)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),  // Increased height for more top padding
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Ride reservation",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: colorsFile.done,
+                    ),
                   ),
-                  borderGradient: LinearGradient(
-                    colors: [
-                      Colors.white24.withOpacity(0.2),
-                      Colors.white70.withOpacity(0.2),
+                ],
+              ),
+              SizedBox(height: 15),  // Increased height for more spacing
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.route_sharp,
+                    color: colorsFile.historyIcon,
+                    size: 18,
+                  ),
+                  SizedBox(width: 3),  // Added space between icon and text
+                  Text(
+                    "From Office",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                      color: colorsFile.titleCard,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),  // Increased height for more spacing
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.calendar_month,
+                        color: colorsFile.historyIcon,
+                        size: 18,
+                      ),
+                      SizedBox(width: 3),  // Added space between icon and text
+                      Text(
+                        "2023-01-25 at 07:20",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.montserrat(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: colorsFile.titleCard,
+                        ),
+                      ),
                     ],
                   ),
-                  child: ListTile(
-                    leading: Icon(Icons.directions_car, color: colorsFile.icons),
-                    title: Text(
-                      "From Office",
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: colorsFile.titleCard,
-                      ),
-                    ),
-                    subtitle: Text(
-                      "2024-05-21 at 09:20",
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        color: colorsFile.titleCard,
-                      ),
-                    ),
-                    trailing: Text(
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(
                       "Today at 09:20",
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w500,
-                        fontSize: 14,
+                        fontSize: 10,
                         color: colorsFile.titleCard,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // SizedBox(height: 15),  // Added more space at the bottom
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+)
+
                       ),
                     ),
                   ),
@@ -231,9 +318,8 @@ class _HistoryState extends State<History> {
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
-

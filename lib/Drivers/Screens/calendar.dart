@@ -29,6 +29,7 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  
   late String selectedTime = '07:20';
   List? schedules;
   int selectedIndex = 0;
@@ -282,7 +283,7 @@ class _CalendarState extends State<Calendar> {
                   ),
                   child: schedules == null
                       ? Container(
-                          height: 127,
+                          height: 130,
                           decoration: const BoxDecoration(
                             color: colorsFile.ProfileIcon,
                             borderRadius: BorderRadius.vertical(
@@ -295,7 +296,7 @@ class _CalendarState extends State<Calendar> {
                         )
                       : schedules!.isEmpty
                           ? Container(
-                              height: 127,
+                              height: 120,
                               decoration: const BoxDecoration(
                                 color: colorsFile.ProfileIcon,
                                 borderRadius: BorderRadius.vertical(
@@ -412,45 +413,46 @@ class _CalendarState extends State<Calendar> {
                                               5.0, 5, 5, 5),
                                           child: Row(
                                             children: [
-                                              const Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    5.0, 10, 5, 10),
-                                                child: Text(
-                                                  "Home",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              const Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 8.0),
-                                                child: Text(
-                                                  "--->",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              const Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 8.0),
-                                                child: Text(
-                                                  "EY Tower",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
+                                              // to office from office 
+                                              // const Padding(
+                                              //   padding: EdgeInsets.fromLTRB(
+                                              //       5.0, 10, 5, 10),
+                                              //   child: Text(
+                                              //     "Home",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // const Padding(
+                                              //   padding:
+                                              //       EdgeInsets.only(right: 8.0),
+                                              //   child: Text(
+                                              //     "--->",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // const Padding(
+                                              //   padding:
+                                              //       EdgeInsets.only(right: 8.0),
+                                              //   child: Text(
+                                              //     "EY Tower",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                               ...List.generate(
                                                 schedules![selectedTimeIndex]
                                                     ['availablePlaces'],
@@ -498,13 +500,7 @@ class _CalendarState extends State<Calendar> {
                                                   color: colorsFile.skyBlue,
                                                 ),
                                               ),
-                                              // const SizedBox(width: 2),
-                                              // Container(
-                                              //   child: const Icon(
-                                              //     Icons.edit,
-                                              //     color: colorsFile.skyBlue,
-                                              //   ),
-                                              // ),
+                                             
                                             ],
                                           ),
                                         ),
@@ -527,14 +523,7 @@ class _CalendarState extends State<Calendar> {
                                                   selectedPersonIndex = -1;
                                                 } else {
                                                   selectedPersonIndex = index;
-                                                  // DriverOnMap(
-                                                  //   poly_lat1: 37.43316,
-                                                  //   poly_lng1: -122.083061,
-                                                  //   poly_lat2: 37.427847,
-                                                  //   poly_lng2: -122.097320,
-                                                  //   route_id: 'route12',
-
-                                                  // );
+                                                  
                                                 }
                                               });
                                             },
