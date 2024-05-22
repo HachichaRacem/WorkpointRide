@@ -29,6 +29,7 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  
   late String selectedTime = '07:20';
   List? schedules;
   int selectedIndex = 0;
@@ -410,45 +411,46 @@ class _CalendarState extends State<Calendar> {
                                               5.0, 5, 5, 5),
                                           child: Row(
                                             children: [
-                                              const Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    5.0, 10, 5, 10),
-                                                child: Text(
-                                                  "Home",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              const Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 8.0),
-                                                child: Text(
-                                                  "--->",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
-                                              const Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 8.0),
-                                                child: Text(
-                                                  "EY Tower",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                    color: colorsFile.icons,
-                                                  ),
-                                                ),
-                                              ),
+                                              // to office from office 
+                                              // const Padding(
+                                              //   padding: EdgeInsets.fromLTRB(
+                                              //       5.0, 10, 5, 10),
+                                              //   child: Text(
+                                              //     "Home",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // const Padding(
+                                              //   padding:
+                                              //       EdgeInsets.only(right: 8.0),
+                                              //   child: Text(
+                                              //     "--->",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                              // const Padding(
+                                              //   padding:
+                                              //       EdgeInsets.only(right: 8.0),
+                                              //   child: Text(
+                                              //     "EY Tower",
+                                              //     textAlign: TextAlign.center,
+                                              //     style: TextStyle(
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontSize: 13,
+                                              //       color: colorsFile.icons,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                               ...List.generate(
                                                 schedules![selectedTimeIndex]
                                                     ['availablePlaces'],

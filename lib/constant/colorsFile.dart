@@ -28,4 +28,5 @@ class colorsFile {
   static const Color loginButton = Color(0xFF407C9C);
 
   static const Color kDarkBlue = Color(0xFF0D47A1);
+  static const Color historyIcon = Color(0xFF4489AE);
 }
