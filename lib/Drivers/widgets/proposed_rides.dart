@@ -267,7 +267,9 @@ class _ProposedRidesState extends State<ProposedRides> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                SizedBox(width: 7,),
                                 Expanded(
+                                  
                                   child: RatingBar.builder(
                                     initialRating: nbPlaces.toDouble(),
                                     minRating: 1,

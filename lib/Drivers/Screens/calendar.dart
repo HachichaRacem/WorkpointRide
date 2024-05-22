@@ -281,7 +281,7 @@ class _CalendarState extends State<Calendar> {
                   ),
                   child: schedules == null
                       ? Container(
-                          height: 127,
+                          height: 130,
                           decoration: const BoxDecoration(
                             color: colorsFile.ProfileIcon,
                             borderRadius: BorderRadius.vertical(
@@ -294,7 +294,7 @@ class _CalendarState extends State<Calendar> {
                         )
                       : schedules!.isEmpty
                           ? Container(
-                              height: 127,
+                              height: 120,
                               decoration: const BoxDecoration(
                                 color: colorsFile.ProfileIcon,
                                 borderRadius: BorderRadius.vertical(
@@ -498,13 +498,7 @@ class _CalendarState extends State<Calendar> {
                                                   color: colorsFile.skyBlue,
                                                 ),
                                               ),
-                                              // const SizedBox(width: 2),
-                                              // Container(
-                                              //   child: const Icon(
-                                              //     Icons.edit,
-                                              //     color: colorsFile.skyBlue,
-                                              //   ),
-                                              // ),
+                                             
                                             ],
                                           ),
                                         ),
@@ -527,14 +521,7 @@ class _CalendarState extends State<Calendar> {
                                                   selectedPersonIndex = -1;
                                                 } else {
                                                   selectedPersonIndex = index;
-                                                  // DriverOnMap(
-                                                  //   poly_lat1: 37.43316,
-                                                  //   poly_lng1: -122.083061,
-                                                  //   poly_lat2: 37.427847,
-                                                  //   poly_lng2: -122.097320,
-                                                  //   route_id: 'route12',
-
-                                                  // );
+                                                  
                                                 }
                                               });
                                             },
