@@ -13,7 +13,7 @@ class HistoryService {
       if (token != null) {
         dio.options.headers["Authorization"] = "$token";
       }
-      return await dio.get("api/history/$userID");
+      return await dio.get("api/history/getByUser/$userID");
     } on DioException catch (e) {
       print(e.response?.data);
       print(e.response?.headers);
