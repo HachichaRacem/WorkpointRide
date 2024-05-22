@@ -6,7 +6,6 @@ import 'package:osmflutter/Users/widgets/input_field.dart';
 import 'package:osmflutter/Users/widgets/password_field.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/login/choose_role.dart';
-import 'package:osmflutter/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -197,6 +196,21 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           Future<dynamic> loginUser =
                               authentication().login(email.text, password.text);
                           loginUser.then((value) async {
+                            print("valueeeeeeeeeeeeeeeeeeeeee ${value.data}");
+                            if (value.toString().contains("error")) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      content: Text(
+                                value.data["error"].toString(),
+                                style: TextStyle(color: Colors.red),
+                              )));
+                              Future.delayed(Duration(seconds: 3), () {
+                                setState(() {
+                                  _clicked = !_clicked;
+                                  _opacity = _opacity == 1.0 ? 0.0 : 1.0;
+                                });
+                              });
+                            }
                             if (value.statusCode == 200) {
                               print("vvvvvvvvvvvvvvvvvv ${value}");
                               final SharedPreferences prefs =
@@ -208,12 +222,17 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
                               await prefs.setString(
                                   "user", payload["id"].toString());
-
+                              await prefs.setString(
+                                  "firstName", payload["firstName"].toString());
+                              await prefs.setString(
+                                  "lastName", payload["lastName"].toString());
+                              await prefs.setString("phoneNumber",
+                                  payload["phoneNumber"].toString());
                               prefs.setString(
                                 "token",
                                 value.data["accessToken"].toString(),
                               );
-                              User().updateFromJSON(payload);
+                              //  User().updateFromJSON(payload);
 
                               print("pppppppppppppppppppppppayload ${payload}");
                               Future.delayed(Duration(seconds: 1), () {

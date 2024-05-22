@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:osmflutter/SplashScreen/splash_screen.dart';
 import 'package:osmflutter/constant/url.dart';
-import 'package:osmflutter/login/login.dart';
 
 import 'Services/API.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.transparent,
       ),
-      home: Login(),
+      home: SplashScreen(),
       //home:  ChooseRole(),
     );
   }

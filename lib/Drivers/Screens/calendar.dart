@@ -6,8 +6,8 @@ import 'package:osmflutter/GoogleMaps/driver_polyline_map.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:osmflutter/models/user.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -140,8 +140,10 @@ class _CalendarState extends State<Calendar> {
     final DateTime date = now.add(Duration(days: selectedIndex));
     final String dateString =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? user = prefs.getString('user');
     await scheduleServices()
-        .getScheduleReservationsByDate(dateString, User().id!)
+        .getScheduleReservationsByDate(dateString, user!)
         .then((resp) async {
       setState(() {
         schedules = resp.data['schedule'];

@@ -6,7 +6,8 @@ class scheduleServices {
   Dio dio = Dio(BaseOptions(baseUrl: link.url));
   late Response response;
 
-  Future<Response> getAllSchedules() async {
+  Future<Response> getAllSchedules(DateTime currentDate, double latitude,
+      double longitude, String routeType) async {
     try {
       final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
@@ -14,7 +15,16 @@ class scheduleServices {
       if (token != null) {
         dio.options.headers["Authorization"] = "$token";
       }
-      return await dio.get("api/schedules");
+      var requestData = {
+        'date': currentDate.toString(),
+        'latitude': latitude.toString(),
+        "longitude": longitude.toString(),
+        "type": routeType,
+      };
+      return await dio.post(
+        "api/schedules/getNearest",
+        data: requestData,
+      );
     } on DioException catch (e) {
       print(e.response?.data);
       print(e.response?.headers);

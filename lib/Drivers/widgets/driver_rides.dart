@@ -1,11 +1,8 @@
-import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
-import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
-import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
+import 'package:osmflutter/constant/colorsFile.dart';
 
 class DriverRides extends StatefulWidget {
   const DriverRides({Key? key}) : super(key: key);

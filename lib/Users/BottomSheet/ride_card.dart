@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:osmflutter/Services/reservation.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RideCard extends StatelessWidget {
   final Map<String, dynamic>? selectedRouteCardInfo;
@@ -84,7 +84,7 @@ class RideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassmorphicContainer(
-      height: 200,
+      height: 205,
       width: 130,
       borderRadius: 15,
       blur: 100,
@@ -127,9 +127,10 @@ class RideCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text(
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3.0, bottom: 3.0),
+                    child: Center(
+                      child: Text(
                         selectedRouteCardInfo!['driverName'] ??
                             "Foulen Ben Falten",
                         style: GoogleFonts.montserrat(
@@ -137,17 +138,8 @@ class RideCard extends StatelessWidget {
                             fontSize: 13,
                             color: colorsFile.titleCard),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () => _onDeleteRideButtonPress(context),
-                        icon: const Icon(
-                          Icons.delete,
-                          color: colorsFile.skyBlue,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-
                   Row(
                     children: [
                       SizedBox(
@@ -208,35 +200,67 @@ class RideCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            selectedRouteCardInfo!['type'] == "toOffice"
-                                ? "To office"
-                                : "From office",
-                            style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: colorsFile.detailColor),
-                          ),
-                        ],
-                      ),
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            selectedRouteCardInfo!['scheduleStartTime'] != null
-                                ? DateFormat("HH:mm").format(DateTime.parse(
-                                    selectedRouteCardInfo![
-                                        'scheduleStartTime']))
-                                : '00:00',
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.end,
-                            style: GoogleFonts.montserrat(
-                                fontSize: 12, color: colorsFile.detailColor),
-                          ),
+                      Center(
+                        child: Text(
+                          selectedRouteCardInfo!['type'] == "toOffice"
+                              ? "To office"
+                              : "From office",
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: colorsFile.detailColor),
                         ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: Container()),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Container(
+                                    // color: Colors.red,
+                                    child: Text(
+                                      selectedRouteCardInfo![
+                                                  'scheduleStartTime'] !=
+                                              null
+                                          ? DateFormat("HH:mm").format(
+                                              DateTime.parse(
+                                                  selectedRouteCardInfo![
+                                                      'scheduleStartTime']))
+                                          : '00:00',
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.end,
+                                      style: GoogleFonts.montserrat(
+                                          fontSize: 12,
+                                          color: colorsFile.detailColor),
+                                    ),
+                                  ),
+                                ),
+                                Container()
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              //    color: Colors.green,
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: IconButton(
+                                  onPressed: () =>
+                                      _onDeleteRideButtonPress(context),
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: colorsFile.skyBlue,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),

@@ -1,20 +1,14 @@
-import 'package:flutter/cupertino.dart';
-import 'package:osmflutter/GoogleMaps/pass_route_map.dart';
-import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:osmflutter/GoogleMaps/googlemaps.dart';
+import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/login/choose_role.dart';
-
-import 'package:osmflutter/mapOsm/home_example.dart';
-import 'package:osmflutter/models/user.dart';
-import 'package:osmflutter/shared_preferences/shared_preferences.dart';
+import 'package:osmflutter/login/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../GoogleMaps/driver_polyline_map.dart';
 import '../../GoogleMaps/passenger_map.dart';
 import 'history.dart';
 
@@ -26,15 +20,31 @@ class pass_profile extends StatefulWidget {
 }
 
 class _pass_profileState extends State<pass_profile> {
+  late String user = "";
+  late String firstName = "";
+  late String lastName = "";
+  late String phoneNumber = "";
+  List<dynamic> favLocations = [];
+
+  Future<void> _loadUserFromStorage() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    user = prefs.getString('user')!;
+    firstName = prefs.getString('firstName')!;
+    lastName = prefs.getString('lastName')!;
+    phoneNumber = prefs.getString('phoneNumber')!;
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     print("inside the initstate");
+    _loadUserFromStorage();
+
     // get_shared();
     super.initState();
   }
 
-  List favLocations = User().favoritePlaces ?? [];
+  // List favLocations = User().favoritePlaces ?? [];
 
   bool check_shared_data = true;
 
@@ -42,40 +52,6 @@ class _pass_profileState extends State<pass_profile> {
       sp_data_poly_lng1,
       sp_data_poly_lat2,
       sp_data_poly_lng2;
-  get_shared() async {
-    print("Getting the shared data");
-
-    final prefs = await sharedpreferences.get_pass_poly_lat1();
-    sp_data_poly_lat1 = prefs;
-    print("Poly_lat1 = ${sp_data_poly_lat1}");
-
-    final prefs1 = await sharedpreferences.get_pass_poly_lng1();
-    sp_data_poly_lng1 = prefs1;
-    print("Poly_lng1 = ${sp_data_poly_lng1}");
-
-    final prefs2 = await sharedpreferences.get_pass_poly_lat2();
-    sp_data_poly_lat2 = prefs2;
-    print("Poly_lat2 = ${sp_data_poly_lat2}");
-
-    final prefs3 = await sharedpreferences.get_pass_poly_lng2();
-    sp_data_poly_lng2 = prefs3;
-    print("Poly_lng2 = ${sp_data_poly_lng2}");
-
-    setState(() {});
-
-    if (sp_data_poly_lat1 == null ||
-        sp_data_poly_lng1 == null ||
-        sp_data_poly_lat2 == null ||
-        sp_data_poly_lng2 == null) {
-      print("Shared data values are null");
-      check_shared_data = true;
-      setState(() {});
-    } else {
-      print("Shared data values are not null");
-      check_shared_data = false;
-      setState(() {});
-    }
-  }
 
   bool bottomSheetVisible = true;
 
@@ -94,40 +70,43 @@ class _pass_profileState extends State<pass_profile> {
     final _height = MediaQuery.of(context).size.height;
     final _width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment(0.8, 1),
-              colors: <Color>[
-                Color.fromRGBO(94, 149, 180, 1),
-                Color.fromRGBO(77, 140, 175, 1),
-              ],
-              tileMode: TileMode.mirror,
-            ),
-          ),
-        ),
-        toolbarHeight: 80.0,
-        title: const Column(
-          children: [
-            SizedBox(height: 16.0),
-          ],
-        ),
-      ),
       body: Stack(
         children: [
           // Background Photo
           // MapsGoogleExample(),
 
-          check_shared_data == true
-              ? PassengerMap(condition: false)
-              : pass_route_map(
-                  lat1: sp_data_poly_lat1,
-                  lng1: sp_data_poly_lng1,
-                  lat2: sp_data_poly_lat2,
-                  lng2: sp_data_poly_lng2),
+          //check_shared_data == true
+          PassengerMap(condition: false),
 
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GestureDetector(
+              onTap: () async {
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                prefs.clear();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Login(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                child: Stack(children: [
+                  const Center(
+                    child: Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ),
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
             minHeight: MediaQuery.of(context).size.height * 0.45,
@@ -285,7 +264,7 @@ class _pass_profileState extends State<pass_profile> {
                               ],
                             ),
                             Text(
-                              "${User().firstName} ${User().lastName}",
+                              "${firstName} ${lastName}",
                               textAlign: TextAlign.center,
                               style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold,
@@ -353,10 +332,10 @@ class _pass_profileState extends State<pass_profile> {
                                                       InkWell(
                                                         onTap: () {
                                                           _launchPhoneDialer(
-                                                              '${User().phoneNumber}');
+                                                              '${phoneNumber}');
                                                         },
                                                         child: Text(
-                                                          '${User().phoneNumber}',
+                                                          '${phoneNumber}',
                                                           style: GoogleFonts
                                                               .montserrat(
                                                             fontWeight:

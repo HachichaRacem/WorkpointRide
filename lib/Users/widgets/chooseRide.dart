@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:clay_containers/clay_containers.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/Services/reservation.dart';
-import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/Users/widgets/routeCrad.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -24,6 +22,10 @@ class ChooseRide extends StatefulWidget {
   Marker? pickMarker;
   dynamic selectedDate;
   String routeType;
+  final Function() getSchedule;
+  List<dynamic> listSchedules;
+  List<dynamic> listRoutes;
+
   ChooseRide(
       this.showMyRides,
       this.ridesVisible,
@@ -35,6 +37,9 @@ class ChooseRide extends StatefulWidget {
       this.pickMarker,
       this.selectedDate,
       this.routeType,
+      this.getSchedule,
+      this.listSchedules,
+      this.listRoutes,
       {Key? key})
       : super(key: key);
 
@@ -50,23 +55,19 @@ class _ChooseRideState extends State<ChooseRide> {
   int selectedIndexRoute = -1;
   List<LatLng> routeCoords = [];
 
-  List<dynamic> listRoutes = [];
   dynamic position1_lat, position1_lng;
   dynamic currentPosition_lat, currentPosition_lng;
   dynamic position2_lat = 36.85135579846211, position2_lng = 10.179065957033673;
   List<Color> containerColors = List.filled(
       4, colorsFile.cardColor); // Use the background color as the default color
-  Future<Response> _getAllSchedules() async {
-    dynamic data = await scheduleServices().getAllSchedules();
-    for (int index = 0; index < data.data.length; index++) {
-      listRoutes.add(data.data?[index]["routes"]);
-    }
-    return data;
-  }
 
-  List schedules = [];
+  // List<dynamic> schedules = [];
   int selectedRouteCardIndex = 0;
-  void toggleSelection(int index) {
+  void toggleSelection(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.remove("markerLat");
+    prefs.remove("markerLng");
     if (selectedIndexRoute == index) {
       // Toggle the selection state if the card is tapped again
       setState(() {
@@ -120,17 +121,17 @@ class _ChooseRideState extends State<ChooseRide> {
   void drawRoute() async {
     routeCoords = [];
 
-    listRoutes[selectedIndexRoute]["polyline"].forEach((polyline) {
+    widget.listRoutes[selectedIndexRoute]["polyline"].forEach((polyline) {
       routeCoords.add(LatLng(polyline[0], polyline[1]));
     });
     position1_lat =
-        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
+        widget.listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0];
     position1_lng =
-        listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1];
+        widget.listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1];
     position2_lat =
-        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0];
+        widget.listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0];
     position2_lng =
-        listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1];
+        widget.listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1];
     widget._polyline!.clear();
     widget._markers!.clear();
     widget._polyline = {};
@@ -148,8 +149,10 @@ class _ChooseRideState extends State<ChooseRide> {
         Marker(
           markerId: const MarkerId('start'),
           position: LatLng(
-              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][0],
-              listRoutes[selectedIndexRoute]["startPoint"]["coordinates"][1]),
+              widget.listRoutes[selectedIndexRoute]["startPoint"]["coordinates"]
+                  [0],
+              widget.listRoutes[selectedIndexRoute]["startPoint"]["coordinates"]
+                  [1]),
           infoWindow: const InfoWindow(title: 'start'),
           icon: BitmapDescriptor.defaultMarker,
         ),
@@ -158,8 +161,10 @@ class _ChooseRideState extends State<ChooseRide> {
         Marker(
           markerId: const MarkerId('end'),
           position: LatLng(
-              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][0],
-              listRoutes[selectedIndexRoute]["endPoint"]["coordinates"][1]),
+              widget.listRoutes[selectedIndexRoute]["endPoint"]["coordinates"]
+                  [0],
+              widget.listRoutes[selectedIndexRoute]["endPoint"]["coordinates"]
+                  [1]),
           infoWindow: const InfoWindow(title: 'End'),
           icon: BitmapDescriptor.defaultMarker,
         ),
@@ -184,58 +189,63 @@ class _ChooseRideState extends State<ChooseRide> {
   void updateSelectedCardIndex(int index) {
     setState(() => selectedRouteCardIndex = index);
   }
+
   String formatTime(String time) {
-  if (time.endsWith(":")) {
-    // Remove the last character if it is a colon
-    return time.substring(0, time.length - 1);
+    if (time.endsWith(":")) {
+      // Remove the last character if it is a colon
+      return time.substring(0, time.length - 1);
+    }
+    return time;
   }
-  return time;
-}
 
 // Usage
 
-
   Future _createReservation(BuildContext context) async {
     //   try {
-    if (schedules.isNotEmpty) {
-      final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.reload();
+    bool latitude = prefs.containsKey("markerLat");
+    bool longitude = prefs.containsKey("markerLng");
+    final alertStyle = AlertStyle(
+        backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
+        animationType: AnimationType.fromTop,
+        isCloseButton: false,
+        isOverlayTapDismiss: true,
+        descStyle: const TextStyle(fontWeight: FontWeight.bold),
+        animationDuration: const Duration(milliseconds: 400),
+        alertBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+          side: const BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        titleStyle: const TextStyle(
+          color: Colors.red,
+        ),
+        // constraints: BoxConstraints.expand(width: 300),
+        //First to chars "55" represents transparency of color
+        overlayColor: Colors.black.withOpacity(0.36),
+        alertElevation: 0,
+        alertAlignment: Alignment.topCenter);
+    print("lattttttttttttttt ${latitude}");
+    print("longggggggggggggg ${longitude}");
+
+    if (widget.listSchedules.isNotEmpty && latitude && longitude) {
       final userID = prefs.getString("user");
       final latitude = prefs.getDouble("markerLat");
       final longitude = prefs.getDouble("markerLng");
-String startTime = schedules[selectedIndexRoute]["startTime"];
+      String startTime = widget.listSchedules[selectedIndexRoute]["startTime"];
       String formattedTime = formatTime(startTime);
 
       final reqBody = {
         "user": userID,
-        "schedule": schedules[selectedIndexRoute]["_id"],
-        "pickupTime": schedules[selectedIndexRoute]["startTime"],
+        "schedule": widget.listSchedules[selectedIndexRoute]["_id"],
+        "pickupTime": widget.listSchedules[selectedIndexRoute]["startTime"],
         "pickupLocation": {
           "type": "Point",
           "coordinates": [latitude, longitude],
         }
       };
-
-      final alertStyle = AlertStyle(
-          backgroundColor: const Color(0xFF003A5A).withOpacity(0.8),
-          animationType: AnimationType.fromTop,
-          isCloseButton: false,
-          isOverlayTapDismiss: true,
-          descStyle: const TextStyle(fontWeight: FontWeight.bold),
-          animationDuration: const Duration(milliseconds: 400),
-          alertBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0.0),
-            side: const BorderSide(
-              color: Colors.grey,
-            ),
-          ),
-          titleStyle: const TextStyle(
-            color: Colors.red,
-          ),
-          // constraints: BoxConstraints.expand(width: 300),
-          //First to chars "55" represents transparency of color
-          overlayColor: Colors.black.withOpacity(0.36),
-          alertElevation: 0,
-          alertAlignment: Alignment.topCenter);
 
       await Reservation().createReservation(reqBody).then(
         (resp) {
@@ -248,7 +258,10 @@ String startTime = schedules[selectedIndexRoute]["startTime"];
               desc: "Reservation created successfully",
               buttons: [
                 DialogButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    widget.showMyRides();
+                  },
                   color: Colors.grey,
                   child: const Text(
                     "Close",
@@ -257,7 +270,6 @@ String startTime = schedules[selectedIndexRoute]["startTime"];
                 ),
               ],
             ).show();
-            widget.showMyRides();
           } else {
             Alert(
               context: context,
@@ -296,6 +308,25 @@ String startTime = schedules[selectedIndexRoute]["startTime"];
           ],
         ).show(),
       );
+    } else {
+      Alert(
+        context: context,
+        type: AlertType.error,
+        style: alertStyle,
+        title: "",
+        desc:
+            "Please specify your pickup location before submitting (must be on the traced route)",
+        buttons: [
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            color: Colors.grey,
+            child: const Text(
+              "Close",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ).show();
     }
   }
 
@@ -332,7 +363,7 @@ String startTime = schedules[selectedIndexRoute]["startTime"];
                     Padding(
                       padding: const EdgeInsets.fromLTRB(50, 8.0, 0, 8),
                       child: Text(
-                        "Choose a ride12",
+                        "Choose a ride",
                         style: GoogleFonts.montserrat(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -385,35 +416,50 @@ String startTime = schedules[selectedIndexRoute]["startTime"];
                   ],
                 ),
                 FutureBuilder(
-                  future: _getAllSchedules(),
+                  future: widget.getSchedule(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      schedules = snapshot.data?.data;
-                      //debugPrint("[TEST]: ${schedules[0]}");
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: List.generate(
-                            schedules.length,
-                            (index) {
-                              final Map? driverData =
-                                  snapshot.data?.data[index]['user'];
-                              return GestureDetector(
-                                onTap: () {
-                                  toggleSelection(index);
-                                },
-                                child: RouteCard(schedules, driverData,
-                                    isCardSelected, selectedIndexRoute, index),
-                              );
-                            },
-                          ),
-                        ),
-                      );
+                      //  schedules = snapshot.data?;
+                      print("[lllllllllllllllllll]: ${widget.listSchedules}");
+                      print(
+                          "[lllllllllllllllllll]: ${widget.listSchedules.length}");
+                      return (widget.listSchedules.length == 0)
+                          ? Center(
+                              child: Text(
+                                "No rides found",
+                                style: TextStyle(color: colorsFile.titleCard),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(
+                                  widget.listSchedules.length,
+                                  (index) {
+                                    print(
+                                        "userrrrrrrrrrrrrrrrrr${widget.listSchedules[index]['user']}");
+                                    final Map? driverData =
+                                        widget.listSchedules[index]['user'];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        toggleSelection(index);
+                                      },
+                                      child: RouteCard(
+                                          widget.listSchedules,
+                                          driverData,
+                                          isCardSelected,
+                                          selectedIndexRoute,
+                                          index),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
                     } else {
                       return const Center(
                         child: Text(
                           "Fetching routes...",
-                          style: TextStyle(color: colorsFile.cardColor),
+                          style: TextStyle(color: colorsFile.titleCard),
                         ),
                       );
                     }

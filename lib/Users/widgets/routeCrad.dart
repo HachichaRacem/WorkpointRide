@@ -9,7 +9,6 @@ class RouteCard extends StatefulWidget {
   bool? isCardSelected;
   int? selectedIndexRoute;
   int? index;
-  
 
   RouteCard(this.schedules, this.driverData, this.isCardSelected,
       this.selectedIndexRoute, this.index,
@@ -89,19 +88,22 @@ class _RouteCardState extends State<RouteCard> {
                       ),
                     ),
                     const SizedBox(height: 13),
-                    Text(
-                      widget.driverData?["firstname"] != null
-                          ? (widget.driverData?["firstName"] +
-                              widget.driverData?["lastName"])
-                          : "Foulen Ben Falten",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                        color: (widget.isCardSelected! &&
-                                widget.selectedIndexRoute == widget.index)
-                            ? Colors.white
-                            : colorsFile.titleCard,
+                    Center(
+                      child: Text(
+                        widget.driverData?["firstName"] != null
+                            ? (widget.driverData?["firstName"] +
+                                " " +
+                                widget.driverData?["lastName"])
+                            : "Foulen Ben Falten",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.montserrat(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: (widget.isCardSelected! &&
+                                  widget.selectedIndexRoute == widget.index)
+                              ? Colors.white
+                              : colorsFile.titleCard,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),

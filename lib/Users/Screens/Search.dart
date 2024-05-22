@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:clay_containers/clay_containers.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -12,11 +13,11 @@ import 'package:osmflutter/GoogleMaps/DrawRouteFromStorage.dart';
 import 'package:osmflutter/GoogleMaps/driver_polyline_map.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/Services/reservation.dart';
+import 'package:osmflutter/Services/schedule.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
 import 'package:osmflutter/Users/BottomSheet/ride_card.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
-import 'package:osmflutter/models/user.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,6 +54,7 @@ class _SearchState extends State<Search> {
   bool check_map = true;
   bool isSearch = false;
   List<dynamic> listRoutes = [];
+  List<dynamic> listSchedules = [];
   int selectedIndexRoute = 0;
   List<LatLng> routeCoords = [];
   dynamic position1_lat, position1_lng;
@@ -81,6 +83,20 @@ class _SearchState extends State<Search> {
     setState(() {
       isSearch = true;
     });
+  }
+
+  Future<Response> _getAllSchedules() async {
+    final DateTime date = now.add(Duration(days: selectedIndex));
+
+    dynamic data = await scheduleServices().getAllSchedules(
+        DateUtils.dateOnly(date), position1_lat, position1_lng, routeType);
+    listSchedules = data.data["schedule"];
+    print("dataaaaaaa $data.data");
+
+    for (int index = 0; index < listSchedules.length; index++) {
+      listRoutes.add(listSchedules[index]["routes"]);
+    }
+    return data;
   }
 
   void drawRoute() async {
@@ -433,8 +449,16 @@ class _SearchState extends State<Search> {
                       padding: EdgeInsets.only(
                           left: index == 0 ? 16.0 : 0.0, right: 16.0),
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+
+                          _polyline.clear();
+                          _markers.clear();
+                          _polyline = {};
                           selectedIndex = index;
+                          await prefs.remove('polylines');
+
                           _getReservations = _loadReservation();
                           setState(() {});
                         },
@@ -606,7 +630,10 @@ class _SearchState extends State<Search> {
                                           data = {
                                             'id': snapshot.data[index]['_id'],
                                             'driverName': snapshot.data[index]
-                                                ['user']['firstName'],
+                                                    ['user']['firstName'] +
+                                                " " +
+                                                snapshot.data[index]['user']
+                                                    ['lastName'],
                                             'driverNum': snapshot.data[index]
                                                 ['user']['phoneNumber'],
                                             'scheduleStartTime': snapshot
@@ -956,11 +983,7 @@ class _SearchState extends State<Search> {
                                               const EdgeInsets.only(left: 8.0),
                                           child: GestureDetector(
                                               onTap: () async {
-                                                final SharedPreferences prefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                final String? user =
-                                                    prefs.getString('user');
+                                                await _getAllSchedules();
                                                 setState(() {
                                                   listSearchBottomSheet = true;
                                                   isSearchPoPupVisible = false;
@@ -1035,7 +1058,10 @@ class _SearchState extends State<Search> {
                         isSearchMap,
                         pickMarker,
                         currentDate,
-                        routeType),
+                        routeType,
+                        _getAllSchedules,
+                        listSchedules,
+                        listRoutes),
                   )),
             ),
             Visibility(
