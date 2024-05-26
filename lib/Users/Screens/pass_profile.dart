@@ -2,6 +2,7 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:osmflutter/Services/user.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:osmflutter/login/choose_role.dart';
 import 'package:osmflutter/login/login.dart';
@@ -20,26 +21,30 @@ class pass_profile extends StatefulWidget {
 }
 
 class _pass_profileState extends State<pass_profile> {
-  late String user = "";
-  late String firstName = "";
-  late String lastName = "";
-  late String phoneNumber = "";
+  String user = "";
+  String firstName = "...";
+  String lastName = "...";
+  String phoneNumber = "";
   List<dynamic> favLocations = [];
 
-  Future<void> _loadUserFromStorage() async {
+  _loadProfile() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     user = prefs.getString('user')!;
-    firstName = prefs.getString('firstName')!;
-    lastName = prefs.getString('lastName')!;
-    phoneNumber = prefs.getString('phoneNumber')!;
+    debugPrint("[DEBUG] : userID: $user");
+    debugPrint("[DEBUG] : _loadProfile");
+    final userData = await UserService().getProfile(user);
+    firstName = userData.data['firstName'];
+    lastName = userData.data['lastName'];
+    phoneNumber = userData.data['phoneNumber'];
+    favLocations = userData.data['favoritePlaces'];
+    setState(() {});
   }
 
   @override
   void initState() {
     // TODO: implement initState
     print("inside the initstate");
-    _loadUserFromStorage();
-
+    _loadProfile();
     // get_shared();
     super.initState();
   }
@@ -77,7 +82,6 @@ class _pass_profileState extends State<pass_profile> {
 
           //check_shared_data == true
           PassengerMap(condition: false),
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: GestureDetector(
