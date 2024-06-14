@@ -205,7 +205,7 @@ class _SearchState extends State<Search> {
     for (int index = 0; index < data.data.length; index++) {
       listRoutes.add(data.data?[index]["schedule"]["routes"]);
     }
-
+    setState(() {});
     return data.data;
   }
 
@@ -460,7 +460,7 @@ class _SearchState extends State<Search> {
                           await prefs.remove('polylines');
 
                           _getReservations = _loadReservation();
-                          setState(() {});
+                          //setState(() {});
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

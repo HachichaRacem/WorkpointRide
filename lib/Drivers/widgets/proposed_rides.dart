@@ -59,8 +59,6 @@ class _ProposedRidesState extends State<ProposedRides> {
       alertElevation: 0,
       alertAlignment: Alignment.topCenter);
 
-
-
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
   void _selectDateRange(
@@ -122,7 +120,7 @@ class _ProposedRidesState extends State<ProposedRides> {
                     selectionMode: DateRangePickerSelectionMode.multiple,
                     onSelectionChanged:
                         (DateRangePickerSelectionChangedArgs args) {
-                      print(args.value);
+                      print("Date: ${args.value}");
                       setState(() {
                         dates = args.value;
                       });
@@ -267,9 +265,10 @@ class _ProposedRidesState extends State<ProposedRides> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(width: 7,),
+                                SizedBox(
+                                  width: 7,
+                                ),
                                 Expanded(
-                                  
                                   child: RatingBar.builder(
                                     initialRating: nbPlaces.toDouble(),
                                     minRating: 1,
@@ -435,8 +434,6 @@ class _ProposedRidesState extends State<ProposedRides> {
     super.initState();
     //  extractAddressesAndTypes();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {

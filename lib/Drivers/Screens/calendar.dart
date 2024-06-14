@@ -29,7 +29,6 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  
   late String selectedTime = '07:20';
   List? schedules;
   int selectedIndex = 0;
@@ -143,28 +142,25 @@ class _CalendarState extends State<Calendar> {
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? user = prefs.getString('user');
-    await scheduleServices()
-        .getScheduleReservationsByDate(dateString, user!)
-        .then((resp) async {
-      setState(() {
-        schedules = resp.data['schedule'];
-      });
-      if (schedules!.isNotEmpty) {
-        for (final (index, schedule) in schedules!.indexed) {
-          listRoutes.add(schedules?[index]["routes"]);
-          List<Person> ppl = (schedule['reservations'] as List)
-              .map((element) => Person(
-                  name:
-                      "${element['user']['firstName']} ${element['user']['lastName']}",
-                  phoneNumber: element['user']['phoneNumber'] ?? "-"))
-              .toList();
-          schedules![index]['people'] = ppl;
-        }
-        drawRoute();
-        //   _loadPickUpPoints();
-        setState(() {});
+    final resp = await scheduleServices()
+        .getScheduleReservationsByDate(dateString, user!);
+    schedules = resp.data['schedule'];
+    debugPrint("[DEBUG]: schedules : $schedules");
+    if (schedules!.isNotEmpty) {
+      for (final (index, schedule) in schedules!.indexed) {
+        listRoutes.add(schedules?[index]["routes"]);
+        List<Person> ppl = (schedule['reservations'] as List)
+            .map((element) => Person(
+                name:
+                    "${element['user']['firstName']} ${element['user']['lastName']}",
+                phoneNumber: element['user']['phoneNumber'] ?? "-"))
+            .toList();
+        schedules![index]['people'] = ppl;
       }
-    });
+      drawRoute();
+      //   _loadPickUpPoints();
+    }
+    setState(() {});
   }
 
   @override
@@ -413,7 +409,7 @@ class _CalendarState extends State<Calendar> {
                                               5.0, 5, 5, 5),
                                           child: Row(
                                             children: [
-                                              // to office from office 
+                                              // to office from office
                                               // const Padding(
                                               //   padding: EdgeInsets.fromLTRB(
                                               //       5.0, 10, 5, 10),
@@ -500,7 +496,6 @@ class _CalendarState extends State<Calendar> {
                                                   color: colorsFile.skyBlue,
                                                 ),
                                               ),
-                                             
                                             ],
                                           ),
                                         ),
@@ -523,7 +518,6 @@ class _CalendarState extends State<Calendar> {
                                                   selectedPersonIndex = -1;
                                                 } else {
                                                   selectedPersonIndex = index;
-                                                  
                                                 }
                                               });
                                             },

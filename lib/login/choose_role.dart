@@ -119,7 +119,7 @@ class _ChooseRoleState extends State<ChooseRole> {
                                       .buttonRole), // Change the color here
                             ),
                             child: Text(
-                              'Browse app as a passenge',
+                              'Browse app as a passenger',
                               style: TextStyle(color: colorsFile.icons),
                             ),
                           ),
